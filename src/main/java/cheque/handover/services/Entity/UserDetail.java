@@ -2,6 +2,7 @@ package cheque.handover.services.Entity;
 
 import jakarta.annotation.Generated;
 import jakarta.persistence.*;
+import lombok.Data;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -9,10 +10,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 @Table(name="user_master")
 @Entity
-
+@Data
 public class UserDetail implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,12 +30,16 @@ public class UserDetail implements UserDetails {
     private String mobileNo;
     @Column(name = "password")
     private String password;
-    @Column(name = "role")
-    private String role;
+
+    @OneToOne(mappedBy = "userMaster", cascade = CascadeType.ALL)
+    private RoleMaster roleMasters;
+
+    @OneToMany(mappedBy = "userMaster",cascade = CascadeType.ALL)
+    private List<AssignBranch> assignBranches;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority(this.role));
+        return Collections.singleton(new SimpleGrantedAuthority(this.roleMasters.getRole()));
     }
 
     @Override
