@@ -25,7 +25,7 @@ public class ExcelMaster {
     private String applicationNumber;
     @Column(name = "product_name")
     private String productName;
-    @Column(name = "loan_aount")
+    @Column(name = "loan_amount")
     private Long loanAmount;
     @Column(name = "sanction_date")
     private Date sanctionDate;

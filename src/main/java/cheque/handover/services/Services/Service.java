@@ -1,10 +1,9 @@
 package cheque.handover.services.Services;
 
 import cheque.handover.services.Entity.BranchMaster;
-import cheque.handover.services.Model.BranchesResponse;
-import cheque.handover.services.Model.CommonResponse;
-import cheque.handover.services.Model.UserDetailResponse;
+import cheque.handover.services.Model.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -16,4 +15,10 @@ public interface Service {
     List<BranchMaster> findBranchByName(String branchName);
 
     void saveServiceResult(BranchesResponse branchesResponse, CommonResponse commonResponse, List<BranchMaster> branchByName);
+
+    ResponseEntity<?> resetPassword(RestPasswordRequest request);
+
+    CommonResponse matchOtp(OtpValidationRequest otpValidationRequest);
+
+    CommonResponse updatePassword(String confirmNewPassword, String newPassword, String emailId);
 }
