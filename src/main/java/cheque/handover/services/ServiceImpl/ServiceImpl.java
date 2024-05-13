@@ -1,7 +1,9 @@
 package cheque.handover.services.ServiceImpl;
 
 import cheque.handover.services.Controller.User;
+import cheque.handover.services.Entity.AssignBranch;
 import cheque.handover.services.Entity.BranchMaster;
+import cheque.handover.services.Entity.RoleMaster;
 import cheque.handover.services.Entity.UserDetail;
 import cheque.handover.services.Model.BranchesResponse;
 import cheque.handover.services.Model.CommonResponse;
@@ -12,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -24,6 +27,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
     private UserDetailRepo userDetailRepo;
     @Autowired
     private BranchMasterRepo branchMasterRepo;
+    BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final Logger logger = LoggerFactory.getLogger(User.class);
 
     public ResponseEntity<?> findUserDetails(String emailId) {
@@ -87,5 +91,43 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         branchesResponse.setCommanResponse(commonResponse);
         branchesResponse.setBranchMasters(branchByName);
 
+    }
+    @Override
+    public CommonResponse saveuser(UserDetail userDetail) {
+        CommonResponse commonResponse = new CommonResponse();
+        UserDetail userDetails=new UserDetail();
+        RoleMaster userRoleDetail=new RoleMaster();
+        List<AssignBranch> assignBranchList = new ArrayList<>();
+        try {
+            Optional<UserDetail> emailExist = userDetailRepo.findUser(userDetail.getEmailId());
+            if (emailExist.isEmpty()) {
+                userDetails.setPassword(passwordEncoder.encode(userDetail.getPassword()));
+                userDetails.setEmailId(userDetail.getEmailId());
+                userDetails.setPassword(userDetail.getPassword());
+                userDetails.setFirstname(userDetail.getFirstname());
+                userDetails.setLastName(userDetail.getLastName());
+                userDetails.setMobileNo(userDetail.getMobileNo());
+
+                userRoleDetail.setRole(String.valueOf(userDetail.getRoleMasters().getRole()));
+                userRoleDetail.setUserMaster(userDetails);
+                userDetails.setRoleMasters(userRoleDetail);
+
+                for (AssignBranch branch : userDetail.getAssignBranches()) {
+                    branch.setUserMaster(userDetails);
+                    assignBranchList.add(branch);
+                }
+                userDetails.setAssignBranches(assignBranchList);
+                userDetailRepo.save(userDetails);
+                commonResponse.setCode("0000");
+                commonResponse.setMsg("User saved successfully");
+            } else {
+                commonResponse.setCode("1111");
+                commonResponse.setMsg("User already exists");
+            }
+        } catch (Exception e) {
+            commonResponse.setCode("1111");
+            commonResponse.setMsg("Error: " + e.getMessage());
+        }
+        return commonResponse;
     }
 }
