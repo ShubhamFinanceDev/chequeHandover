@@ -31,15 +31,15 @@ public class UserDetail implements UserDetails {
     @Column(name = "password")
     private String password;
 
-    @OneToOne(mappedBy = "userMaster", cascade = CascadeType.ALL)
-    private RoleMaster roleMasters;
-
-    @OneToMany(mappedBy = "userMaster",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "userMaster", cascade = CascadeType.ALL)
     private List<AssignBranch> assignBranches;
+
+    @OneToOne(mappedBy = "userMaster", cascade = CascadeType.ALL)
+    private RoleMaster roleMaster;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority(this.roleMasters.getRole()));
+        return Collections.singleton(new SimpleGrantedAuthority(this.roleMaster.getRole()));
     }
 
     @Override

@@ -20,6 +20,4 @@ public class BranchMaster {
     @Column(name = "state")
     private String state;
 
-//    @OneToMany(mappedBy = "branchMaster", cascade = CascadeType.ALL)
-//    private List<AssignBranch> assignBranches;
 }

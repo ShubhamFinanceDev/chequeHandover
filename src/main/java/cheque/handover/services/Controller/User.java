@@ -20,24 +20,4 @@ public class User {
     private Service service;
 
     private Logger logger = LoggerFactory.getLogger(User.class);
-
-    @GetMapping("/get-user-details")
-    public ResponseEntity<?> userData(@RequestParam(name = "emailId") String emailId) {
-        return ResponseEntity.ok(service.findUserDetails(emailId).getBody());
-    }
-
-    @GetMapping("/get-all-branches")
-    public ResponseEntity<?> allBranches(@RequestParam(name = "branchName", required = false) String branchName) {
-        CommonResponse commonResponse = new CommonResponse();
-        BranchesResponse branchesResponse = new BranchesResponse();
-
-        if (branchName != null) {
-            service.saveServiceResult(branchesResponse, commonResponse, service.findBranchByName(branchName));
-        } else {
-            service.saveServiceResult(branchesResponse, commonResponse, service.findAllBranches());
-
-        }
-        return ResponseEntity.ok(branchesResponse);
-    }
-
 }

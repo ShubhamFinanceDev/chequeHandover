@@ -1,91 +1,137 @@
 package cheque.handover.services.ServiceImpl;
 
-import cheque.handover.services.Controller.User;
-import cheque.handover.services.Entity.BranchMaster;
-import cheque.handover.services.Entity.UserDetail;
-import cheque.handover.services.Model.BranchesResponse;
+import cheque.handover.services.Entity.ExcelDetail;
+import cheque.handover.services.Utility.ExcelUtilityValidation;
 import cheque.handover.services.Model.CommonResponse;
-import cheque.handover.services.Model.UserDetailResponse;
-import cheque.handover.services.Repository.BranchMasterRepo;
-import cheque.handover.services.Repository.UserDetailRepo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import cheque.handover.services.Repository.ExcelDetailRepo;
+import cheque.handover.services.Services.Service;
+import cheque.handover.services.Utility.DateFormatUtility;
+import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 
-@Service
-public class ServiceImpl implements cheque.handover.services.Services.Service {
+@org.springframework.stereotype.Service
+public class ServiceImpl implements Service {
+
     @Autowired
-    private UserDetailRepo userDetailRepo;
+    private ExcelDetailRepo excelDetailRepo;
+
     @Autowired
-    private BranchMasterRepo branchMasterRepo;
-    private final Logger logger = LoggerFactory.getLogger(User.class);
+    private ExcelUtilityValidation excelUtilityValidation;
 
-    public ResponseEntity<?> findUserDetails(String emailId) {
-
-        UserDetailResponse userDetailResponse = new UserDetailResponse();
-        CommonResponse commonResponse = new CommonResponse();
-
-        try {
-            Optional<UserDetail> userDetail = userDetailRepo.findByEmailId(emailId);
-            userDetailResponse.setUserDetail(userDetail.get());
-            commonResponse.setCode("0000");
-            commonResponse.setMsg("Success");
-            userDetailResponse.setCommonResponse(commonResponse);
-            return ResponseEntity.ok(userDetailResponse);
-
-        } catch (Exception e) {
-            commonResponse.setMsg("Data not found");
-            commonResponse.setCode("1111");
-            logger.info("User not exist");
-            return ResponseEntity.ok(commonResponse);
-        }
-    }
-
-    public List<BranchMaster> findAllBranches() {
-
-        List<BranchMaster> branchMasterList = new ArrayList<>();
-
-        try {
-            branchMasterList = branchMasterRepo.findAll();
-
-        } catch (Exception e) {
-            logger.info("Technical error.");
-
-        }
-        return branchMasterList;
-    }
-
-
-    public List<BranchMaster> findBranchByName(String branchName) {
-
-        List<BranchMaster> branchMasterList = new ArrayList<>();
-        try {
-            branchMasterList = branchMasterRepo.findByBranchName(branchName);
-
-        } catch (Exception e) {
-            logger.info("Data not found");
-        }
-        return branchMasterList;
-    }
+    @Autowired
+    private DateFormatUtility dateFormatUtility;
 
     @Override
-    public void saveServiceResult(BranchesResponse branchesResponse, CommonResponse commonResponse, List<BranchMaster> branchByName) {
-        if (branchByName.isEmpty()) {
+    public CommonResponse excelUpload(MultipartFile file) {
+
+        CommonResponse commonResponse = new CommonResponse();
+        List<ExcelDetail> excelDetails = new ArrayList<>();
+        int count = 0;
+        String errorMsg = "";
+
+        try {
+            Workbook workbook = WorkbookFactory.create(file.getInputStream());
+            Sheet sheet = workbook.getSheetAt(0);
+            Iterator<Row> rowIterator = sheet.iterator();
+            Row headerRow = rowIterator.next(); // Skipping header row
+            boolean fileFormat = excelUtilityValidation.ExcelFileFormat(headerRow);
+
+            System.out.println(fileFormat);
+
+            if (fileFormat) {
+
+                System.out.println("file format matched");
+
+                while (rowIterator.hasNext()) {
+                    count++;
+                    Row row = rowIterator.next();
+                    ExcelDetail excelDetail = new ExcelDetail();
+
+                    for (int i = 0; i < 10; i++) {
+                        Cell cell = row.getCell(i);
+                        errorMsg = (cell == null || cell.getCellType() == CellType.BLANK) ? "file upload error due to row no " + (row.getRowNum() + 1) + " is empty" : "";
+
+                        if (errorMsg.isEmpty()) {
+                            switch (i) {
+                                case 0:
+                                    excelDetail.setApplicantName(row.getCell(0).toString());
+                                    ;
+                                    break;
+                                case 1:
+                                    excelDetail.setBranchName(row.getCell(1).toString());
+                                    ;
+                                    break;
+                                case 2:
+                                    excelDetail.setRegion(row.getCell(2).toString());
+                                    ;
+                                    break;
+                                case 3:
+                                    excelDetail.setHubName(row.getCell(3).toString());
+                                    ;
+                                    break;
+                                case 4:
+                                    excelDetail.setApplicationNumber(row.getCell(4).toString());
+                                    ;
+                                    break;
+                                case 5:
+                                    excelDetail.setProductName(row.getCell(5).toString());
+                                    ;
+                                    break;
+                                case 6:
+                                    excelDetail.setLoanAmount(Long.valueOf(row.getCell(6).toString().replace(".0", "")));
+                                    ;
+                                    break;
+                                case 7:
+                                    excelDetail.setSanctionDate(Date.valueOf(dateFormatUtility.changeDateFormate(row.getCell(7).toString())));
+                                    ;
+                                    break;
+                                case 8:
+                                    excelDetail.setDisbursalDate(Date.valueOf(dateFormatUtility.changeDateFormate(row.getCell(8).toString())));
+                                    ;
+                                    break;
+                                case 9:
+                                    excelDetail.setChequeAmount(Long.valueOf(row.getCell(9).toString().replace(".0", "")));
+                                    ;
+                                    break;
+                            }
+                        }
+                        if (!errorMsg.isEmpty())
+                            break;
+                    }
+                    if (!errorMsg.isEmpty())
+                        break;
+                    excelDetails.add(excelDetail);
+                }
+
+                if (errorMsg.isEmpty()) {
+                    excelDetailRepo.saveAll(excelDetails);
+                    commonResponse.setMsg("file uploaded successfully " + excelDetails.size() + " row uploaded.");
+                    commonResponse.setCode("0000");
+                } else {
+                    errorMsg = "file is empty";
+                    commonResponse.setCode("1111");
+                    commonResponse.setMsg(errorMsg);
+                }
+            } else {
+                errorMsg = "file format is not matching or technical issue.";
+                commonResponse.setCode("1111");
+                commonResponse.setMsg(errorMsg);
+            }
+        } catch (Exception e) {
+            errorMsg = "file is empty or technical issue.";
             commonResponse.setCode("1111");
-            commonResponse.setMsg("Data not found");
+            commonResponse.setMsg(errorMsg);
 
-        } else {
-            commonResponse.setCode("0000");
-            commonResponse.setMsg("Success");
+            System.out.println(e);
         }
-        branchesResponse.setCommanResponse(commonResponse);
-        branchesResponse.setBranchMasters(branchByName);
 
+        System.out.println(errorMsg);
+        return commonResponse;
     }
 }

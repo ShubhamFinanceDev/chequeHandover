@@ -8,12 +8,12 @@ import java.sql.Date;
 @Entity
 @Data
 @Table(name = "excel_master")
-public class ExcelMaster {
+public class ExcelDetail {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
-    @Column(name = "applicant_name")
+    private Long Id;
+    @Column(name="applicant_name")
     private String applicantName;
     @Column(name = "branch_name")
     private String branchName;
@@ -25,7 +25,7 @@ public class ExcelMaster {
     private String applicationNumber;
     @Column(name = "product_name")
     private String productName;
-    @Column(name = "loan_aount")
+    @Column(name = "loan_amount")
     private Long loanAmount;
     @Column(name = "sanction_date")
     private Date sanctionDate;
