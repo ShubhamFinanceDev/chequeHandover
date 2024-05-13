@@ -5,10 +5,7 @@ import cheque.handover.services.Model.CommonResponse;
 import cheque.handover.services.Services.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/admin")
@@ -17,7 +14,7 @@ public class Admin {
     private Service service;
 
     @PostMapping("/createUser")
-    public CommonResponse userdetail(@RequestBody UserDetail userDetail) {
+    public CommonResponse userdetail(@RequestBody UserDetail userDetail/*@RequestParam(value = "created_By",required = false)String createdBy*/) {
         CommonResponse commonResponse = new CommonResponse();
         String emailId = userDetail.getEmailId();
         String password = userDetail.getPassword();

@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -97,7 +96,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
 
     }
     @Override
-    public CommonResponse saveuser(UserDetail userDetail) {
+    public CommonResponse saveuser(UserDetail userDetail ) {
         CommonResponse commonResponse = new CommonResponse();
         UserDetail userDetails=new UserDetail();
         RoleMaster userRoleDetail=new RoleMaster();
@@ -111,6 +110,10 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                 userDetails.setFirstname(userDetail.getFirstname());
                 userDetails.setLastName(userDetail.getLastName());
                 userDetails.setMobileNo(userDetail.getMobileNo());
+
+                userDetails.setCreatedBy(userDetail.getCreatedBy());
+                logger.info("createdBy : "+userDetail.getCreatedBy());
+
 
                 userRoleDetail.setRole(String.valueOf(userDetail.getRoleMasters().getRole()));
                 userRoleDetail.setUserMaster(userDetails);

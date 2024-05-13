@@ -18,5 +18,5 @@ public interface Service {
 
     void saveServiceResult(BranchesResponse branchesResponse, CommonResponse commonResponse, List<BranchMaster> branchByName);
 
-    CommonResponse saveuser(UserDetail userDetail);
+    CommonResponse saveuser(UserDetail userDetail );
 }
