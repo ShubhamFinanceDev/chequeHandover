@@ -18,8 +18,8 @@ public class Admin {
     @Autowired
     private Service service;
 
-    @PostMapping("/upload-excel-files")
+    @PostMapping("/import-data")
     public ResponseEntity<CommonResponse> FileUpload(@RequestParam("file") MultipartFile file) {
-        return ResponseEntity.ok(service.excelUpload(file));
+        return ResponseEntity.ok(service.applicationDetailsUpload(file));
     }
 }

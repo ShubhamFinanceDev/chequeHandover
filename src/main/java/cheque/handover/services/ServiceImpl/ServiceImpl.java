@@ -2,13 +2,13 @@ package cheque.handover.services.ServiceImpl;
 
 import cheque.handover.services.Controller.User;
 import cheque.handover.services.Entity.BranchMaster;
-import cheque.handover.services.Entity.ExcelMaster;
+import cheque.handover.services.Entity.ApplicationDetails;
 import cheque.handover.services.Entity.UserDetail;
 import cheque.handover.services.Model.BranchesResponse;
 import cheque.handover.services.Model.CommonResponse;
 import cheque.handover.services.Model.UserDetailResponse;
 import cheque.handover.services.Repository.BranchMasterRepo;
-import cheque.handover.services.Repository.ExcelMasterRepo;
+import cheque.handover.services.Repository.ApplicationDetailsRepo;
 import cheque.handover.services.Repository.UserDetailRepo;
 import cheque.handover.services.Utility.DateFormatUtility;
 import cheque.handover.services.Utility.ExcelUtilityValidation;
@@ -37,7 +37,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
     @Autowired
     private DateFormatUtility dateFormatUtility;
     @Autowired
-    private ExcelMasterRepo excelMasterRepo;
+    private ApplicationDetailsRepo applicationDetailsRepo;
     private final Logger logger = LoggerFactory.getLogger(User.class);
 
     public ResponseEntity<?> findUserDetails(String emailId) {
@@ -104,10 +104,10 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
     }
 
     @Override
-    public CommonResponse excelUpload(MultipartFile file) {
+    public CommonResponse applicationDetailsUpload(MultipartFile file) {
 
         CommonResponse commonResponse = new CommonResponse();
-        List<ExcelMaster> excelDetails = new ArrayList<>();
+        List<ApplicationDetails> applicationDetails = new ArrayList<>();
         int count = 0;
         String errorMsg = "";
 
@@ -127,7 +127,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                 while (rowIterator.hasNext()) {
                     count++;
                     Row row = rowIterator.next();
-                    ExcelMaster excelDetail = new ExcelMaster();
+                    ApplicationDetails applicationDetails1 = new ApplicationDetails();
 
                     for (int i = 0; i < 10; i++) {
                         Cell cell = row.getCell(i);
@@ -137,43 +137,43 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                         if (errorMsg.isEmpty()) {
                             switch (i) {
                                 case 0:
-                                    excelDetail.setApplicantName(row.getCell(0).toString());
+                                    applicationDetails1.setApplicantName(row.getCell(0).toString());
                                     ;
                                     break;
                                 case 1:
-                                    excelDetail.setBranchName(row.getCell(1).toString());
+                                    applicationDetails1.setBranchName(row.getCell(1).toString());
                                     ;
                                     break;
                                 case 2:
-                                    excelDetail.setRegion(row.getCell(2).toString());
+                                    applicationDetails1.setRegion(row.getCell(2).toString());
                                     ;
                                     break;
                                 case 3:
-                                    excelDetail.setHubName(row.getCell(3).toString());
+                                    applicationDetails1.setHubName(row.getCell(3).toString());
                                     ;
                                     break;
                                 case 4:
-                                    excelDetail.setApplicationNumber(row.getCell(4).toString());
+                                    applicationDetails1.setApplicationNumber(row.getCell(4).toString());
                                     ;
                                     break;
                                 case 5:
-                                    excelDetail.setProductName(row.getCell(5).toString());
+                                    applicationDetails1.setProductName(row.getCell(5).toString());
                                     ;
                                     break;
                                 case 6:
-                                    excelDetail.setLoanAmount(Long.valueOf(row.getCell(6).toString().replace(".0", "")));
+                                    applicationDetails1.setLoanAmount(Long.valueOf(row.getCell(6).toString().replace(".0", "")));
                                     ;
                                     break;
                                 case 7:
-                                    excelDetail.setSanctionDate(Date.valueOf(dateFormatUtility.changeDateFormate(row.getCell(7).toString())));
+                                    applicationDetails1.setSanctionDate(Date.valueOf(dateFormatUtility.changeDateFormate(row.getCell(7).toString())));
                                     ;
                                     break;
                                 case 8:
-                                    excelDetail.setDisbursalDate(Date.valueOf(dateFormatUtility.changeDateFormate(row.getCell(8).toString())));
+                                    applicationDetails1.setDisbursalDate(Date.valueOf(dateFormatUtility.changeDateFormate(row.getCell(8).toString())));
                                     ;
                                     break;
                                 case 9:
-                                    excelDetail.setChequeAmount(Long.valueOf(row.getCell(9).toString().replace(".0", "")));
+                                    applicationDetails1.setChequeAmount(Long.valueOf(row.getCell(9).toString().replace(".0", "")));
                                     ;
                                     break;
                             }
@@ -183,12 +183,12 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                     }
                     if (!errorMsg.isEmpty())
                         break;
-                    excelDetails.add(excelDetail);
+                    applicationDetails.add(applicationDetails1);
                 }
 
                 if (errorMsg.isEmpty()) {
-                    excelMasterRepo.saveAll(excelDetails);
-                    commonResponse.setMsg("file uploaded successfully " + excelDetails.size() + " row uploaded.");
+                    applicationDetailsRepo.saveAll(applicationDetails);
+                    commonResponse.setMsg("file uploaded successfully " + applicationDetails.size() + " row uploaded.");
                     commonResponse.setCode("0000");
                 } else {
                     commonResponse.setCode("1111");
