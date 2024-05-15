@@ -41,7 +41,7 @@ public class User {
     }
     @PostMapping("/generate-otp")
     public ResponseEntity<?> resetUserPassword(@RequestBody RestPasswordRequest request){
-        return ResponseEntity.ok(service.resetPassword(request));
+        return ResponseEntity.ok(service.resetPassword(request).getBody());
     }
 
     @PostMapping("/validate-otp")
