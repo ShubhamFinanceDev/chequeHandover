@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/handover-service")
+@CrossOrigin("*")
 public class HandoverLogin {
 
     @Autowired

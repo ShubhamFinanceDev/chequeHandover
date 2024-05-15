@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/admin")
+@CrossOrigin("*")
 public class Admin {
     @Autowired
     private Service service;
