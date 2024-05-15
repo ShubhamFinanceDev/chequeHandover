@@ -8,7 +8,7 @@ import java.sql.Date;
 @Entity
 @Data
 @Table(name = "excel_master")
-public class ExcelMaster {
+public class ApplicationDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
@@ -25,7 +25,7 @@ public class ExcelMaster {
     private String applicationNumber;
     @Column(name = "product_name")
     private String productName;
-    @Column(name = "loan_aount")
+    @Column(name = "loan_amount")
     private Long loanAmount;
     @Column(name = "sanction_date")
     private Date sanctionDate;
