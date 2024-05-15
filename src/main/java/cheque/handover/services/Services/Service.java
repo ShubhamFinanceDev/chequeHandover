@@ -1,6 +1,7 @@
 package cheque.handover.services.Services;
 
 import cheque.handover.services.Entity.BranchMaster;
+import cheque.handover.services.Entity.UserDetail;
 import cheque.handover.services.Model.BranchesResponse;
 import cheque.handover.services.Model.CommonResponse;
 import cheque.handover.services.Model.UserDetailResponse;
@@ -16,4 +17,6 @@ public interface Service {
     List<BranchMaster> findBranchByName(String branchName);
 
     void saveServiceResult(BranchesResponse branchesResponse, CommonResponse commonResponse, List<BranchMaster> branchByName);
+
+    CommonResponse saveuser(UserDetail userDetail );
 }
