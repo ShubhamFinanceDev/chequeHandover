@@ -20,8 +20,8 @@ public class Admin {
     public ResponseEntity<CommonResponse> userdetail(@RequestBody UserDetail userDetail) {
         CommonResponse commonResponse = new CommonResponse();
         String emailId = userDetail.getEmailId();
-        String password = userDetail.getPassword();
-        if (emailId != null && emailId.contains("@shubham") && userDetail.getPassword() != null) {
+
+        if (!emailId.isEmpty() && emailId.contains("@shubham") && !userDetail.getPassword().isEmpty()) {
             commonResponse = service.saveuser(userDetail);
             return ResponseEntity.ok(commonResponse);
         } else {
