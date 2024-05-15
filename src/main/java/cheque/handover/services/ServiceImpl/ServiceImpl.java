@@ -117,7 +117,6 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             if (emailExist.isEmpty()) {
                 userDetails.setPassword(passwordEncoder.encode(userDetail.getPassword()));
                 userDetails.setEmailId(userDetail.getEmailId());
-                userDetails.setPassword(userDetail.getPassword());
                 userDetails.setFirstname(userDetail.getFirstname());
                 userDetails.setLastName(userDetail.getLastName());
                 userDetails.setMobileNo(userDetail.getMobileNo());
