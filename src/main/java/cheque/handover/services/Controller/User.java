@@ -6,7 +6,6 @@ import cheque.handover.services.Services.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ScopeMetadata;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,10 +39,9 @@ public class User {
         }
         return ResponseEntity.ok(branchesResponse);
     }
-
     @PostMapping("/generate-otp")
     public ResponseEntity<?> resetUserPassword(@RequestBody RestPasswordRequest request){
-        return ResponseEntity.ok(service.resetPassword(request));
+        return ResponseEntity.ok(service.resetPassword(request).getBody());
     }
 
     @PostMapping("/validate-otp")
@@ -60,6 +58,6 @@ public class User {
 
     @PostMapping("/reset-password")
     public ResponseEntity<?> restUserPassword(@RequestBody ResetNewPassword rest){
-           return ResponseEntity.ok(service.updatePassword(rest.getConfirmNewPassword(), rest.getNewPassword(), rest.getEmailId()));
+        return ResponseEntity.ok(service.updatePassword(rest.getConfirmNewPassword(), rest.getNewPassword(), rest.getEmailId()));
     }
 }

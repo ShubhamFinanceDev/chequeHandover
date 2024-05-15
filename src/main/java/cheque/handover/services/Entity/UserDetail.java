@@ -30,6 +30,8 @@ public class UserDetail implements UserDetails {
     private String mobileNo;
     @Column(name = "password")
     private String password;
+    @Column(name = "created_by")
+    private String createdBy;
 
     @OneToOne(mappedBy = "userMaster", cascade = CascadeType.ALL)
     private RoleMaster roleMasters;

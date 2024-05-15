@@ -8,7 +8,7 @@ import java.sql.Date;
 @Entity
 @Data
 @Table(name = "excel_master")
-public class ExcelMaster {
+public class ApplicationDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")

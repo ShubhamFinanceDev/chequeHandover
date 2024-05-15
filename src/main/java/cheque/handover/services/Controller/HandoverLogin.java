@@ -45,15 +45,22 @@ public class HandoverLogin {
 //        System.out.println("email+"+request.getEmailId());
 //        System.out.println(passwordEncoder.encode(request.getPassword()));
 
+        final boolean[] userRole = new boolean[1];
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmailId());
 
         this.doAuthenticate(request.getEmailId(), request.getPassword());
 
         String token = this.helper.generateToken(userDetails);
+        userDetails.getAuthorities().forEach(grantedAuthority -> {
+                String roleName= String.valueOf(grantedAuthority);
+              userRole[0] =(roleName.equals("ROLE_ADMIN")) ? true : false;
+            System.out.println(roleName);
+        });
 
         JwtResponse response = JwtResponse.builder()
                 .token(token)
+                .role(userRole[0])
                 .emailId(userDetails.getUsername()).build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
