@@ -1,6 +1,7 @@
 package cheque.handover.services.Controller;
 
 import cheque.handover.services.JwtAuthentication.JwtHelper;
+import cheque.handover.services.Model.CommonResponse;
 import cheque.handover.services.Model.JwtRequest;
 import cheque.handover.services.Model.JwtResponse;
 import cheque.handover.services.Repository.UserDetailRepo;
@@ -79,9 +80,5 @@ public class HandoverLogin {
 
     }
 
-    @ExceptionHandler(BadCredentialsException.class)
-    public String exceptionHandler() {
-        return "Credentials Invalid !!";
-    }
 
 }
