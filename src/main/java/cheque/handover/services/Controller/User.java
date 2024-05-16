@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
-@CrossOrigin
+@CrossOrigin("*")
+
 public class User {
 
     @Autowired
@@ -39,25 +40,13 @@ public class User {
         }
         return ResponseEntity.ok(branchesResponse);
     }
-    @PostMapping("/generate-otp")
-    public ResponseEntity<?> resetUserPassword(@RequestBody RestPasswordRequest request){
-        return ResponseEntity.ok(service.resetPassword(request).getBody());
-    }
 
-    @PostMapping("/validate-otp")
-    public ResponseEntity<?> otpValidation(@RequestBody OtpValidationRequest otpValidationRequest){
-        CommonResponse commonResponse = new CommonResponse();
-        if (otpValidationRequest.getOtpCode() != null && otpValidationRequest.getEmailId() != null){
-            return ResponseEntity.ok(service.matchOtp(otpValidationRequest));
-        }else{
-            commonResponse.setCode("1111");
-            commonResponse.setMsg("Required field ");
-            return ResponseEntity.ok(commonResponse);
+    @GetMapping("/fetch-excel-data")
+    public ResponseEntity<?> excelDataByUser(@RequestParam(name = "emailId")String emailId,@RequestParam(name = "applicationNo",required = false)String applicationNo){
+        if (applicationNo == null || applicationNo.isEmpty()) {
+            return ResponseEntity.ok(service.fetchExcelData(emailId));
+        }else {
+            return ResponseEntity.ok(service.fetchExcelDataByApplicationNo(applicationNo));
         }
-    }
-
-    @PostMapping("/reset-password")
-    public ResponseEntity<?> restUserPassword(@RequestBody ResetNewPassword rest){
-        return ResponseEntity.ok(service.updatePassword(rest.getConfirmNewPassword(), rest.getNewPassword(), rest.getEmailId()));
     }
 }
