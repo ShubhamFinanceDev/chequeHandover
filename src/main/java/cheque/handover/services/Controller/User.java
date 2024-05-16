@@ -41,4 +41,32 @@ public class User {
         return ResponseEntity.ok(branchesResponse);
     }
 
+//<<<<<<< Updated upstream
+//=======
+//    @PostMapping("/validate-otp")
+//    public ResponseEntity<?> otpValidation(@RequestBody OtpValidationRequest otpValidationRequest){
+//        CommonResponse commonResponse = new CommonResponse();
+//        if (otpValidationRequest.getOtpCode() != null && otpValidationRequest.getEmailId() != null){
+//            return ResponseEntity.ok(service.matchOtp(otpValidationRequest));
+//        }else{
+//            commonResponse.setCode("1111");
+//            commonResponse.setMsg("Required field ");
+//            return ResponseEntity.ok(commonResponse);
+//        }
+//    }
+//
+//    @PostMapping("/reset-password")
+//    public ResponseEntity<?> restUserPassword(@RequestBody ResetNewPassword rest){
+//        return ResponseEntity.ok(service.updatePassword(rest.getConfirmNewPassword(), rest.getNewPassword(), rest.getEmailId()));
+//    }
+
+    @GetMapping("/fetch-excel-data")
+    public ResponseEntity<?> excelDataByUser(@RequestParam(name = "emailId")String emailId,@RequestParam(name = "applicationNo",required = false)String applicationNo){
+        if (applicationNo == null || applicationNo.isEmpty()) {
+            return ResponseEntity.ok(service.fetchExcelData(emailId));
+        }else {
+            return ResponseEntity.ok(service.fetchExcelDataByApplicationNo(applicationNo));
+        }
+    }
+//>>>>>>> Stashed changes
 }

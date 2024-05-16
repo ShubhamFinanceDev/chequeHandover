@@ -60,7 +60,6 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             commonResponse.setMsg("Success");
             userDetailResponse.setCommonResponse(commonResponse);
             return ResponseEntity.ok(userDetailResponse);
-
         } catch (Exception e) {
             commonResponse.setMsg("Data not found");
             commonResponse.setCode("1111");
@@ -233,6 +232,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                     }
                     if (!errorMsg.isEmpty())
                         break;
+                    applicationDetails1.setChequeStatus("N");
                     applicationDetails.add(applicationDetails1);
                 }
 
@@ -261,7 +261,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return commonResponse;
     }
 
-    public ResponseEntity<?> resetPassword(RestPasswordRequest request){
+    public ResponseEntity<?> resetPassword(RestPasswordRequest request) {
 
         ResetPasswordResponse resetPasswordResponse = new ResetPasswordResponse();
         CommonResponse commonResponse = new CommonResponse();
@@ -284,7 +284,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                     commonResponse.setCode("0000");
                     commonResponse.setMsg("otp generated success");
 
-                    otpUtility.sendOtpOnMail(request.getEmailId(),String.valueOf(otpCode));
+                    otpUtility.sendOtpOnMail(request.getEmailId(), String.valueOf(otpCode));
 
                     resetPasswordResponse.setCommonResponse(commonResponse);
                     return ResponseEntity.ok(resetPasswordResponse);
@@ -298,7 +298,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                 commonResponse.setCode("1111");
                 return ResponseEntity.ok(commonResponse);
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             commonResponse.setMsg("Technical error.");
             commonResponse.setCode("1111");
             logger.error("Exception", e);
@@ -306,7 +306,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         }
     }
 
-    public CommonResponse matchOtp(OtpValidationRequest otpValidationRequest){
+    public CommonResponse matchOtp(OtpValidationRequest otpValidationRequest) {
 
         CommonResponse commonResponse = new CommonResponse();
         try {
@@ -321,24 +321,82 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                 commonResponse.setMsg("Your Otp is expired");
                 commonResponse.setCode("1111");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             commonResponse.setMsg("Otp or emailId is not correct");
             commonResponse.setCode("1111");
         }
         return commonResponse;
     }
 
-    public CommonResponse updatePassword(String confirmNewPassword, String newPassword, String emailId){
+    public CommonResponse updatePassword(String confirmNewPassword, String newPassword, String emailId) {
         CommonResponse commonResponse = new CommonResponse();
-        if (newPassword.matches(confirmNewPassword)){
+        if (newPassword.matches(confirmNewPassword)) {
             String password = passwordEncoder.encode(confirmNewPassword);
-            userDetailRepo.updatePassword(emailId,password);
+            userDetailRepo.updatePassword(emailId, password);
             commonResponse.setMsg("Your Password is reset");
             commonResponse.setCode("0000");
-        }else{
+        } else {
             commonResponse.setMsg("New Password and Confirm Password is not same");
             commonResponse.setCode("1111");
         }
         return commonResponse;
+    }
+
+    public FetchExcelData fetchExcelData(String emailId) {
+
+        FetchExcelData fetchExcelData = new FetchExcelData();
+        CommonResponse commonResponse = new CommonResponse();
+
+        try {
+            Optional<UserDetail> userDetail = userDetailRepo.findByEmailId(emailId);
+            List<ApplicationDetails> applicationDetails = new ArrayList<>();
+            UserDetail userDetail1 = userDetail.get();
+            List<AssignBranch> assignBranches = userDetail1.getAssignBranches();
+            List<String> branchCodes = new ArrayList<>();
+
+            for (AssignBranch branches : assignBranches) {
+                branchCodes.add(String.valueOf(branches.getBranchCode()));
+            }
+            if (!branchCodes.isEmpty()) {
+                List<String> branchNames = branchMasterRepo.findBranches(branchCodes);
+                applicationDetails = applicationDetailsRepo.findAlldetails(branchNames);
+                if (applicationDetails != null) {
+                    commonResponse.setMsg("Data found successfully");
+                    commonResponse.setCode("0000");
+                    fetchExcelData.setApplicationDetails(applicationDetails);
+                    fetchExcelData.setCommonResponse(commonResponse);
+                    return fetchExcelData;
+                } else {
+                    commonResponse.setCode("1111");
+                    commonResponse.setMsg("Data not found");
+                    fetchExcelData.setCommonResponse(commonResponse);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(("Technical issue :"+e.getMessage()));
+        }
+        return fetchExcelData;
+    }
+
+    public FetchExcelData fetchExcelDataByApplicationNo(String applicationNo){
+        CommonResponse commonResponse = new CommonResponse();
+        FetchExcelData fetchExcelData = new FetchExcelData();
+        try {
+            List<ApplicationDetails> applicationDetails = applicationDetailsRepo.findByApplicationNo(applicationNo);
+            if (applicationDetails != null) {
+                commonResponse.setMsg("Data found successfully");
+                commonResponse.setCode("0000");
+                fetchExcelData.setApplicationDetails(applicationDetails);
+                fetchExcelData.setCommonResponse(commonResponse);
+            } else {
+                commonResponse.setCode("1111");
+                commonResponse.setMsg("Data not found");
+                fetchExcelData.setCommonResponse(commonResponse);
+            }
+        }catch (Exception e){
+            commonResponse.setMsg("Technical issue :"+e);
+            fetchExcelData.setCommonResponse(commonResponse);
+        }
+        return fetchExcelData;
     }
 }

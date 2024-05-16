@@ -33,4 +33,6 @@ public class ApplicationDetails {
     private Date disbursalDate;
     @Column(name = "cheque_amount")
     private Long chequeAmount;
+    @Column(name = "cheque_status")
+    private String chequeStatus;
 }

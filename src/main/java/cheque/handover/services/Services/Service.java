@@ -1,5 +1,6 @@
 package cheque.handover.services.Services;
 
+import cheque.handover.services.Entity.ApplicationDetails;
 import cheque.handover.services.Entity.BranchMaster;
 import cheque.handover.services.Entity.UserDetail;
 import cheque.handover.services.Model.*;
@@ -25,4 +26,7 @@ public interface Service {
 
     CommonResponse updatePassword(String confirmNewPassword, String newPassword, String emailId);
 
+    FetchExcelData fetchExcelData(String emailId);
+
+    FetchExcelData fetchExcelDataByApplicationNo(String applicationNo);
 }
