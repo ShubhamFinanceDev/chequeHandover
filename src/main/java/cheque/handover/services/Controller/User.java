@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
-@CrossOrigin
+@CrossOrigin("*")
+
 public class User {
 
     @Autowired
@@ -40,4 +41,12 @@ public class User {
         return ResponseEntity.ok(branchesResponse);
     }
 
+    @GetMapping("/fetch-excel-data")
+    public ResponseEntity<?> excelDataByUser(@RequestParam(name = "emailId")String emailId,@RequestParam(name = "applicationNo",required = false)String applicationNo){
+        if (applicationNo == null || applicationNo.isEmpty()) {
+            return ResponseEntity.ok(service.fetchExcelData(emailId));
+        }else {
+            return ResponseEntity.ok(service.fetchExcelDataByApplicationNo(applicationNo));
+        }
+    }
 }

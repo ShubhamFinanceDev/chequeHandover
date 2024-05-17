@@ -1,6 +1,7 @@
 package cheque.handover.services.ServiceImpl;
 
 import cheque.handover.services.Controller.User;
+
 import cheque.handover.services.Entity.BranchMaster;
 import cheque.handover.services.Entity.ApplicationDetails;
 import cheque.handover.services.Entity.UserDetail;
@@ -12,15 +13,32 @@ import cheque.handover.services.Repository.ApplicationDetailsRepo;
 import cheque.handover.services.Repository.UserDetailRepo;
 import cheque.handover.services.Utility.DateFormatUtility;
 import cheque.handover.services.Utility.ExcelUtilityValidation;
+
+import cheque.handover.services.Entity.*;
+import cheque.handover.services.Model.*;
+import cheque.handover.services.Repository.ApplicationDetailsRepo;
+import cheque.handover.services.Repository.BranchMasterRepo;
+import cheque.handover.services.Repository.OtpRepository;
+import cheque.handover.services.Repository.UserDetailRepo;
+import cheque.handover.services.Utility.DateFormatUtility;
+import cheque.handover.services.Utility.ExcelUtilityValidation;
+import cheque.handover.services.Utility.OtpUtility;
+
 import org.apache.poi.ss.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.lang.reflect.Parameter;
 import java.sql.Date;
+import java.sql.SQLOutput;
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -33,11 +51,20 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
     @Autowired
     private BranchMasterRepo branchMasterRepo;
     @Autowired
+
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+
     private ExcelUtilityValidation excelUtilityValidation;
     @Autowired
     private DateFormatUtility dateFormatUtility;
     @Autowired
     private ApplicationDetailsRepo applicationDetailsRepo;
+
+    @Autowired
+    private OtpUtility otpUtility;
+    @Autowired
+    private OtpRepository otpRepository;
     private final Logger logger = LoggerFactory.getLogger(User.class);
 
     public ResponseEntity<?> findUserDetails(String emailId) {
@@ -52,7 +79,6 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             commonResponse.setMsg("Success");
             userDetailResponse.setCommonResponse(commonResponse);
             return ResponseEntity.ok(userDetailResponse);
-
         } catch (Exception e) {
             commonResponse.setMsg("Data not found");
             commonResponse.setCode("1111");
@@ -101,6 +127,48 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         branchesResponse.setCommanResponse(commonResponse);
         branchesResponse.setBranchMasters(branchByName);
 
+    }
+
+    @Override
+    public CommonResponse saveuser(UserDetail userDetail) {
+        CommonResponse commonResponse = new CommonResponse();
+        UserDetail userDetails = new UserDetail();
+        RoleMaster userRoleDetail = new RoleMaster();
+        List<AssignBranch> assignBranchList = new ArrayList<>();
+        try {
+            Optional<UserDetail> emailExist = userDetailRepo.findUser(userDetail.getEmailId());
+            if (emailExist.isEmpty()) {
+                userDetails.setPassword(passwordEncoder.encode(userDetail.getPassword()));
+                userDetails.setEmailId(userDetail.getEmailId());
+                userDetails.setFirstname(userDetail.getFirstname());
+                userDetails.setLastName(userDetail.getLastName());
+                userDetails.setMobileNo(userDetail.getMobileNo());
+
+                userDetails.setCreatedBy(userDetail.getCreatedBy());
+                logger.info("createdBy : " + userDetail.getCreatedBy());
+
+
+                userRoleDetail.setRole(String.valueOf(userDetail.getRoleMasters().getRole()));
+                userRoleDetail.setUserMaster(userDetails);
+                userDetails.setRoleMasters(userRoleDetail);
+
+                for (AssignBranch branch : userDetail.getAssignBranches()) {
+                    branch.setUserMaster(userDetails);
+                    assignBranchList.add(branch);
+                }
+                userDetails.setAssignBranches(assignBranchList);
+                userDetailRepo.save(userDetails);
+                commonResponse.setCode("0000");
+                commonResponse.setMsg("User saved successfully");
+            } else {
+                commonResponse.setCode("1111");
+                commonResponse.setMsg("User already exists");
+            }
+        } catch (Exception e) {
+            commonResponse.setCode("1111");
+            commonResponse.setMsg("Error: " + e.getMessage());
+        }
+        return commonResponse;
     }
 
     @Override
@@ -183,6 +251,9 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                     }
                     if (!errorMsg.isEmpty())
                         break;
+
+                    applicationDetails1.setChequeStatus("N");
+
                     applicationDetails.add(applicationDetails1);
                 }
 
@@ -209,5 +280,160 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
 
         System.out.println(errorMsg);
         return commonResponse;
+    }
+
+
+    public ResponseEntity<?> resetPassword(RestPasswordRequest request) {
+
+        ResetPasswordResponse resetPasswordResponse = new ResetPasswordResponse();
+        CommonResponse commonResponse = new CommonResponse();
+        try {
+            Optional<UserDetail> userDetail = userDetailRepo.findByEmailId(request.getEmailId());
+            if (userDetail.isPresent()) {
+                UserDetail userDetailData = userDetail.get();
+                int otpCode = otpUtility.generateOtp(userDetailData);
+                if (otpCode > 0) {
+                    OtpManage otpManage = new OtpManage();
+                    otpManage.setOtpCode(String.valueOf(otpCode));
+                    otpManage.setEmailId(request.getEmailId());
+                    otpManage.setExpTime(LocalDateTime.now());
+                    otpRepository.save(otpManage);
+
+                    resetPasswordResponse.setOtpId(otpManage.getOtpId());
+                    resetPasswordResponse.setOtpCode(String.valueOf(otpCode));
+                    resetPasswordResponse.setEmailId(otpManage.getEmailId());
+
+                    commonResponse.setCode("0000");
+                    commonResponse.setMsg("otp generated success");
+
+                    otpUtility.sendOtpOnMail(request.getEmailId(), String.valueOf(otpCode));
+
+                    resetPasswordResponse.setCommonResponse(commonResponse);
+                    return ResponseEntity.ok(resetPasswordResponse);
+                } else {
+                    commonResponse.setMsg("Otp did not generated, please try again");
+                    commonResponse.setCode("1111");
+                    return ResponseEntity.ok(commonResponse);
+                }
+            } else {
+                commonResponse.setMsg("user not found");
+                commonResponse.setCode("1111");
+                return ResponseEntity.ok(commonResponse);
+            }
+        } catch (Exception e) {
+            commonResponse.setMsg("Technical error.");
+            commonResponse.setCode("1111");
+            logger.error("Exception", e);
+            return ResponseEntity.ok(commonResponse);
+        }
+    }
+
+    public CommonResponse matchOtp(OtpValidationRequest otpValidationRequest) {
+
+        CommonResponse commonResponse = new CommonResponse();
+        try {
+            Optional<OtpManage> otpManages = otpRepository.findByEmail(otpValidationRequest.getEmailId(), otpValidationRequest.getOtpCode());
+            OtpManage otpManage = otpManages.get();
+            Duration duration = Duration.between(otpManage.getExpTime(), LocalDateTime.now());
+            long betweenTime = duration.toMinutes();
+            if (betweenTime <= 1) {
+                commonResponse.setMsg(" Otp match Success");
+                commonResponse.setCode("0000");
+            } else {
+                commonResponse.setMsg("Your Otp is expired");
+                commonResponse.setCode("1111");
+            }
+        } catch (Exception e) {
+            commonResponse.setMsg("Otp or emailId is not correct");
+            commonResponse.setCode("1111");
+        }
+        return commonResponse;
+    }
+
+    public CommonResponse updatePassword(String confirmNewPassword, String newPassword, String emailId) {
+        CommonResponse commonResponse = new CommonResponse();
+        if (newPassword.matches(confirmNewPassword)) {
+            String password = passwordEncoder.encode(confirmNewPassword);
+            userDetailRepo.updatePassword(emailId, password);
+            commonResponse.setMsg("Your Password is reset");
+            commonResponse.setCode("0000");
+        } else {
+            commonResponse.setMsg("New Password and Confirm Password is not same");
+            commonResponse.setCode("1111");
+        }
+        return commonResponse;
+    }
+
+    public FetchExcelData fetchExcelData(String emailId) {
+
+        FetchExcelData fetchExcelData = new FetchExcelData();
+        CommonResponse commonResponse = new CommonResponse();
+
+        try {
+            Optional<UserDetail> userDetail = userDetailRepo.findByEmailId(emailId);
+            List<ApplicationDetails> applicationDetails = new ArrayList<>();
+            UserDetail userDetail1 = userDetail.get();
+            List<AssignBranch> assignBranches = userDetail1.getAssignBranches();
+            List<String> branchCodes = new ArrayList<>();
+
+            for (AssignBranch branches : assignBranches) {
+                branchCodes.add(String.valueOf(branches.getBranchCode()));
+            }
+            if (!branchCodes.isEmpty()) {
+                List<String> branchNames = branchMasterRepo.findBranches(branchCodes);
+                applicationDetails = applicationDetailsRepo.findAlldetails(branchNames);
+                if (applicationDetails != null) {
+                    commonResponse.setMsg("Data found successfully");
+                    commonResponse.setCode("0000");
+                    fetchExcelData.setApplicationDetails(applicationDetails);
+                    fetchExcelData.setCommonResponse(commonResponse);
+                    return fetchExcelData;
+                } else {
+                    commonResponse.setCode("1111");
+                    commonResponse.setMsg("Data not found");
+                    fetchExcelData.setCommonResponse(commonResponse);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(("Technical issue :"+e.getMessage()));
+        }
+        return fetchExcelData;
+    }
+
+    public FetchExcelData fetchExcelDataByApplicationNo(String applicationNo){
+        CommonResponse commonResponse = new CommonResponse();
+        FetchExcelData fetchExcelData = new FetchExcelData();
+        try {
+            List<ApplicationDetails> applicationDetails = applicationDetailsRepo.findByApplicationNo(applicationNo);
+            if (applicationDetails != null) {
+                commonResponse.setMsg("Data found successfully");
+                commonResponse.setCode("0000");
+                fetchExcelData.setApplicationDetails(applicationDetails);
+                fetchExcelData.setCommonResponse(commonResponse);
+            } else {
+                commonResponse.setCode("1111");
+                commonResponse.setMsg("Data not found");
+                fetchExcelData.setCommonResponse(commonResponse);
+            }
+        }catch (Exception e){
+            commonResponse.setMsg("Technical issue :"+e);
+            fetchExcelData.setCommonResponse(commonResponse);
+        }
+        return fetchExcelData;
+    }
+
+    @Override
+    public CommonResponse disableChequeStatus() {
+        CommonResponse commonResponse = new CommonResponse();
+        try {
+            applicationDetailsRepo.CHEQUE_STATUS_PROCEDURE();
+            commonResponse.setCode("0000");
+            commonResponse.setMsg("Cheque Status 'Y' data backed up and deleted successfully.");
+            return commonResponse;
+        } catch (Exception e) {
+            commonResponse.setMsg("Technical issue :" + e);
+            commonResponse.setCode("1111");
+            return commonResponse;
+        }
     }
 }
