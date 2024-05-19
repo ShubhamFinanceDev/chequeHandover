@@ -1,6 +1,19 @@
 package cheque.handover.services.ServiceImpl;
 
 import cheque.handover.services.Controller.User;
+
+import cheque.handover.services.Entity.BranchMaster;
+import cheque.handover.services.Entity.ApplicationDetails;
+import cheque.handover.services.Entity.UserDetail;
+import cheque.handover.services.Model.BranchesResponse;
+import cheque.handover.services.Model.CommonResponse;
+import cheque.handover.services.Model.UserDetailResponse;
+import cheque.handover.services.Repository.BranchMasterRepo;
+import cheque.handover.services.Repository.ApplicationDetailsRepo;
+import cheque.handover.services.Repository.UserDetailRepo;
+import cheque.handover.services.Utility.DateFormatUtility;
+import cheque.handover.services.Utility.ExcelUtilityValidation;
+
 import cheque.handover.services.Entity.*;
 import cheque.handover.services.Model.*;
 import cheque.handover.services.Repository.ApplicationDetailsRepo;
@@ -10,6 +23,7 @@ import cheque.handover.services.Repository.UserDetailRepo;
 import cheque.handover.services.Utility.DateFormatUtility;
 import cheque.handover.services.Utility.ExcelUtilityValidation;
 import cheque.handover.services.Utility.OtpUtility;
+
 import org.apache.poi.ss.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,9 +33,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.lang.reflect.Parameter;
 import java.sql.Date;
+import java.sql.SQLOutput;
 import java.time.Duration;
 import java.time.LocalDateTime;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -34,18 +51,20 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
     @Autowired
     private BranchMasterRepo branchMasterRepo;
     @Autowired
+
     private PasswordEncoder passwordEncoder;
     @Autowired
+
     private ExcelUtilityValidation excelUtilityValidation;
     @Autowired
     private DateFormatUtility dateFormatUtility;
     @Autowired
     private ApplicationDetailsRepo applicationDetailsRepo;
+
     @Autowired
     private OtpUtility otpUtility;
     @Autowired
     private OtpRepository otpRepository;
-
     private final Logger logger = LoggerFactory.getLogger(User.class);
 
     public ResponseEntity<?> findUserDetails(String emailId) {
@@ -232,7 +251,9 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                     }
                     if (!errorMsg.isEmpty())
                         break;
+
                     applicationDetails1.setChequeStatus("N");
+
                     applicationDetails.add(applicationDetails1);
                 }
 
@@ -260,6 +281,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         System.out.println(errorMsg);
         return commonResponse;
     }
+
 
     public ResponseEntity<?> resetPassword(RestPasswordRequest request) {
 
@@ -398,5 +420,20 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             fetchExcelData.setCommonResponse(commonResponse);
         }
         return fetchExcelData;
+    }
+
+    @Override
+    public CommonResponse disableChequeStatus() {
+        CommonResponse commonResponse = new CommonResponse();
+        try {
+            applicationDetailsRepo.CHEQUE_STATUS_PROCEDURE();
+            commonResponse.setCode("0000");
+            commonResponse.setMsg("SUCCESS");
+            return commonResponse;
+        } catch (Exception e) {
+            commonResponse.setMsg("Technical issue :" + e);
+            commonResponse.setCode("1111");
+            return commonResponse;
+        }
     }
 }
