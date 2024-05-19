@@ -21,7 +21,7 @@ import java.io.PrintWriter;
 @ControllerAdvice
 
 public class GlobalException implements AuthenticationEntryPoint {
-    CommonResponse commonResponse=new CommonResponse();
+    CommonResponse commonResponse = new CommonResponse();
 
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<CommonResponse> handleUserNotFoundException(UsernameNotFoundException ex, WebRequest request) {
@@ -34,7 +34,7 @@ public class GlobalException implements AuthenticationEntryPoint {
     // You can add more exception handlers for different exceptions here
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<CommonResponse> handleRuntimeException(RuntimeException ex, WebRequest request) {
-        CommonResponse commonResponse=new CommonResponse();
+        CommonResponse commonResponse = new CommonResponse();
 
         commonResponse.setCode("500");
         commonResponse.setMsg(ex.getMessage());
@@ -50,10 +50,10 @@ public class GlobalException implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            PrintWriter writer = response.getWriter();
-            System.out.println(authException);
-            writer.println("Access Denied !! " + authException.getMessage());
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        PrintWriter writer = response.getWriter();
+        System.out.println(authException);
+        writer.println("Access Denied !! " + authException.getMessage());
 
     }
 }

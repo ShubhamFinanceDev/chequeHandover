@@ -8,6 +8,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.sql.Date;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/user")
@@ -48,5 +53,21 @@ public class User {
         }else {
             return ResponseEntity.ok(service.fetchExcelDataByApplicationNo(applicationNo));
         }
+    }
+
+    @PostMapping("/update-application-flag")
+    public ResponseEntity<?> updateFlag(@RequestParam("file") MultipartFile file, @RequestParam("consumerType") String consumerType, @RequestParam("date") Date date, @RequestParam("applicationNo") String applicationNo) throws IOException, ExecutionException, InterruptedException {
+        ApplicationFlagUpdate applicationFlagUpdate=new ApplicationFlagUpdate();
+        applicationFlagUpdate.setApplicationNo(applicationNo);
+        applicationFlagUpdate.setConsumerType(consumerType);
+        applicationFlagUpdate.setDate(date);
+        return ResponseEntity.ok(service.chequeStatus(applicationFlagUpdate,file));
+    }
+
+    @GetMapping("/generate-mis-report")
+    public CommonResponse generateMis() throws IOException {
+        CommonResponse commonResponse = new CommonResponse();
+        commonResponse = service.generateExcel();
+        return commonResponse;
     }
 }

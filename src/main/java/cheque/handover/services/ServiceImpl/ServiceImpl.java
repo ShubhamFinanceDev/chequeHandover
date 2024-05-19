@@ -1,30 +1,16 @@
 package cheque.handover.services.ServiceImpl;
 
 import cheque.handover.services.Controller.User;
-
-import cheque.handover.services.Entity.BranchMaster;
-import cheque.handover.services.Entity.ApplicationDetails;
-import cheque.handover.services.Entity.UserDetail;
-import cheque.handover.services.Model.BranchesResponse;
-import cheque.handover.services.Model.CommonResponse;
-import cheque.handover.services.Model.UserDetailResponse;
-import cheque.handover.services.Repository.BranchMasterRepo;
-import cheque.handover.services.Repository.ApplicationDetailsRepo;
-import cheque.handover.services.Repository.UserDetailRepo;
-import cheque.handover.services.Utility.DateFormatUtility;
-import cheque.handover.services.Utility.ExcelUtilityValidation;
-
 import cheque.handover.services.Entity.*;
 import cheque.handover.services.Model.*;
-import cheque.handover.services.Repository.ApplicationDetailsRepo;
-import cheque.handover.services.Repository.BranchMasterRepo;
-import cheque.handover.services.Repository.OtpRepository;
-import cheque.handover.services.Repository.UserDetailRepo;
+import cheque.handover.services.Repository.*;
 import cheque.handover.services.Utility.DateFormatUtility;
+import cheque.handover.services.Utility.DdfsUtility;
 import cheque.handover.services.Utility.ExcelUtilityValidation;
 import cheque.handover.services.Utility.OtpUtility;
-
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,16 +19,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.lang.reflect.Parameter;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.Date;
-import java.sql.SQLOutput;
 import java.time.Duration;
 import java.time.LocalDateTime;
-
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Service
 public class ServiceImpl implements cheque.handover.services.Services.Service {
@@ -51,20 +39,23 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
     @Autowired
     private BranchMasterRepo branchMasterRepo;
     @Autowired
-
     private PasswordEncoder passwordEncoder;
     @Autowired
-
     private ExcelUtilityValidation excelUtilityValidation;
     @Autowired
     private DateFormatUtility dateFormatUtility;
     @Autowired
     private ApplicationDetailsRepo applicationDetailsRepo;
-
     @Autowired
     private OtpUtility otpUtility;
     @Autowired
     private OtpRepository otpRepository;
+    @Autowired
+    private DdfsUtility ddfsUtility;
+    @Autowired
+    private ChequeStatusRepo chequeStatusRepo;
+
+
     private final Logger logger = LoggerFactory.getLogger(User.class);
 
     public ResponseEntity<?> findUserDetails(String emailId) {
@@ -251,9 +242,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                     }
                     if (!errorMsg.isEmpty())
                         break;
-
                     applicationDetails1.setChequeStatus("N");
-
                     applicationDetails.add(applicationDetails1);
                 }
 
@@ -281,7 +270,6 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         System.out.println(errorMsg);
         return commonResponse;
     }
-
 
     public ResponseEntity<?> resetPassword(RestPasswordRequest request) {
 
@@ -435,5 +423,145 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             commonResponse.setCode("1111");
             return commonResponse;
         }
+    }
+
+
+    public CommonResponse chequeStatus(ApplicationFlagUpdate flagUpdate, MultipartFile file) throws IOException, ExecutionException, InterruptedException {
+        CommonResponse commonResponse = new CommonResponse();
+        ChequeStatus chequeStatus = new ChequeStatus();
+
+        CompletableFuture<Boolean> response = ddfsUtility.callDDFSApi(file, flagUpdate.getApplicationNo());
+        System.out.println("DDfs response" + response);
+        chequeStatus.setApplicationNo(flagUpdate.getApplicationNo());
+        chequeStatus.setDdfsFlag("Y");
+        chequeStatus.setConsumerType(flagUpdate.getConsumerType());
+        chequeStatus.setHandoverDate(flagUpdate.getDate());
+
+        chequeStatusRepo.save(chequeStatus);
+
+        applicationDetailsRepo.updateFlagByApplicationNo(flagUpdate.getApplicationNo());
+        commonResponse.setMsg("Data save successfully");
+        commonResponse.setCode("0000");
+
+        return commonResponse;
+    }
+
+    public CommonResponse saveBranch(MultipartFile file) {
+        CommonResponse commonResponse = new CommonResponse();
+        List<BranchMaster> branchMasterList = new ArrayList<>();
+        int count = 0;
+        String errorMsg = "";
+
+        try {
+            Workbook workbook = WorkbookFactory.create(file.getInputStream());
+            Sheet sheet = workbook.getSheetAt(0);
+            Iterator<Row> rowIterator = sheet.iterator();
+            Row headerRow = rowIterator.next();
+            boolean fileFormat = excelUtilityValidation.branchAddValidation(headerRow);
+
+            System.out.println(fileFormat);
+
+            if (fileFormat) {
+
+                while (rowIterator.hasNext()) {
+                    count++;
+                    Row row = rowIterator.next();
+                    BranchMaster branchMaster = new BranchMaster();
+
+                    for (int i = 0; i < 3; i++) {
+                        Cell cell = row.getCell(i);
+                        errorMsg = (cell == null || cell.getCellType() == CellType.BLANK) ? "file upload error due to row no " + (row.getRowNum() + 1) + " is empty" : "";
+
+                        if (errorMsg.isEmpty()) {
+                            switch (i) {
+                                case 0:
+                                    branchMaster.setBranchName(row.getCell(0).toString());
+                                    ;
+                                    break;
+                                case 1:
+                                    branchMaster.setBranchCode(row.getCell(1).toString().replace(".0", ""));
+                                    ;
+                                    break;
+                                case 2:
+                                    branchMaster.setState(row.getCell(2).toString());
+                                    ;
+                                    break;
+                            }
+                        }
+                        if (!errorMsg.isEmpty())
+                            break;
+                    }
+                    if (!errorMsg.isEmpty())
+                        break;
+                    branchMasterList.add(branchMaster);
+                }
+                if (errorMsg.isEmpty()) {
+                    branchMasterRepo.saveAll(branchMasterList);
+                    commonResponse.setCode("0000");
+                    commonResponse.setMsg("file uploaded successfully " + branchMasterList.size() + "row uploaded.");
+                } else {
+                    commonResponse.setMsg(errorMsg);
+                    commonResponse.setCode("1111");
+                }
+            } else {
+                commonResponse.setMsg("File format not match");
+                commonResponse.setCode("1111");
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return commonResponse;
+    }
+
+    public CommonResponse generateExcel() throws IOException {
+        CommonResponse commonResponse = new CommonResponse();
+        List<ApplicationDetails> applicationDetails = applicationDetailsRepo.findByFlag();
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        XSSFSheet sheet = workbook.createSheet("Persons");
+
+        int rowCount = 0;
+        Row headerRow = sheet.createRow(rowCount++);
+        headerRow.createCell(0).setCellValue("ApplicationNumber");
+        headerRow.createCell(1).setCellValue("DisbursalDate");
+        headerRow.createCell(2).setCellValue("SanctionDate");
+        headerRow.createCell(3).setCellValue("BranchName");
+        headerRow.createCell(4).setCellValue("HubName");
+        headerRow.createCell(5).setCellValue("Region");
+        headerRow.createCell(6).setCellValue("ApplicantName");
+        headerRow.createCell(7).setCellValue("ChequeAmount");
+        headerRow.createCell(8).setCellValue("ProductName");
+        headerRow.createCell(9).setCellValue("LoanAmount");
+        headerRow.createCell(10).setCellValue("getChequeStatus");
+
+        for (ApplicationDetails details : applicationDetails) {
+            Row row = sheet.createRow(rowCount++);
+            row.createCell(0).setCellValue(details.getApplicationNumber());
+            row.createCell(1).setCellValue(details.getDisbursalDate());
+            row.createCell(2).setCellValue(details.getSanctionDate());
+            row.createCell(3).setCellValue(details.getBranchName());
+            row.createCell(4).setCellValue(details.getHubName());
+            row.createCell(5).setCellValue(details.getRegion());
+            row.createCell(6).setCellValue(details.getApplicantName());
+            row.createCell(7).setCellValue(details.getChequeAmount());
+            row.createCell(8).setCellValue(details.getProductName());
+            row.createCell(9).setCellValue(details.getLoanAmount());
+            row.createCell(10).setCellValue(details.getChequeStatus());
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
+        String timestamp = LocalDateTime.now().format(formatter);
+        String filePath = "D:\\demo\\push\\ApplicationDetails_" + timestamp + ".xlsx";
+
+        try {
+            FileOutputStream outputStream = new FileOutputStream(filePath);
+            workbook.write(outputStream);
+            commonResponse.setCode("0000");
+            commonResponse.setMsg("Excel generated successfully ");
+        } catch (IOException e) {
+            commonResponse.setCode("1111");
+            commonResponse.setMsg("Technical issue ");
+        } finally {
+            workbook.close();
+        }
+        return commonResponse;
     }
 }

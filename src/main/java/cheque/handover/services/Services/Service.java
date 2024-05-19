@@ -7,7 +7,9 @@ import cheque.handover.services.Model.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public interface Service {
     ResponseEntity<?> findUserDetails(String emailId);
@@ -19,7 +21,6 @@ public interface Service {
     void saveServiceResult(BranchesResponse branchesResponse, CommonResponse commonResponse, List<BranchMaster> branchByName);
 
     CommonResponse saveuser(UserDetail userDetail );
-
     CommonResponse applicationDetailsUpload(MultipartFile file);
 
     ResponseEntity<?> resetPassword(RestPasswordRequest request);
@@ -32,7 +33,11 @@ public interface Service {
 
     FetchExcelData fetchExcelDataByApplicationNo(String applicationNo);
 
-
     CommonResponse disableChequeStatus();
+    CommonResponse chequeStatus(ApplicationFlagUpdate flagUpdate, MultipartFile file) throws IOException, ExecutionException, InterruptedException;
+
+    CommonResponse saveBranch(MultipartFile file);
+
+    CommonResponse generateExcel() throws IOException;
 
 }

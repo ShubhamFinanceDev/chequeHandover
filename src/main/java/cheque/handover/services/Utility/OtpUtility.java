@@ -40,7 +40,7 @@ public class OtpUtility {
         try {
             SimpleMailMessage mailMessage = new SimpleMailMessage();
 
-            String msgBody="Dear User\n Your OTP for reset password  is: "+otpCode+" Please enter this OTP to proceed. \n Thank you,\nShubham Finance;";
+            String msgBody = "Dear User\n Your OTP for reset password  is: " + otpCode + " Please enter this OTP to proceed. \n Thank you,\nShubham Finance;";
 
             System.out.println(msgBody);
 
