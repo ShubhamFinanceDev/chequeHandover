@@ -39,5 +39,15 @@ public class User {
         }
         return ResponseEntity.ok(branchesResponse);
     }
+    @GetMapping("/Get-excel-data")
+public ResponseEntity<?> excelDataGet(@RequestParam(name = "email_id")String emailId,@RequestParam(name = "application_Number",required = false)String applicationNumber){
+if (applicationNumber == null || applicationNumber.isEmpty()){
+return ResponseEntity.ok(service.getexcelModel(emailId));
+
+}else{
+return ResponseEntity.ok(service.getExcelModelByApplicationNumber(applicationNumber));
+}
+    }
+
 
 }

@@ -8,9 +8,10 @@ import java.sql.Date;
 @Entity
 @Data
 @Table(name = "excel_master")
-public class ExcelMaster {
+public class FetchExcelDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+
     @Column(name = "id")
     private Long id;
     @Column(name = "applicant_name")
@@ -25,7 +26,7 @@ public class ExcelMaster {
     private String applicationNumber;
     @Column(name = "product_name")
     private String productName;
-    @Column(name = "loan_aount")
+    @Column(name = "loan_amount")
     private Long loanAmount;
     @Column(name = "sanction_date")
     private Date sanctionDate;
@@ -33,4 +34,6 @@ public class ExcelMaster {
     private Date disbursalDate;
     @Column(name = "cheque_amount")
     private Long chequeAmount;
+    @Column(name = "cheque_status")
+    private String chequeStatus;
 }

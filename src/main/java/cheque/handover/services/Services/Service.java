@@ -4,6 +4,7 @@ import cheque.handover.services.Entity.BranchMaster;
 import cheque.handover.services.Entity.UserDetail;
 import cheque.handover.services.Model.BranchesResponse;
 import cheque.handover.services.Model.CommonResponse;
+import cheque.handover.services.Model.GetExcelModel;
 import cheque.handover.services.Model.UserDetailResponse;
 import org.springframework.http.ResponseEntity;
 
@@ -19,4 +20,8 @@ public interface Service {
     void saveServiceResult(BranchesResponse branchesResponse, CommonResponse commonResponse, List<BranchMaster> branchByName);
 
     CommonResponse saveuser(UserDetail userDetail );
+
+    GetExcelModel getexcelModel(String emailId);
+
+    GetExcelModel getExcelModelByApplicationNumber(String applicationNumber);
 }
