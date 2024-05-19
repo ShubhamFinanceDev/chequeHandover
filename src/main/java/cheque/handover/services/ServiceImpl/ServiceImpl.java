@@ -99,10 +99,10 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
     }
 
     @Override
-    public CommonResponse saveuser(UserDetail userDetail) {
+    public CommonResponse saveuser(UserDetail userDetail ) {
         CommonResponse commonResponse = new CommonResponse();
-        UserDetail userDetails = new UserDetail();
-        RoleMaster userRoleDetail = new RoleMaster();
+        UserDetail userDetails=new UserDetail();
+        RoleMaster userRoleDetail=new RoleMaster();
         List<AssignBranch> assignBranchList = new ArrayList<>();
         try {
             Optional<UserDetail> emailExist = userDetailRepo.findUser(userDetail.getEmailId());
@@ -115,7 +115,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                 userDetails.setMobileNo(userDetail.getMobileNo());
 
                 userDetails.setCreatedBy(userDetail.getCreatedBy());
-                logger.info("createdBy : " + userDetail.getCreatedBy());
+                logger.info("createdBy : "+userDetail.getCreatedBy());
 
 
                 userRoleDetail.setRole(String.valueOf(userDetail.getRoleMasters().getRole()));
@@ -156,7 +156,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
 
                 if (!branchCodes.isEmpty()) {
                     List<String> branchNames = branchMasterRepo.findBranches(branchCodes);
-                    List<FetchExcelDetail> fetchExcelDetails = fetchExcelRepo.findAlldetails(branchNames);
+                    List<ExcelMaster> fetchExcelDetails = fetchExcelRepo.findAlldetails(branchNames);
 
                     if (fetchExcelDetails != null && !fetchExcelDetails.isEmpty()) {
                         commonResponse.setMsg("Data found successfully");
@@ -187,7 +187,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         GetExcelModel getExcelModel = new GetExcelModel();
 
         try {
-            List<FetchExcelDetail> fetchExcelDetails = fetchExcelRepo.findApplicationNumber(applicationNumber);
+            List<ExcelMaster> fetchExcelDetails = fetchExcelRepo.findApplicationNumber(applicationNumber);
 
             if (fetchExcelDetails != null && !fetchExcelDetails.isEmpty()) {
                 commonResponse.setMsg("Data found successfully");

@@ -1,6 +1,6 @@
 package cheque.handover.services.Model;
 
-import cheque.handover.services.Entity.FetchExcelDetail;
+import cheque.handover.services.Entity.ExcelMaster;
 import lombok.Data;
 
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.List;
 public class GetExcelModel {
 
     CommonResponse commonResponse=new CommonResponse();
-private List<FetchExcelDetail> fetchExcelDetails;
+private List<ExcelMaster> fetchExcelDetails;
 
 
 }
