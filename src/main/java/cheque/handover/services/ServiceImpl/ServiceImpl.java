@@ -428,7 +428,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         try {
             applicationDetailsRepo.CHEQUE_STATUS_PROCEDURE();
             commonResponse.setCode("0000");
-            commonResponse.setMsg("Cheque Status 'Y' data backed up and deleted successfully.");
+            commonResponse.setMsg("SUCCESS");
             return commonResponse;
         } catch (Exception e) {
             commonResponse.setMsg("Technical issue :" + e);

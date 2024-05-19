@@ -48,7 +48,7 @@ public class Admin {
         return ResponseEntity.ok(service.applicationDetailsUpload(file));
     }
 
-    @PostMapping("/invoke-cheque-status")
+    @PostMapping("/invoke-status-procedure")
     public ResponseEntity<CommonResponse>invokeChequeStatus(){
         CommonResponse commonResponse = service.disableChequeStatus();
         if ("0000".equals(commonResponse.getCode())) {
