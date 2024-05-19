@@ -19,7 +19,9 @@ public interface Service {
     void saveServiceResult(BranchesResponse branchesResponse, CommonResponse commonResponse, List<BranchMaster> branchByName);
 
     CommonResponse saveuser(UserDetail userDetail );
+
     CommonResponse applicationDetailsUpload(MultipartFile file);
+
     ResponseEntity<?> resetPassword(RestPasswordRequest request);
 
     CommonResponse matchOtp(OtpValidationRequest otpValidationRequest);
@@ -29,4 +31,8 @@ public interface Service {
     FetchExcelData fetchExcelData(String emailId);
 
     FetchExcelData fetchExcelDataByApplicationNo(String applicationNo);
+
+
+    CommonResponse disableChequeStatus();
+
 }
