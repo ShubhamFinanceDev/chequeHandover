@@ -47,11 +47,11 @@ public class User {
     }
 
     @GetMapping("/fetch-excel-data")
-    public ResponseEntity<?> excelDataByUser(@RequestParam(name = "emailId")String emailId,@RequestParam(name = "applicationNo",required = false)String applicationNo){
+    public ResponseEntity<?> excelDataByUser(@RequestParam(name = "emailId")String emailId,@RequestParam(name = "applicationNo",required = false)String applicationNo,@RequestParam(name = "pageNo") int pageNo){
         if (applicationNo == null || applicationNo.isEmpty()) {
-            return ResponseEntity.ok(service.fetchExcelData(emailId));
+            return ResponseEntity.ok(service.fetchExcelData(emailId,pageNo));
         }else {
-            return ResponseEntity.ok(service.fetchExcelDataByApplicationNo(applicationNo));
+            return ResponseEntity.ok(service.fetchExcelDataByApplicationNo(applicationNo,pageNo));
         }
     }
 

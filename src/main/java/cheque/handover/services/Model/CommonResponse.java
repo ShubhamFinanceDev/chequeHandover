@@ -6,4 +6,5 @@ import lombok.Data;
 public class CommonResponse {
     private String code;
     private String msg;
+
 }
