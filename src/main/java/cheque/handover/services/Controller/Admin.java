@@ -10,6 +10,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping("/admin")
 @CrossOrigin("*")
@@ -51,5 +53,11 @@ public class Admin {
     @PostMapping("/add-new-branch")
     public ResponseEntity<?> addNewBranch(@RequestParam("file")MultipartFile file){
         return ResponseEntity.ok(service.saveBranch(file));
+    }
+
+    @GetMapping("/generate-mis-report")
+    public CommonResponse generateMis() throws IOException {
+        CommonResponse commonResponse = service.generateExcel();
+        return commonResponse;
     }
 }

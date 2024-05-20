@@ -64,10 +64,5 @@ public class User {
         return ResponseEntity.ok(service.chequeStatus(applicationFlagUpdate,file));
     }
 
-    @GetMapping("/generate-mis-report")
-    public CommonResponse generateMis() throws IOException {
-        CommonResponse commonResponse = new CommonResponse();
-        commonResponse = service.generateExcel();
-        return commonResponse;
-    }
+
 }
