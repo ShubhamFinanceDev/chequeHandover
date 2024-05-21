@@ -14,6 +14,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -352,12 +354,14 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return commonResponse;
     }
 
-    public FetchExcelData fetchExcelData(String emailId) {
+    public FetchExcelData fetchExcelData(String emailId,int pageNo) {
 
         FetchExcelData fetchExcelData = new FetchExcelData();
         CommonResponse commonResponse = new CommonResponse();
+        int pageSize = 100;
 
         try {
+            Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
             Optional<UserDetail> userDetail = userDetailRepo.findByEmailId(emailId);
             List<ApplicationDetails> applicationDetails = new ArrayList<>();
             UserDetail userDetail1 = userDetail.get();
@@ -369,10 +373,13 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             }
             if (!branchCodes.isEmpty()) {
                 List<String> branchNames = branchMasterRepo.findBranches(branchCodes);
-                applicationDetails = applicationDetailsRepo.findAlldetails(branchNames);
+                applicationDetails = applicationDetailsRepo.findAlldetails(branchNames,pageable);
+                long totalCount=applicationDetailsRepo.findCount(branchNames);
                 if (applicationDetails != null) {
                     commonResponse.setMsg("Data found successfully");
                     commonResponse.setCode("0000");
+                    fetchExcelData.setTotalCount(totalCount);
+                    fetchExcelData.setNextPage(pageNo <= (totalCount / pageSize));
                     fetchExcelData.setApplicationDetails(applicationDetails);
                     fetchExcelData.setCommonResponse(commonResponse);
                     return fetchExcelData;
@@ -388,14 +395,23 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return fetchExcelData;
     }
 
-    public FetchExcelData fetchExcelDataByApplicationNo(String applicationNo){
+    public FetchExcelData fetchExcelDataByApplicationNo(String applicationNo,int pageNo){
         CommonResponse commonResponse = new CommonResponse();
         FetchExcelData fetchExcelData = new FetchExcelData();
+
+        int pageSize = 100;
         try {
-            List<ApplicationDetails> applicationDetails = applicationDetailsRepo.findByApplicationNo(applicationNo);
+            Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
+            List<ApplicationDetails> applicationDetails = applicationDetailsRepo.findByApplicationNo(applicationNo,pageable);
+            long totalCount=applicationDetailsRepo.findCountByApplicationNo(applicationNo);
             if (applicationDetails != null) {
                 commonResponse.setMsg("Data found successfully");
                 commonResponse.setCode("0000");
+                fetchExcelData.setTotalCount(totalCount);
+                fetchExcelData.setNextPage(pageNo <= (totalCount / pageSize));
+                fetchExcelData.setApplicationDetails(applicationDetails);
+                fetchExcelData.setCommonResponse(commonResponse);
+
                 fetchExcelData.setApplicationDetails(applicationDetails);
                 fetchExcelData.setCommonResponse(commonResponse);
             } else {
@@ -409,7 +425,6 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         }
         return fetchExcelData;
     }
-
     @Override
     public CommonResponse disableChequeStatus() {
         CommonResponse commonResponse = new CommonResponse();

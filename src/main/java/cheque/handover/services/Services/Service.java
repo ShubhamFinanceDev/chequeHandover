@@ -29,9 +29,9 @@ public interface Service {
 
     CommonResponse updatePassword(String confirmNewPassword, String newPassword, String emailId);
 
-    FetchExcelData fetchExcelData(String emailId);
+    FetchExcelData fetchExcelData(String emailId,int pageNo);
 
-    FetchExcelData fetchExcelDataByApplicationNo(String applicationNo);
+    FetchExcelData fetchExcelDataByApplicationNo(String applicationNo,int pageNo);
 
     CommonResponse disableChequeStatus();
     CommonResponse chequeStatus(ApplicationFlagUpdate flagUpdate, MultipartFile file) throws IOException, ExecutionException, InterruptedException;
