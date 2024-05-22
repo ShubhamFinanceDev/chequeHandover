@@ -3,9 +3,11 @@ package cheque.handover.services.Controller;
 import cheque.handover.services.Model.*;
 import cheque.handover.services.Repository.UserDetailRepo;
 import cheque.handover.services.Services.Service;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -64,5 +66,8 @@ public class User {
         return ResponseEntity.ok(service.chequeStatus(applicationFlagUpdate,file));
     }
 
-
+    @GetMapping("/generate-mis-report")
+    public HttpServletResponse generateMis(HttpServletResponse response) throws IOException {
+        return service.generateExcel(response);
+    }
 }

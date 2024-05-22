@@ -3,6 +3,7 @@ package cheque.handover.services.Controller;
 import cheque.handover.services.Entity.UserDetail;
 import cheque.handover.services.Model.CommonResponse;
 import cheque.handover.services.Services.Service;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,9 +56,4 @@ public class Admin {
         return ResponseEntity.ok(service.saveBranch(file));
     }
 
-    @GetMapping("/generate-mis-report")
-    public CommonResponse generateMis() throws IOException {
-        CommonResponse commonResponse = service.generateExcel();
-        return commonResponse;
-    }
 }

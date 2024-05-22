@@ -3,6 +3,7 @@ package cheque.handover.services.Repository;
 import cheque.handover.services.Entity.ApplicationDetails;
 
 import cheque.handover.services.Model.FetchExcelData;
+import cheque.handover.services.Model.MisReport;
 import jakarta.transaction.Transactional;
 
 
@@ -14,6 +15,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.stereotype.Repository;
 
+import java.nio.charset.MalformedInputException;
 import java.util.List;
 
 @Repository
@@ -27,8 +29,8 @@ public interface ApplicationDetailsRepo extends JpaRepository<ApplicationDetails
     @Transactional
     @Query("update ApplicationDetails ps set ps.chequeStatus = 'Y' where ps.applicationNumber = :applicationNo")
     void updateFlagByApplicationNo(String applicationNo);
-    @Query("select i from ApplicationDetails i where i.chequeStatus = 'Y'")
-    List<ApplicationDetails> findByFlag();
+
+//    List<MisReport> findByFlag();
 
     @Procedure(name = "CHEQUE_STATUS_PROCEDURE")
     void CHEQUE_STATUS_PROCEDURE();
