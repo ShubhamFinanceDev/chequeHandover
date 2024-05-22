@@ -1,9 +1,9 @@
 package cheque.handover.services.Services;
 
-import cheque.handover.services.Entity.ApplicationDetails;
 import cheque.handover.services.Entity.BranchMaster;
 import cheque.handover.services.Entity.UserDetail;
 import cheque.handover.services.Model.*;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,6 +38,6 @@ public interface Service {
 
     CommonResponse saveBranch(MultipartFile file);
 
-    CommonResponse generateExcel() throws IOException;
+    HttpServletResponse generateExcel(HttpServletResponse response) throws IOException;
 
 }

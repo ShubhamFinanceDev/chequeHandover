@@ -4,10 +4,8 @@ import cheque.handover.services.Controller.User;
 import cheque.handover.services.Entity.*;
 import cheque.handover.services.Model.*;
 import cheque.handover.services.Repository.*;
-import cheque.handover.services.Utility.DateFormatUtility;
-import cheque.handover.services.Utility.DdfsUtility;
-import cheque.handover.services.Utility.ExcelUtilityValidation;
-import cheque.handover.services.Utility.OtpUtility;
+import cheque.handover.services.Utility.*;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -17,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,6 +24,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -56,6 +58,10 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
     private DdfsUtility ddfsUtility;
     @Autowired
     private ChequeStatusRepo chequeStatusRepo;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private MisReportUtility misReportUtility;
 
 
     private final Logger logger = LoggerFactory.getLogger(User.class);
@@ -528,55 +534,44 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return commonResponse;
     }
 
-    public CommonResponse generateExcel() throws IOException {
-        CommonResponse commonResponse = new CommonResponse();
-        List<ApplicationDetails> applicationDetails = applicationDetailsRepo.findByFlag();
+    public HttpServletResponse generateExcel(HttpServletResponse response) throws IOException {
+
+        List<MisReport> applicationDetails = new ArrayList<>();
+        applicationDetails = jdbcTemplate.query(misReportUtility.misQuery(), new MisReportUtility.MisReportRowMapper());
+
         XSSFWorkbook workbook = new XSSFWorkbook();
-        XSSFSheet sheet = workbook.createSheet("Persons");
-
+        XSSFSheet sheet = workbook.createSheet("MIS_Report");
         int rowCount = 0;
-        Row headerRow = sheet.createRow(rowCount++);
-        headerRow.createCell(0).setCellValue("ApplicationNumber");
-        headerRow.createCell(1).setCellValue("DisbursalDate");
-        headerRow.createCell(2).setCellValue("SanctionDate");
-        headerRow.createCell(3).setCellValue("BranchName");
-        headerRow.createCell(4).setCellValue("HubName");
-        headerRow.createCell(5).setCellValue("Region");
-        headerRow.createCell(6).setCellValue("ApplicantName");
-        headerRow.createCell(7).setCellValue("ChequeAmount");
-        headerRow.createCell(8).setCellValue("ProductName");
-        headerRow.createCell(9).setCellValue("LoanAmount");
-        headerRow.createCell(10).setCellValue("getChequeStatus");
 
-        for (ApplicationDetails details : applicationDetails) {
+        String[] header = {"ApplicationNumber","BranchName","ApplicantName","ChequeAmount","DdfsFlag","ConsumerType","HandoverDate","LoanAmount"};
+        Row headerRow = sheet.createRow(rowCount++);
+        int cellCount = 0;
+
+        for (String headerValue : header) {
+            headerRow.createCell(cellCount++).setCellValue(headerValue);
+        }
+        for (MisReport details : applicationDetails) {
             Row row = sheet.createRow(rowCount++);
             row.createCell(0).setCellValue(details.getApplicationNumber());
-            row.createCell(1).setCellValue(details.getDisbursalDate());
-            row.createCell(2).setCellValue(details.getSanctionDate());
-            row.createCell(3).setCellValue(details.getBranchName());
-            row.createCell(4).setCellValue(details.getHubName());
-            row.createCell(5).setCellValue(details.getRegion());
-            row.createCell(6).setCellValue(details.getApplicantName());
-            row.createCell(7).setCellValue(details.getChequeAmount());
-            row.createCell(8).setCellValue(details.getProductName());
-            row.createCell(9).setCellValue(details.getLoanAmount());
-            row.createCell(10).setCellValue(details.getChequeStatus());
+            row.createCell(1).setCellValue(details.getBranchName());
+            row.createCell(2).setCellValue(details.getApplicantName());
+            row.createCell(3).setCellValue(details.getChequeAmount());
+            row.createCell(4).setCellValue(details.getHandoverDate());
+            row.createCell(5).setCellValue(details.getConsumerType());
+            row.createCell(6).setCellValue(details.getDdfsFlag());
+            row.createCell(7).setCellValue(details.getLoanAmount());
         }
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
-        String timestamp = LocalDateTime.now().format(formatter);
-        String filePath = "D:\\demo\\push\\ApplicationDetails_" + timestamp + ".xlsx";
 
         try {
-            FileOutputStream outputStream = new FileOutputStream(filePath);
-            workbook.write(outputStream);
-            commonResponse.setCode("0000");
-            commonResponse.setMsg("Excel generated successfully ");
-        } catch (IOException e) {
-            commonResponse.setCode("1111");
-            commonResponse.setMsg("Technical issue ");
-        } finally {
+            response.setContentType("text/csv");
+            response.setHeader("Content-Disposition", "attachment; filename=MIS_Report.xlsx");
+
+            workbook.write(response.getOutputStream());
             workbook.close();
+
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
         }
-        return commonResponse;
+        return response;
     }
 }

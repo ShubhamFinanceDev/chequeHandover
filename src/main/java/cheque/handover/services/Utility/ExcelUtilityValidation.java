@@ -24,7 +24,7 @@ public class ExcelUtilityValidation {
     }
 
     public boolean branchAddValidation(Row headerRow) {
-        String[] expectedHeaders = {"Branch Name", "Branch Code", "Status"};
+        String[] expectedHeaders = {"Branch Name", "Branch Code", "State"};
         boolean match = true;
         for (int i = 0; i < expectedHeaders.length; i++) {
             Cell cell = headerRow.getCell(i);
