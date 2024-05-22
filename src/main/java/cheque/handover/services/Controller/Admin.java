@@ -2,6 +2,7 @@ package cheque.handover.services.Controller;
 
 import cheque.handover.services.Entity.UserDetail;
 import cheque.handover.services.Model.CommonResponse;
+import cheque.handover.services.Model.RestPasswordRequest;
 import cheque.handover.services.Services.Service;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ public class Admin {
     private Service service;
 
     @PostMapping("/create-user")
-    public ResponseEntity<CommonResponse> userdetail(@RequestBody UserDetail userDetail) {
+    public ResponseEntity<CommonResponse> userDetail(@RequestBody UserDetail userDetail) {
         CommonResponse commonResponse = new CommonResponse();
         String emailId = userDetail.getEmailId();
 
@@ -41,8 +42,15 @@ public class Admin {
     }
 
     @PostMapping("/invoke-status-procedure")
-    public ResponseEntity<CommonResponse>invokeChequeStatus(){
-        CommonResponse commonResponse = service.disableChequeStatus();
+    public ResponseEntity<CommonResponse>invokeChequeStatus(@RequestBody RestPasswordRequest inputRequest){
+        CommonResponse commonResponse=new CommonResponse();
+        if(inputRequest.getEmailId().isEmpty() || inputRequest.getEmailId()== null) {
+            commonResponse.setMsg("Required field missing or empty.");
+            commonResponse.setCode("1111");
+            return ResponseEntity.ok(commonResponse);
+        }
+        System.out.println(inputRequest.getEmailId());
+         commonResponse = service.disableChequeStatus();
         if ("0000".equals(commonResponse.getCode())) {
             return new ResponseEntity<>(commonResponse, HttpStatus.OK);
         } else {

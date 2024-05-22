@@ -66,8 +66,10 @@ public class User {
         return ResponseEntity.ok(service.chequeStatus(applicationFlagUpdate,file));
     }
 
-    @GetMapping("/generate-mis-report")
-    public HttpServletResponse generateMis(HttpServletResponse response) throws IOException {
-        return service.generateExcel(response);
+    @GetMapping("/generate-mis-report{emailId}")
+    public String generateMis(HttpServletResponse response,@PathVariable String emailId) throws IOException {
+        System.out.println(emailId);
+         service.generateExcel(response);
+        return "Success";
     }
 }
