@@ -348,7 +348,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
 
     public CommonResponse updatePassword(String confirmNewPassword, String newPassword, String emailId) {
         CommonResponse commonResponse = new CommonResponse();
-        if (newPassword.matches(confirmNewPassword)) {
+        if (newPassword.equals(confirmNewPassword)) {
             String password = passwordEncoder.encode(confirmNewPassword);
             userDetailRepo.updatePassword(emailId, password);
             commonResponse.setMsg("Your Password is reset");
