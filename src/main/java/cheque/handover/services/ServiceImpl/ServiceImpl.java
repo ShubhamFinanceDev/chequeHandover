@@ -543,7 +543,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         XSSFSheet sheet = workbook.createSheet("MIS_Report");
         int rowCount = 0;
 
-        String[] header = {"ApplicationNumber","BranchName","ApplicantName","ChequeAmount","DdfsFlag","ConsumerType","HandoverDate","LoanAmount"};
+        String[] header = {"ApplicationNumber","BranchName","ApplicantName","ChequeAmount","ConsumerType","HandoverDate","LoanAmount"};
         Row headerRow = sheet.createRow(rowCount++);
         int cellCount = 0;
 
@@ -556,10 +556,9 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             row.createCell(1).setCellValue(details.getBranchName());
             row.createCell(2).setCellValue(details.getApplicantName());
             row.createCell(3).setCellValue(details.getChequeAmount());
-            row.createCell(4).setCellValue(details.getHandoverDate());
-            row.createCell(5).setCellValue(details.getConsumerType());
-            row.createCell(6).setCellValue(details.getDdfsFlag());
-            row.createCell(7).setCellValue(details.getLoanAmount());
+            row.createCell(4).setCellValue(details.getConsumerType());
+            row.createCell(5).setCellValue(details.getHandoverDate().toString());
+            row.createCell(6).setCellValue(details.getLoanAmount());
         }
 
         try {
