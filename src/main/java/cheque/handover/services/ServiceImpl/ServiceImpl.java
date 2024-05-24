@@ -403,14 +403,13 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             for (String branch : assignBranches) {
                 if (branch.equals(branchName)) ;
                 {
-                    if((applicationNo !=null && !applicationNo.isEmpty()) && branchName !=null)
+                    if((applicationNo !=null && !applicationNo.isEmpty()) && (branchName !=null && !branchName.isEmpty()))
                     {
-                        System.out.println("app"+applicationNo);
                         applicationDetails=applicationDetailsRepo.findDetailByBranchAndApplication(branchName,applicationNo,pageable);
                         totalCount=applicationDetailsRepo.findDetailByBranchAndApplicationCount(branchName,applicationNo);
                     }
                     else {
-                    applicationDetails = (applicationNo !=null && !applicationNo.isEmpty()) ? applicationDetailsRepo.findDetailByApplication(applicationNo, pageable) : applicationDetailsRepo.findDetailByBranch(branchName,pageable) ;
+                    applicationDetails = (applicationNo !=null && !applicationNo.isEmpty()) ? applicationDetailsRepo.findDetailByApplication(applicationNo,assignBranches, pageable) : applicationDetailsRepo.findDetailByBranch(branchName,pageable) ;
                     totalCount = (applicationNo !=null) ? applicationDetailsRepo.findDetailByApplicationCount(applicationNo): applicationDetailsRepo.findDetailByBranchCount(branchName);
                     }
                     break;
