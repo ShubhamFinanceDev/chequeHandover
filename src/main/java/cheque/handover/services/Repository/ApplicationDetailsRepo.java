@@ -39,8 +39,8 @@ public interface ApplicationDetailsRepo extends JpaRepository<ApplicationDetails
 
     @Query("select d from ApplicationDetails d where d.branchName =:branchName")
     ApplicationDetails findByBranch(String branchName);
- @Query("SELECT count(d) FROM ApplicationDetails d WHERE (:applicationNo IS NULL AND d.branchName = :branchName) OR (:branchName IS NULL AND d.applicationNumber = :applicationNo)  OR (:applicationNo IS NOT NULL AND :branchName IS NOT NULL AND (d.branchName = :branchName OR d.applicationNumber = :applicationNo))")
+ @Query("SELECT COUNT(d) FROM ApplicationDetails d WHERE (:applicationNo IS NULL OR d.applicationNumber = :applicationNo) AND (:branchName IS NULL OR d.branchName = :branchName)")
     long findDetailByBranchAndApplication(String branchName, String applicationNo);
-@Query("SELECT d FROM ApplicationDetails d WHERE (:applicationNo IS NULL AND d.branchName = :branchName) OR (:branchName IS NULL AND d.applicationNumber = :applicationNo)  OR (:applicationNo IS NOT NULL AND :branchName IS NOT NULL AND (d.branchName = :branchName OR d.applicationNumber = :applicationNo))")
+@Query("SELECT d FROM ApplicationDetails d WHERE (:applicationNo IS NULL OR d.applicationNumber = :applicationNo) AND (:branchName IS NULL OR d.branchName = :branchName)")
  List<ApplicationDetails> findDetailByBranchAndApplication(String branchName, String applicationNo, Pageable pageable);
 }
