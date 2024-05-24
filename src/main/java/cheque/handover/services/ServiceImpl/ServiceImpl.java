@@ -599,11 +599,3 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return response;
     }
 }
-
-//        for (String branches : branchNames) {
-//        if (branches.equalsIgnoreCase(branchName)) {
-//applicationDetails = applicationDetailsRepo.findAllDetails(branchNames, pageable);
-//totalCount = applicationDetailsRepo.findCount(branchNames);
-//                    }
-//                            }
-//                            }
