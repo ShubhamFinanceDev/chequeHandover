@@ -70,7 +70,10 @@ public class User {
         System.out.println(emailId);
          service.generateExcel(response);
         return "Success";
+    }
 
-
+    @GetMapping("/get-list-of-assign-branches")
+    public ResponseEntity<AllAssignBranchResponse> getAllAssignBranch(@RequestParam(name = "emailId")String emailId){
+        return ResponseEntity.ok(service.findAssignBranchList(emailId));
     }
 }

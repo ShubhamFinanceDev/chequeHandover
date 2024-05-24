@@ -40,4 +40,5 @@ public interface Service {
 
     HttpServletResponse generateExcel(HttpServletResponse response) throws IOException;
 
+    AllAssignBranchResponse findAssignBranchList(String emailId);
 }
