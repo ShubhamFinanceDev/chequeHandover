@@ -23,15 +23,6 @@ public class UserUtility {
     private BranchMasterRepo branchMasterRepo;
 
     public List<String> findBranchesByUser(String emailId) {
-
-        Optional<UserDetail> userDetail = userDetailRepo.findByEmailId(emailId);
-        UserDetail userDetail1 = userDetail.get();
-        List<AssignBranch> assignBranches = userDetail1.getAssignBranches();
-        List<String> branchCodes = new ArrayList<>();
-
-        for (AssignBranch branches : assignBranches) {
-            branchCodes.add(String.valueOf(branches.getBranchCode()));
-        }
-            return branchMasterRepo.findBranches(branchCodes);
+    return branchMasterRepo.findAssignedBranch(emailId);
     }
 }

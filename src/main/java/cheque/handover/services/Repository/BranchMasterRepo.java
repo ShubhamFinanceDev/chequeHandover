@@ -12,6 +12,6 @@ public interface BranchMasterRepo extends JpaRepository<BranchMaster,Long> {
     @Query("select b from BranchMaster b where b.branchName LIKE CONCAT('%', :branchName, '%')")
     List<BranchMaster> findByBranchName(String branchName);
 
-    @Query("select b.branchName from BranchMaster b where b.branchCode in :branchCodes")
-    List<String> findBranches(List<String> branchCodes);
+    @Query(value = "SELECT DISTINCT branch_name FROM branch_master WHERE branch_code IN (SELECT branch_code FROM assign_branch WHERE user_id = (SELECT user_id FROM user_master WHERE email_id = ?1))", nativeQuery = true)
+    List<String> findAssignedBranch(String emailId);
 }
