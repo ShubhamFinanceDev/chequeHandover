@@ -65,12 +65,6 @@ public class User {
         return ResponseEntity.ok(service.chequeStatus(applicationFlagUpdate,file));
     }
 
-    @GetMapping("/generate-mis-report{emailId}")
-    public String generateMis(HttpServletResponse response,@PathVariable String emailId) throws IOException {
-        System.out.println(emailId);
-         service.generateExcel(response);
-        return "Success";
-    }
 
     @GetMapping("/get-list-of-assign-branches")
     public ResponseEntity<AllAssignBranchResponse> getAllAssignBranch(@RequestParam(name = "emailId")String emailId){

@@ -534,10 +534,11 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return commonResponse;
     }
 
-    public HttpServletResponse generateExcel(HttpServletResponse response) throws IOException {
+    public HttpServletResponse generateExcel(HttpServletResponse response,String emailId) throws IOException {
 
         List<MisReport> applicationDetails = new ArrayList<>();
-        applicationDetails = jdbcTemplate.query(misReportUtility.misQuery(), new MisReportUtility.MisReportRowMapper());
+
+        applicationDetails = jdbcTemplate.query(misReportUtility.misQuery(emailId), new MisReportUtility.MisReportRowMapper());
 
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet sheet = workbook.createSheet("MIS_Report");

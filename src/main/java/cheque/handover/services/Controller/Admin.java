@@ -58,6 +58,12 @@ public class Admin {
         }
 
     }
+    @GetMapping("/generate-mis-report")
+    public String generateMis(HttpServletResponse response,@RequestParam String emailId) throws IOException {
+        System.out.println(emailId);
+        service.generateExcel(response,emailId);
+        return "Success";
+    }
 
     @PostMapping("/add-new-branch")
     public ResponseEntity<?> addNewBranch(@RequestParam("file")MultipartFile file){

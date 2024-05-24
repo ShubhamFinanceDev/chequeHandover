@@ -38,7 +38,7 @@ public interface Service {
 
     CommonResponse saveBranch(MultipartFile file);
 
-    HttpServletResponse generateExcel(HttpServletResponse response) throws IOException;
+    HttpServletResponse generateExcel(HttpServletResponse response,String emailId) throws IOException;
 
     AllAssignBranchResponse findAssignBranchList(String emailId);
 }
