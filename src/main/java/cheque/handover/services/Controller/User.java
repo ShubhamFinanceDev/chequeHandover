@@ -34,7 +34,7 @@ public class User {
     }
 
     @GetMapping("/get-all-branches")
-    public ResponseEntity<?> allBranches(@RequestParam(name = "branchName", required = false) String branchName) {
+    public ResponseEntity<?> allBranches(@RequestParam(name = "branchName", required = false) String branchName,@RequestParam(name = "emailId" , required = false) String emailId) {
         CommonResponse commonResponse = new CommonResponse();
         BranchesResponse branchesResponse = new BranchesResponse();
 
@@ -70,5 +70,7 @@ public class User {
         System.out.println(emailId);
          service.generateExcel(response);
         return "Success";
+
+
     }
 }

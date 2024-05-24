@@ -396,63 +396,38 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         List<ApplicationDetails> applicationDetails = new ArrayList<>();
         int pageSize = 100;
         long totalCount = 0;
+
+        Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
+        List<String> assignBranches = userUtility.findBranchesByUser(emailId);
         try {
-            Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
-            List<String> assignBranches = userUtility.findBranchesByUser(emailId);
-
-            if (branchName != null && !branchName.isEmpty()) {
-                System.out.println(branchName+"name");
-                if (assignBranches.contains(branchName)) {
-                    ApplicationDetails branchData = applicationDetailsRepo.findByBranch(branchName);
-                    totalCount = applicationDetailsRepo.findApplicationNoCount(branchName);
-                    applicationDetails.add(branchData);
-                } else {
-                    commonResponse.setMsg("This branch is not assigned to you");
-                    commonResponse.setCode("1111");
+            for (String branch : assignBranches) {
+                if (branch.equals(branchName)) ;
+                {
+                    applicationDetails = applicationDetailsRepo.findDetailByBranchAndApplication(branchName, applicationNo, pageable);
+                    totalCount = applicationDetailsRepo.findDetailByBranchAndApplication(branchName, applicationNo);
+                    break;
                 }
-
-            } else if (applicationNo != null && !applicationNo.isEmpty()) {
-
-                ApplicationDetails applicationNoDetails = applicationDetailsRepo.findByApplicationNo(applicationNo);
-
-                if (applicationNoDetails != null) {
-                    String applicationBranch = applicationNoDetails.getBranchName();
-                    if (assignBranches.contains(applicationBranch)) {
-                        applicationDetails.add(applicationNoDetails);
-                        totalCount = applicationDetailsRepo.findCountByApplicationNo(branchName);
-                    } else {
-                        commonResponse.setMsg("This branch is not assigned to you");
-                        commonResponse.setCode("1111");
-                    }
-                } else {
-                    commonResponse.setMsg("Application not found");
-                    commonResponse.setCode("1111");
-                }
-
-            } else{
-                commonResponse.setMsg("Invalid request: Either branchName or applicationNo must be provided");
-                commonResponse.setCode("1111");
-            }
-
-            if (!applicationDetails.isEmpty()) {
-                commonResponse.setMsg("Data found successfully");
-                commonResponse.setCode("0000");
-                fetchExcelData.setTotalCount(totalCount);
-                fetchExcelData.setNextPage(pageNo <= (totalCount / pageSize));
-                fetchExcelData.setApplicationDetails(applicationDetails);
-                fetchExcelData.setCommonResponse(commonResponse);
-
-                fetchExcelData.setApplicationDetails(applicationDetails);
-                fetchExcelData.setCommonResponse(commonResponse);
-            } else {
-                commonResponse.setCode("1111");
-                commonResponse.setMsg("Data not found");
-                fetchExcelData.setCommonResponse(commonResponse);
             }
         } catch (Exception e) {
-            commonResponse.setMsg("Technical issue :" + e);
+            System.out.println(e.getMessage());
+        }
+
+        if (!applicationDetails.isEmpty()) {
+            commonResponse.setMsg("Data found successfully");
+            commonResponse.setCode("0000");
+            fetchExcelData.setTotalCount(totalCount);
+            fetchExcelData.setNextPage(pageNo <= (totalCount / pageSize));
+            fetchExcelData.setApplicationDetails(applicationDetails);
+            fetchExcelData.setCommonResponse(commonResponse);
+
+            fetchExcelData.setApplicationDetails(applicationDetails);
+            fetchExcelData.setCommonResponse(commonResponse);
+        } else {
+            commonResponse.setCode("1111");
+            commonResponse.setMsg("Data not found");
             fetchExcelData.setCommonResponse(commonResponse);
         }
+
         return fetchExcelData;
     }
 
