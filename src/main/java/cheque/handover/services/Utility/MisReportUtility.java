@@ -13,11 +13,21 @@ import java.sql.SQLException;
 public class MisReportUtility {
 
     public String misQuery(){
-        return "SELECT em.applicant_name,em.loan_amount,em.cheque_amount,em.branch_name,em.application_number,\n" +
-                "    cs.consumer_type,cs.ddfs_flag,cs.handover_date FROM \n" +
+        return "SELECT \n" +
+                "    em.applicant_name,\n" +
+                "    em.loan_amount,\n" +
+                "    em.cheque_amount,\n" +
+                "    em.branch_name,\n" +
+                "    em.application_number,\n" +
+                "    cs.consumer_type,\n" +
+                "    cs.ddfs_flag,\n" +
+                "    cs.handover_date\n" +
+                "FROM \n" +
                 "    excel_master em, \n" +
-                "    cheque_status cs WHERE \n" +
-                "    em.application_number = cs.application_number;";
+                "    cheque_status cs\n" +
+                "WHERE \n" +
+                "    em.application_number = cs.application_number\n" +
+                "    AND em.cheque_status = 'Y';";
     }
 
     public static class MisReportRowMapper implements RowMapper<MisReport> {

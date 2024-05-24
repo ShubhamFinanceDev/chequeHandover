@@ -16,19 +16,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -62,6 +57,8 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
     private JdbcTemplate jdbcTemplate;
     @Autowired
     private MisReportUtility misReportUtility;
+    @Autowired
+    private UserUtility userUtility;
 
 
     private final Logger logger = LoggerFactory.getLogger(User.class);
@@ -360,57 +357,84 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return commonResponse;
     }
 
-    public FetchExcelData fetchExcelData(String emailId,int pageNo) {
+    public FetchExcelData fetchExcelData(String emailId, int pageNo) {
 
         FetchExcelData fetchExcelData = new FetchExcelData();
         CommonResponse commonResponse = new CommonResponse();
+        List<ApplicationDetails> applicationDetails = new ArrayList<>();
         int pageSize = 100;
+        long totalCount = 0;
 
         try {
             Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
-            Optional<UserDetail> userDetail = userDetailRepo.findByEmailId(emailId);
-            List<ApplicationDetails> applicationDetails = new ArrayList<>();
-            UserDetail userDetail1 = userDetail.get();
-            List<AssignBranch> assignBranches = userDetail1.getAssignBranches();
-            List<String> branchCodes = new ArrayList<>();
+            List<String> branchNames = userUtility.findBranchesByUser(emailId);
+            applicationDetails = applicationDetailsRepo.findAllDetails(branchNames, pageable);
+            totalCount = applicationDetailsRepo.findCount(branchNames);
 
-            for (AssignBranch branches : assignBranches) {
-                branchCodes.add(String.valueOf(branches.getBranchCode()));
-            }
-            if (!branchCodes.isEmpty()) {
-                List<String> branchNames = branchMasterRepo.findBranches(branchCodes);
-                applicationDetails = applicationDetailsRepo.findAlldetails(branchNames,pageable);
-                long totalCount=applicationDetailsRepo.findCount(branchNames);
-                if (applicationDetails != null) {
-                    commonResponse.setMsg("Data found successfully");
-                    commonResponse.setCode("0000");
-                    fetchExcelData.setTotalCount(totalCount);
-                    fetchExcelData.setNextPage(pageNo <= (totalCount / pageSize));
-                    fetchExcelData.setApplicationDetails(applicationDetails);
-                    fetchExcelData.setCommonResponse(commonResponse);
-                    return fetchExcelData;
-                } else {
-                    commonResponse.setCode("1111");
-                    commonResponse.setMsg("Data not found");
-                    fetchExcelData.setCommonResponse(commonResponse);
-                }
+            if (!applicationDetails.isEmpty()) {
+                commonResponse.setMsg("Data found successfully");
+                commonResponse.setCode("0000");
+                fetchExcelData.setTotalCount(totalCount);
+                fetchExcelData.setNextPage(pageNo <= (totalCount / pageSize));
+                fetchExcelData.setApplicationDetails(applicationDetails);
+                fetchExcelData.setCommonResponse(commonResponse);
+                return fetchExcelData;
+            } else {
+                commonResponse.setCode("1111");
+                commonResponse.setMsg("Data not found");
+                fetchExcelData.setCommonResponse(commonResponse);
             }
         } catch (Exception e) {
-            System.out.println(("Technical issue :"+e.getMessage()));
+            System.out.println(("Technical issue :" + e.getMessage()));
         }
         return fetchExcelData;
     }
 
-    public FetchExcelData fetchExcelDataByApplicationNo(String applicationNo,int pageNo){
+    public FetchExcelData fetchExcelDataByApplicationNo(String applicationNo, String branchName, int pageNo, String emailId) {
         CommonResponse commonResponse = new CommonResponse();
         FetchExcelData fetchExcelData = new FetchExcelData();
-
+        List<ApplicationDetails> applicationDetails = new ArrayList<>();
         int pageSize = 100;
+        long totalCount = 0;
         try {
             Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
-            List<ApplicationDetails> applicationDetails = applicationDetailsRepo.findByApplicationNo(applicationNo,pageable);
-            long totalCount=applicationDetailsRepo.findCountByApplicationNo(applicationNo);
-            if (applicationDetails != null) {
+            List<String> assignBranches = userUtility.findBranchesByUser(emailId);
+
+            if (branchName != null && !branchName.isEmpty()) {
+                System.out.println(branchName+"name");
+                if (assignBranches.contains(branchName)) {
+                    ApplicationDetails branchData = applicationDetailsRepo.findByBranch(branchName);
+                    totalCount = applicationDetailsRepo.findApplicationNoCount(branchName);
+                    applicationDetails.add(branchData);
+                } else {
+                    commonResponse.setMsg("This branch is not assigned to you");
+                    commonResponse.setCode("1111");
+                }
+
+            } else if (applicationNo != null && !applicationNo.isEmpty()) {
+
+                ApplicationDetails applicationNoDetails = applicationDetailsRepo.findByApplicationNo(applicationNo);
+
+                if (applicationNoDetails != null) {
+                    String applicationBranch = applicationNoDetails.getBranchName();
+                    if (assignBranches.contains(applicationBranch)) {
+                        applicationDetails.add(applicationNoDetails);
+                        totalCount = applicationDetailsRepo.findCountByApplicationNo(branchName);
+                    } else {
+                        commonResponse.setMsg("This branch is not assigned to you");
+                        commonResponse.setCode("1111");
+                    }
+                } else {
+                    commonResponse.setMsg("Application not found");
+                    commonResponse.setCode("1111");
+                }
+
+            } else{
+                commonResponse.setMsg("Invalid request: Either branchName or applicationNo must be provided");
+                commonResponse.setCode("1111");
+            }
+
+            if (!applicationDetails.isEmpty()) {
                 commonResponse.setMsg("Data found successfully");
                 commonResponse.setCode("0000");
                 fetchExcelData.setTotalCount(totalCount);
@@ -425,12 +449,13 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                 commonResponse.setMsg("Data not found");
                 fetchExcelData.setCommonResponse(commonResponse);
             }
-        }catch (Exception e){
-            commonResponse.setMsg("Technical issue :"+e);
+        } catch (Exception e) {
+            commonResponse.setMsg("Technical issue :" + e);
             fetchExcelData.setCommonResponse(commonResponse);
         }
         return fetchExcelData;
     }
+
     @Override
     public CommonResponse disableChequeStatus() {
         CommonResponse commonResponse = new CommonResponse();
@@ -543,7 +568,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         XSSFSheet sheet = workbook.createSheet("MIS_Report");
         int rowCount = 0;
 
-        String[] header = {"ApplicationNumber","BranchName","ApplicantName","ChequeAmount","ConsumerType","HandoverDate","LoanAmount"};
+        String[] header = {"ApplicationNumber", "BranchName", "ApplicantName", "ChequeAmount", "ConsumerType", "HandoverDate", "LoanAmount"};
         Row headerRow = sheet.createRow(rowCount++);
         int cellCount = 0;
 
@@ -574,3 +599,11 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return response;
     }
 }
+
+//        for (String branches : branchNames) {
+//        if (branches.equalsIgnoreCase(branchName)) {
+//applicationDetails = applicationDetailsRepo.findAllDetails(branchNames, pageable);
+//totalCount = applicationDetailsRepo.findCount(branchNames);
+//                    }
+//                            }
+//                            }
