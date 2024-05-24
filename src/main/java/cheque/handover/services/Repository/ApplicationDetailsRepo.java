@@ -39,8 +39,19 @@ public interface ApplicationDetailsRepo extends JpaRepository<ApplicationDetails
 
     @Query("select d from ApplicationDetails d where d.branchName =:branchName")
     ApplicationDetails findByBranch(String branchName);
-    @Query("SELECT COUNT(d) FROM ApplicationDetails d WHERE (:applicationNo IS NULL OR d.applicationNumber = :applicationNo) AND (:branchName IS NULL OR d.branchName = :branchName)")
-    long findDetailByBranchAndApplication(String branchName, String applicationNo);
-    @Query("SELECT d FROM ApplicationDetails d WHERE (:applicationNo IS NULL OR d.applicationNumber = :applicationNo) AND (:branchName IS NULL OR d.branchName = :branchName)")
-    List<ApplicationDetails> findDetailByBranchAndApplication(String branchName, String applicationNo, Pageable pageable);
+ @Query("select d from ApplicationDetails d where  d.applicationNumber =:applicationNo")
+ List<ApplicationDetails> findDetailByApplication(String applicationNo, Pageable pageable);
+
+ @Query("select d from ApplicationDetails d where d.branchName =:branchName")
+ List<ApplicationDetails> findDetailByBranch(String branchName,Pageable pageable);
+
+ @Query("select count (d) from ApplicationDetails d where d.applicationNumber =:applicationNo")
+ long findDetailByApplicationCount(String applicationNo);
+ @Query("select count (d) from ApplicationDetails d where d.branchName =:branchName")
+ long findDetailByBranchCount(String branchName);
+
+ @Query("select (d) from ApplicationDetails d where d.branchName =:branchName and d.applicationNumber =:applicationNo")
+ List<ApplicationDetails> findDetailByBranchAndApplication(String branchName, String applicationNo, Pageable pageable);
+ @Query("select count (d) from ApplicationDetails d where d.branchName =:branchName and d.applicationNumber =:applicationNo")
+ long findDetailByBranchAndApplicationCount(String branchName,String applicationNo);
 }
