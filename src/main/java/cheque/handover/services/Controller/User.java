@@ -34,11 +34,11 @@ public class User {
     }
 
     @GetMapping("/get-all-branches")
-    public ResponseEntity<?> allBranches(@RequestParam(name = "branchName", required = false) String branchName,@RequestParam(name = "emailId" , required = false) String emailId) {
+    public ResponseEntity<?> allBranches(@RequestParam(name = "branchName", required = false) String branchName) {
         CommonResponse commonResponse = new CommonResponse();
         BranchesResponse branchesResponse = new BranchesResponse();
 
-        if (branchName != null) {
+        if (branchName != null && !branchName.isEmpty()) {
             service.saveServiceResult(branchesResponse, commonResponse, service.findBranchByName(branchName));
         } else {
             service.saveServiceResult(branchesResponse, commonResponse, service.findAllBranches());
