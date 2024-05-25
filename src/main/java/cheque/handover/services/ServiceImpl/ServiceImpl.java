@@ -71,8 +71,26 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         CommonResponse commonResponse = new CommonResponse();
 
         try {
-            Optional<UserDetail> userDetail = userDetailRepo.findByEmailId(emailId);
-            userDetailResponse.setUserDetail(userDetail.get());
+            Optional<UserDetail> userDetail1 = userDetailRepo.findByEmailId(emailId);
+            UserDetail userDetail = userDetail1.get();
+
+            userDetailResponse.setUserId(userDetail.getUserId());
+            userDetailResponse.setFirstname(userDetail.getFirstname());
+            userDetailResponse.setLastName(userDetail.getLastName());
+            userDetailResponse.setEmailId(userDetail.getEmailId());
+            userDetailResponse.setMobileNo(userDetail.getMobileNo());
+            userDetailResponse.setCreatedBy(userDetail.getCreatedBy());
+            userDetailResponse.setEnabled(userDetail.isEnabled());
+            userDetailResponse.setCreateDate(userDetail.getCreateDate());
+            List<Long> assignBranches =new ArrayList<>();
+            userDetail.getAssignBranches().forEach(branch ->{
+
+                assignBranches.add(branch.getBranchCode());
+            });
+            userDetailResponse.setAssignBranches(userUtility.listOfBranch(assignBranches));
+            userDetailResponse.setRoleMaster(userDetail.getRoleMasters().getRole());
+            userDetailResponse.setLastLogin(userDetail.getLoginDetails().getTimestamp());
+
             commonResponse.setCode("0000");
             commonResponse.setMsg("Success");
             userDetailResponse.setCommonResponse(commonResponse);

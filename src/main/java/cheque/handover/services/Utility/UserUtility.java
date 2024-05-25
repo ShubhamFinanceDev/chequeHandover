@@ -26,4 +26,15 @@ public class UserUtility {
             System.out.println(emailId);
     return branchMasterRepo.findAssignedBranch(emailId);
     }
+
+    public List<String> listOfBranch(List<Long> branchCode){
+        List<String> branchName = new ArrayList<>();
+        try
+        {
+            branchName = branchMasterRepo.findByBranchCode(branchCode);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+        return branchName;
+    }
 }
