@@ -20,4 +20,8 @@ public interface UserDetailRepo extends JpaRepository<UserDetail,Long> {
     @Modifying
     @Query("update UserDetail ps set ps.password=:password where ps.emailId=:emailId")
     void updatePassword(String emailId, String password);
+    @Transactional
+    @Modifying
+    @Query(value = "update login_detail set last_login=CURRENT_TIMESTAMP where email_id=?1",nativeQuery = true)
+    void lastLogin(String email);
 }

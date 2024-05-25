@@ -75,8 +75,7 @@ public class HandoverLogin {
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(email, password);
         try {
             manager.authenticate(authentication);
-
-
+            userDetailRepo.lastLogin(email);
         } catch (BadCredentialsException e) {
             throw new BadCredentialsException(" Invalid Username or Password  !!");
         }

@@ -28,7 +28,7 @@ public class Admin {
         String emailId = userDetail.getEmailId();
 
         if (!emailId.isEmpty() && emailId.contains("@shubham") && !userDetail.getPassword().isEmpty()) {
-            commonResponse = service.saveuser(userDetail);
+            commonResponse = service.saveUser(userDetail);
             return ResponseEntity.ok(commonResponse);
         } else {
             commonResponse.setCode("1111");

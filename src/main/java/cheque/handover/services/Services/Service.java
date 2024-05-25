@@ -20,7 +20,7 @@ public interface Service {
 
     void saveServiceResult(BranchesResponse branchesResponse, CommonResponse commonResponse, List<BranchMaster> branchByName);
 
-    CommonResponse saveuser(UserDetail userDetail );
+    CommonResponse saveUser(UserDetail userDetail );
     CommonResponse applicationDetailsUpload(MultipartFile file);
 
     ResponseEntity<?> resetPassword(RestPasswordRequest request);

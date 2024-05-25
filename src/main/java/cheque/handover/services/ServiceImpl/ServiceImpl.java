@@ -22,6 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.sql.Date;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -126,10 +128,12 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
     }
 
     @Override
-    public CommonResponse saveuser(UserDetail userDetail) {
+    public CommonResponse saveUser(UserDetail userDetail) {
         CommonResponse commonResponse = new CommonResponse();
         UserDetail userDetails = new UserDetail();
         RoleMaster userRoleDetail = new RoleMaster();
+        LoginDetails loginDetails=new LoginDetails();
+
         List<AssignBranch> assignBranchList = new ArrayList<>();
         try {
             Optional<UserDetail> emailExist = userDetailRepo.findUser(userDetail.getEmailId());
@@ -139,7 +143,10 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                 userDetails.setFirstname(userDetail.getFirstname());
                 userDetails.setLastName(userDetail.getLastName());
                 userDetails.setMobileNo(userDetail.getMobileNo());
-
+                userDetails.setEnabled(true);
+                loginDetails.setUserMaster(userDetails);
+                loginDetails.setEmailId(userDetail.getEmailId());
+                userDetails.setLoginDetails(loginDetails);
                 userDetails.setCreatedBy(userDetail.getCreatedBy());
                 logger.info("createdBy : " + userDetail.getCreatedBy());
 

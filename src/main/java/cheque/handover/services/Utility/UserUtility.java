@@ -23,7 +23,7 @@ public class UserUtility {
     private BranchMasterRepo branchMasterRepo;
 
     public List<String> findBranchesByUser(String emailId) {
-        System.out.println(emailId);
+            System.out.println(emailId);
     return branchMasterRepo.findAssignedBranch(emailId);
     }
 }
