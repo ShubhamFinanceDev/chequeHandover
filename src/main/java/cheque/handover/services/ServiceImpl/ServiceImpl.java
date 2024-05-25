@@ -410,7 +410,8 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                     }
                     else {
                     applicationDetails = (applicationNo !=null && !applicationNo.isEmpty()) ? applicationDetailsRepo.findDetailByApplication(applicationNo,assignBranches, pageable) : applicationDetailsRepo.findDetailByBranch(branchName,pageable) ;
-                    totalCount = (applicationNo !=null) ? applicationDetailsRepo.findDetailByApplicationCount(applicationNo): applicationDetailsRepo.findDetailByBranchCount(branchName);
+                    totalCount = (applicationNo !=null && !applicationNo.isEmpty()) ? applicationDetailsRepo.findDetailByApplicationCount(applicationNo,assignBranches) : applicationDetailsRepo.findDetailByBranchCount(branchName);
+                        System.out.println("total"+totalCount);
                     }
                     break;
                 }
@@ -444,7 +445,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         try {
             applicationDetailsRepo.CHEQUE_STATUS_PROCEDURE();
             commonResponse.setCode("0000");
-            commonResponse.setMsg("SUCCESS");
+            commonResponse.setMsg("SUCCESS.");
             return commonResponse;
         } catch (Exception e) {
             commonResponse.setMsg("Technical issue :" + e);

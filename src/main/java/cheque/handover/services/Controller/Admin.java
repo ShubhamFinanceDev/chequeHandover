@@ -5,6 +5,7 @@ import cheque.handover.services.Model.CommonResponse;
 import cheque.handover.services.Model.RestPasswordRequest;
 import cheque.handover.services.Services.Service;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.collections4.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,20 +43,20 @@ public class Admin {
     }
 
     @PostMapping("/invoke-status-procedure")
-    public ResponseEntity<CommonResponse>invokeChequeStatus(@RequestBody RestPasswordRequest inputRequest){
+    public ResponseEntity<HashedMap>invokeChequeStatus(@RequestBody RestPasswordRequest inputRequest){
+        HashedMap<String,Object> response=new HashedMap<>();
         CommonResponse commonResponse=new CommonResponse();
+
         if(inputRequest.getEmailId().isEmpty() || inputRequest.getEmailId()== null) {
             commonResponse.setMsg("Required field missing or empty.");
             commonResponse.setCode("1111");
-            return ResponseEntity.ok(commonResponse);
+            response.put("commonResponse",commonResponse);
+            return ResponseEntity.ok(response);
         }
         System.out.println(inputRequest.getEmailId());
-         commonResponse = service.disableChequeStatus();
-        if ("0000".equals(commonResponse.getCode())) {
-            return new ResponseEntity<>(commonResponse, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(commonResponse, HttpStatus.BAD_REQUEST);
-        }
+        commonResponse = service.disableChequeStatus();
+        response.put("commonResponse",commonResponse);
+        return ResponseEntity.ok(response);
 
     }
 
