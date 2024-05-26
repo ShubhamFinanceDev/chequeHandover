@@ -8,11 +8,14 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.sql.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-@Table(name="user_master")
+@Table(name = "user_master")
 @Entity
 @Data
 public class UserDetail implements UserDetails {
@@ -20,7 +23,7 @@ public class UserDetail implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long userId;
-    @Column(name="first_name")
+    @Column(name = "first_name")
     private String firstname;
     @Column(name = "last_name")
     private String lastName;
@@ -32,13 +35,25 @@ public class UserDetail implements UserDetails {
     private String password;
     @Column(name = "created_by")
     private String createdBy;
+    @Column(name = "enable")
+    private boolean enabled;
+    @Column(name = "creation_date")
+    private String createDate;
+    @PrePersist
+    private void onCreate() {
+        LocalDate currentDate = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        createDate = currentDate.format(formatter);
+    }
 
     @OneToOne(mappedBy = "userMaster", cascade = CascadeType.ALL)
     private RoleMaster roleMasters;
 
-    @OneToMany(mappedBy = "userMaster",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "userMaster", cascade = CascadeType.ALL)
     private List<AssignBranch> assignBranches;
 
+    @OneToOne(mappedBy = "userMaster", cascade = CascadeType.ALL)
+    private LoginDetails loginDetails;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singleton(new SimpleGrantedAuthority(this.roleMasters.getRole()));
@@ -71,6 +86,6 @@ public class UserDetail implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return this.enabled;
     }
 }

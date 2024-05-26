@@ -20,7 +20,7 @@ public interface Service {
 
     void saveServiceResult(BranchesResponse branchesResponse, CommonResponse commonResponse, List<BranchMaster> branchByName);
 
-    CommonResponse saveuser(UserDetail userDetail );
+    CommonResponse saveUser(UserDetail userDetail );
     CommonResponse applicationDetailsUpload(MultipartFile file);
 
     ResponseEntity<?> resetPassword(RestPasswordRequest request);
@@ -31,13 +31,14 @@ public interface Service {
 
     FetchExcelData fetchExcelData(String emailId,int pageNo);
 
-    FetchExcelData fetchExcelDataByApplicationNo(String applicationNo,int pageNo);
+    FetchExcelData fetchExcelDataByApplicationNo(String applicationNo, String branchName, int pageNo, String emailId);
 
     CommonResponse disableChequeStatus();
     CommonResponse chequeStatus(ApplicationFlagUpdate flagUpdate, MultipartFile file) throws IOException, ExecutionException, InterruptedException;
 
     CommonResponse saveBranch(MultipartFile file);
 
-    HttpServletResponse generateExcel(HttpServletResponse response) throws IOException;
+    HttpServletResponse generateExcel(HttpServletResponse response,String emailId) throws IOException;
 
+    AllAssignBranchResponse findAssignBranchList(String emailId);
 }

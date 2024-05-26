@@ -7,7 +7,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,7 +38,7 @@ public class User {
         CommonResponse commonResponse = new CommonResponse();
         BranchesResponse branchesResponse = new BranchesResponse();
 
-        if (branchName != null) {
+        if (branchName != null && !branchName.isEmpty()) {
             service.saveServiceResult(branchesResponse, commonResponse, service.findBranchByName(branchName));
         } else {
             service.saveServiceResult(branchesResponse, commonResponse, service.findAllBranches());
@@ -49,11 +48,11 @@ public class User {
     }
 
     @GetMapping("/fetch-excel-data")
-    public ResponseEntity<?> excelDataByUser(@RequestParam(name = "emailId")String emailId,@RequestParam(name = "applicationNo",required = false)String applicationNo,@RequestParam(name = "pageNo") int pageNo){
-        if (applicationNo == null || applicationNo.isEmpty()) {
-            return ResponseEntity.ok(service.fetchExcelData(emailId,pageNo));
-        }else {
-            return ResponseEntity.ok(service.fetchExcelDataByApplicationNo(applicationNo,pageNo));
+    public ResponseEntity<?> excelDataByUser(@RequestParam(name = "emailId")String emailId,@RequestParam(name = "applicationNo",required = false)String applicationNo,@RequestParam(name = "pageNo") int pageNo,@RequestParam(name = "branchName",required = false)String branchName){
+        if ((branchName != null && !branchName.isEmpty()) || (applicationNo != null && !applicationNo.isEmpty())) {
+            return ResponseEntity.ok(service.fetchExcelDataByApplicationNo(applicationNo, branchName, pageNo, emailId));
+        } else {
+            return ResponseEntity.ok(service.fetchExcelData(emailId, pageNo));
         }
     }
 
@@ -66,10 +65,14 @@ public class User {
         return ResponseEntity.ok(service.chequeStatus(applicationFlagUpdate,file));
     }
 
-    @GetMapping("/generate-mis-report{emailId}")
-    public String generateMis(HttpServletResponse response,@PathVariable String emailId) throws IOException {
+    @GetMapping("/generate-mis-report")
+    public String generateMis(HttpServletResponse response,@RequestParam String emailId) throws IOException {
         System.out.println(emailId);
-         service.generateExcel(response);
+        service.generateExcel(response,emailId);
         return "Success";
+    }
+    @GetMapping("/get-list-of-assign-branches")
+    public ResponseEntity<AllAssignBranchResponse> getAllAssignBranch(@RequestParam(name = "emailId")String emailId){
+        return ResponseEntity.ok(service.findAssignBranchList(emailId));
     }
 }
