@@ -66,89 +66,83 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
     public ResponseEntity<?> findUserDetails(String name) {
 
         List<UserDetailResponse> userDetailResponseList = new ArrayList<>();
-        AllUserDetailList userReturn = new AllUserDetailList();
+        AllUserDetailList allUserDetailList = new AllUserDetailList();
         CommonResponse commonResponse = new CommonResponse();
 
         try {
-            List<UserDetail> userDetail1 = userDetailRepo.findByFirstName(name);
-            for (UserDetail userDetail : userDetail1) {
-                UserDetailResponse userDetailResponse = new UserDetailResponse();
-                userDetailResponse.setUserId(userDetail.getUserId());
-                userDetailResponse.setFirstname(userDetail.getFirstname());
-                userDetailResponse.setLastName(userDetail.getLastName());
-                userDetailResponse.setEmailId(userDetail.getEmailId());
-                userDetailResponse.setMobileNo(userDetail.getMobileNo());
-                userDetailResponse.setCreatedBy(userDetail.getCreatedBy());
-                userDetailResponse.setEnabled(userDetail.isEnabled());
-                userDetailResponse.setCreateDate(userDetail.getCreateDate());
-                List<Long> assignBranches = new ArrayList<>();
-                userDetail.getAssignBranches().forEach(branch -> {
+            List<UserDetail> userDetail = userDetailRepo.findByFirstName(name);
+            setUserDetail(userDetail, userDetailResponseList, commonResponse, allUserDetailList);
 
-                    assignBranches.add(branch.getBranchCode());
-                });
-                userDetailResponse.setAssignBranches(userUtility.listOfBranch(assignBranches));
-                userDetailResponse.setRoleMaster(userDetail.getRoleMasters().getRole());
-                userDetailResponse.setLastLogin(userDetail.getLoginDetails().getTimestamp());
-                userDetailResponseList.add(userDetailResponse);
-            }
-
-            commonResponse.setCode("0000");
-            commonResponse.setMsg("Success");
-            userReturn.setUserDetailResponse(userDetailResponseList);
-            userReturn.setCommonResponse(commonResponse);
-            return ResponseEntity.ok(userReturn);
+            return ResponseEntity.ok(allUserDetailList);
 
         } catch (Exception e) {
             commonResponse.setMsg("Data not found");
             commonResponse.setCode("1111");
             logger.info("User not exist");
-            userReturn.setCommonResponse(commonResponse);
-            return ResponseEntity.ok(userReturn);
+            allUserDetailList.setCommonResponse(commonResponse);
+            return ResponseEntity.ok(allUserDetailList);
         }
     }
 
     public ResponseEntity<?> allUser() {
 
-        List<UserDetail> userDetail = new ArrayList<>();
         CommonResponse commonResponse = new CommonResponse();
         AllUserDetailList allUserDetailList = new AllUserDetailList();
         List<UserDetailResponse> userDetailResponseList = new ArrayList<>();
 
         try {
-            userDetail = userDetailRepo.findAll();
-            for (UserDetail userData : userDetail) {
-                UserDetailResponse userDetails = new UserDetailResponse();
+            List<UserDetail> userDetail = userDetailRepo.findAll();
+            if (!userDetail.isEmpty()) {
+                setUserDetail(userDetail, userDetailResponseList, commonResponse, allUserDetailList);
+                return ResponseEntity.ok(allUserDetailList);
+            } else {
+                commonResponse.setCode("0000");
+                commonResponse.setMsg("Data found successfully");
+            }
+        } catch (Exception e) {
+            commonResponse.setMsg("Data not found or Technical issue :" + e.getMessage());
+            commonResponse.setCode("1111");
+        }
+        return ResponseEntity.ok(commonResponse);
 
-                userDetails.setUserId(userData.getUserId());
-                userDetails.setFirstname(userData.getFirstname());
-                userDetails.setLastName(userData.getLastName());
-                userDetails.setEmailId(userData.getEmailId());
-                userDetails.setMobileNo(userData.getMobileNo());
-                userDetails.setCreatedBy(userData.getCreatedBy());
-                userDetails.setEnabled(userData.isEnabled());
-                userDetails.setCreateDate(userData.getCreateDate());
-                List<Long> assignBranches = new ArrayList<>();
+    }
+
+
+    private void setUserDetail(List<UserDetail> userDetail, List<UserDetailResponse> userDetailResponseList, CommonResponse commonResponse, AllUserDetailList allUserDetailList) {
+
+        for (UserDetail userData : userDetail) {
+            UserDetailResponse userDetails = new UserDetailResponse();
+
+            userDetails.setUserId(userData.getUserId());
+            userDetails.setFirstname(userData.getFirstname());
+            userDetails.setLastName(userData.getLastName());
+            userDetails.setEmailId(userData.getEmailId());
+            userDetails.setMobileNo(userData.getMobileNo());
+            userDetails.setCreatedBy(userData.getCreatedBy());
+            userDetails.setEnabled(userData.isEnabled());
+            userDetails.setCreateDate(userData.getCreateDate());
+            List<Long> assignBranches = new ArrayList<>();
+            if (!userData.getAssignBranches().isEmpty()) {
                 userData.getAssignBranches().forEach(branch -> {
 
                     assignBranches.add(branch.getBranchCode());
                 });
-                userDetails.setAssignBranches(userUtility.listOfBranch(assignBranches));
-                userDetails.setRoleMaster(userData.getRoleMasters().getRole());
-                userDetails.setLastLogin(userData.getLoginDetails().getTimestamp());
-                userDetailResponseList.add(userDetails);
             }
-
-            commonResponse.setCode("0000");
-            commonResponse.setMsg("Data found successfully");
-            allUserDetailList.setCommonResponse(commonResponse);
-            allUserDetailList.setUserDetailResponse(userDetailResponseList);
-            return ResponseEntity.ok(allUserDetailList);
-        } catch (Exception e) {
-            commonResponse.setMsg("Data not found or Technical issue :" + e.getMessage());
-            commonResponse.setCode("1111");
-            return ResponseEntity.ok(commonResponse);
+            userDetails.setAssignBranches(userUtility.listOfBranch(assignBranches));
+            userDetails.setRoleMaster(userData.getRoleMasters().getRole());
+            if (userData.getLoginDetails() != null) {
+                userDetails.setLastLogin(userData.getLoginDetails().getTimestamp());
+            }
+            userDetailResponseList.add(userDetails);
         }
+
+        commonResponse.setCode("0000");
+        commonResponse.setMsg("Data found successfully");
+        allUserDetailList.setCommonResponse(commonResponse);
+        allUserDetailList.setUserDetailResponse(userDetailResponseList);
     }
+
+
 
     public List<BranchMaster> findAllBranches() {
 
@@ -197,7 +191,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         CommonResponse commonResponse = new CommonResponse();
         UserDetail userDetails = new UserDetail();
         RoleMaster userRoleDetail = new RoleMaster();
-        LoginDetails loginDetails=new LoginDetails();
+        LoginDetails loginDetails = new LoginDetails();
 
         List<AssignBranch> assignBranchList = new ArrayList<>();
         try {
@@ -475,15 +469,13 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             for (String branch : assignBranches) {
                 if (branch.equals(branchName)) ;
                 {
-                    if((applicationNo !=null && !applicationNo.isEmpty()) && (branchName !=null && !branchName.isEmpty()))
-                    {
-                        applicationDetails=applicationDetailsRepo.findDetailByBranchAndApplication(branchName,applicationNo,pageable);
-                        totalCount=applicationDetailsRepo.findDetailByBranchAndApplicationCount(branchName,applicationNo);
-                    }
-                    else {
-                    applicationDetails = (applicationNo !=null && !applicationNo.isEmpty()) ? applicationDetailsRepo.findDetailByApplication(applicationNo,assignBranches, pageable) : applicationDetailsRepo.findDetailByBranch(branchName,pageable) ;
-                    totalCount = (applicationNo !=null && !applicationNo.isEmpty()) ? applicationDetailsRepo.findDetailByApplicationCount(applicationNo,assignBranches) : applicationDetailsRepo.findDetailByBranchCount(branchName);
-                        System.out.println("total"+totalCount);
+                    if ((applicationNo != null && !applicationNo.isEmpty()) && (branchName != null && !branchName.isEmpty())) {
+                        applicationDetails = applicationDetailsRepo.findDetailByBranchAndApplication(branchName, applicationNo, pageable);
+                        totalCount = applicationDetailsRepo.findDetailByBranchAndApplicationCount(branchName, applicationNo);
+                    } else {
+                        applicationDetails = (applicationNo != null && !applicationNo.isEmpty()) ? applicationDetailsRepo.findDetailByApplication(applicationNo, assignBranches, pageable) : applicationDetailsRepo.findDetailByBranch(branchName, pageable);
+                        totalCount = (applicationNo != null && !applicationNo.isEmpty()) ? applicationDetailsRepo.findDetailByApplicationCount(applicationNo, assignBranches) : applicationDetailsRepo.findDetailByBranchCount(branchName);
+                        System.out.println("total" + totalCount);
                     }
                     break;
                 }
@@ -505,6 +497,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         } else {
             commonResponse.setCode("1111");
             commonResponse.setMsg("Data not found");
+
             fetchExcelData.setCommonResponse(commonResponse);
         }
 
@@ -614,7 +607,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return commonResponse;
     }
 
-    public HttpServletResponse generateExcel(HttpServletResponse response,String emailId) throws IOException {
+    public HttpServletResponse generateExcel(HttpServletResponse response, String emailId) throws IOException {
 
         List<MisReport> applicationDetails = new ArrayList<>();
 
@@ -655,14 +648,14 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return response;
     }
 
-    public AllAssignBranchResponse findAssignBranchList(String emailId){
+    public AllAssignBranchResponse findAssignBranchList(String emailId) {
         AllAssignBranchResponse assignBranchResponse = new AllAssignBranchResponse();
         List<String> userAssignBranch = userUtility.findBranchesByUser(emailId);
-        if (!userAssignBranch.isEmpty()){
+        if (!userAssignBranch.isEmpty()) {
             assignBranchResponse.setCode("0000");
             assignBranchResponse.setMsg("Data found successfully");
             assignBranchResponse.setAssignBranchList(userAssignBranch);
-        }else {
+        } else {
             assignBranchResponse.setCode("1111");
             assignBranchResponse.setMsg("No branch assign to you");
         }
