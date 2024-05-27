@@ -9,7 +9,6 @@ import java.util.List;
 @Data
 public class UserDetailResponse {
 
-    private CommonResponse commonResponse;
     private Long userId;
     private String firstname;
     private String lastName;
