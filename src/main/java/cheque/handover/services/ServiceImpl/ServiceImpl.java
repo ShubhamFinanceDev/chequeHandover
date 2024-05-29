@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.sql.Date;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -533,7 +534,9 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         chequeStatus.setApplicationNo(flagUpdate.getApplicationNo());
         chequeStatus.setDdfsFlag("Y");
         chequeStatus.setConsumerType(flagUpdate.getConsumerType());
+        chequeStatus.setUpdatedBy(flagUpdate.getEmailId());
         chequeStatus.setHandoverDate(flagUpdate.getDate());
+        chequeStatus.setUpdatedDate(Date.valueOf(LocalDate.now()));
 
         chequeStatusRepo.save(chequeStatus);
 
@@ -613,12 +616,9 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return commonResponse;
     }
 
-    public HttpServletResponse generateExcel(HttpServletResponse response, String emailId) throws IOException {
-
-        List<MisReport> applicationDetails = new ArrayList<>();
-
-        applicationDetails = jdbcTemplate.query(misReportUtility.misQuery(emailId), new MisReportUtility.MisReportRowMapper());
-
+    public HttpServletResponse generatedExcel(HttpServletResponse response, String emailId, String reportType, String value) throws IOException {
+        try {
+        List<MisReport> applicationDetails = jdbcTemplate.query(misReportUtility.reportWise(reportType,value), new MisReportUtility.MisReportRowMapper());
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet sheet = workbook.createSheet("MIS_Report");
         int rowCount = 0;
@@ -641,7 +641,6 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             row.createCell(6).setCellValue(details.getLoanAmount());
         }
 
-        try {
             response.setContentType("text/csv");
             response.setHeader("Content-Disposition", "attachment; filename=MIS_Report.xlsx");
 
@@ -671,9 +670,14 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
     public CommonResponse statusEnableOrDisable(String emailId) {
         CommonResponse commonResponse = new CommonResponse();
         try {
-            userDetailRepo.enableUserStatus(emailId);
-            commonResponse.setCode("0000");
-            commonResponse.setMsg("Status update successfully");
+            if (emailId != null && !emailId.isEmpty()) {
+                userDetailRepo.enableUserStatus(emailId);
+                commonResponse.setCode("0000");
+                commonResponse.setMsg("Status update successfully");
+            }else {
+                commonResponse.setCode("1111");
+                commonResponse.setMsg("EmailId is required");
+            }
         } catch (Exception e) {
             commonResponse.setCode("1111");
             commonResponse.setMsg("User not found or Technical issue " + e.getMessage());

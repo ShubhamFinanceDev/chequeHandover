@@ -61,18 +61,19 @@ public class User {
     }
 
     @PostMapping("/update-application-flag")
-    public ResponseEntity<?> updateFlag(@RequestParam("file") MultipartFile file, @RequestParam("consumerType") String consumerType, @RequestParam("date") Date date, @RequestParam("applicationNo") String applicationNo) throws IOException, ExecutionException, InterruptedException {
+    public ResponseEntity<?> updateFlag(@RequestParam("file") MultipartFile file, @RequestParam("consumerType") String consumerType, @RequestParam("date") Date date, @RequestParam("applicationNo") String applicationNo,@RequestParam("emailId")String emailId) throws IOException, ExecutionException, InterruptedException {
         ApplicationFlagUpdate applicationFlagUpdate=new ApplicationFlagUpdate();
         applicationFlagUpdate.setApplicationNo(applicationNo);
         applicationFlagUpdate.setConsumerType(consumerType);
         applicationFlagUpdate.setDate(date);
+        applicationFlagUpdate.setEmailId(emailId);
         return ResponseEntity.ok(service.chequeStatus(applicationFlagUpdate,file));
     }
 
     @GetMapping("/generate-mis-report")
-    public String generateMis(HttpServletResponse response,@RequestParam String emailId) throws IOException {
+    public String generateMis(HttpServletResponse response, @RequestParam("emailId") String emailId, @RequestParam(value = "reportType") String reportType, @RequestParam(value = "value",required = false) String value) throws IOException {
         System.out.println(emailId);
-        service.generateExcel(response,emailId);
+        service.generatedExcel(response,emailId,reportType,value);
         return "Success";
     }
     @GetMapping("/get-list-of-assign-branches")

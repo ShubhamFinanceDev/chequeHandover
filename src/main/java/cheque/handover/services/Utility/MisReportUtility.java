@@ -13,30 +13,33 @@ import java.util.List;
 @Service
 public class MisReportUtility {
 
-    public String misQuery(String emailId){
-        String query= "SELECT \n" +
+    public String reportWise(String reportType,String value) {
+        System.out.println(reportType + "reportWise in");
+        String sql = "SELECT \n" +
                 "    em.applicant_name,\n" +
                 "    em.loan_amount,\n" +
                 "    em.cheque_amount,\n" +
                 "    em.branch_name,\n" +
                 "    em.application_number,\n" +
                 "    cs.consumer_type,\n" +
-                "    cs.ddfs_flag,\n" +
-                "    cs.handover_date\n" +
+                "    cs.handover_date,\n" +
+                "    cs.updated_by\n" +
                 "FROM \n" +
                 "    excel_master em\n" +
                 "JOIN \n" +
                 "    cheque_status cs ON em.application_number = cs.application_number\n" +
                 "WHERE \n" +
-                "    em.cheque_status = 'Y' \n" +
-                "    AND em.branch_name IN (\n" +
-                "        SELECT DISTINCT bm.branch_name\n" +
-                "        FROM branch_master bm\n" +
-                "        JOIN assign_branch ab ON bm.branch_code = ab.branch_code\n" +
-                "        JOIN user_master um ON ab.user_id = um.user_id\n" +
-                "        WHERE um.email_id ='"+emailId+"'\n" +
-                "    );\n";
-        return query;
+                "    em.cheque_status = 'Y'\n";
+
+        if (reportType.equals("userWise")) {
+             sql+=" AND cs.updated_by = '" + value + "'\n";
+        } else if (reportType.equals("branchWise")) {
+             sql += " AND  em.branch_name= '" + value + "'\n";
+        } else {
+             sql += " AND cs.updated_date =CURDATE()\n";
+        }
+        System.out.println(sql);
+        return sql;
     }
 
     public static class MisReportRowMapper implements RowMapper<MisReport> {
@@ -47,7 +50,6 @@ public class MisReportUtility {
                     rs.getString("branch_name"),
                     rs.getString("application_number"),
                     rs.getLong("cheque_amount"),
-                    rs.getString("ddfs_flag"),
                     rs.getString("consumer_type"),
                     rs.getDate("handover_date"),
                     rs.getLong("loan_amount")

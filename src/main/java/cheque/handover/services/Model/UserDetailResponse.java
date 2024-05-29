@@ -16,7 +16,7 @@ public class UserDetailResponse {
     private String mobileNo;
     private String createdBy;
     private boolean enabled;
-    private String createDate;
+    private Timestamp createDate;
     private Timestamp lastLogin;
 
     private List<String> assignBranches;

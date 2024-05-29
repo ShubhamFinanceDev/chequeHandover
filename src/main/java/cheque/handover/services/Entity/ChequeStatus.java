@@ -19,6 +19,10 @@ public class ChequeStatus {
     private String consumerType;
     @Column(name = "handover_date")
     private Date handoverDate;
+    @Column(name = "updated_date")
+    private Date updatedDate;
     @Column(name = "ddfs_flag")
     private String ddfsFlag;
+    @Column(name = "updated_by")
+    private String updatedBy;
 }
