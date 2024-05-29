@@ -100,14 +100,6 @@ public class HandoverLogin {
         }
     }
 
-    @GetMapping("/generate-mis-report")
-    public String generateMis(HttpServletResponse response, @RequestParam String emailId, @RequestParam String reportType, @RequestParam(required = false) String branchName ) throws IOException {
-        System.out.println(emailId);
-        System.out.println(reportType);
-        service.generateExcel(response, emailId, reportType, branchName);
-        return "Success";
-    }
-
     @PostMapping("/reset-password")
     public ResponseEntity<?> restUserPassword(@RequestBody ResetNewPassword rest){
         return ResponseEntity.ok(service.updatePassword(rest.getConfirmNewPassword(), rest.getNewPassword(), rest.getEmailId()));

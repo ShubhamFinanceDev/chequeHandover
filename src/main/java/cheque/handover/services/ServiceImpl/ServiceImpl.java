@@ -489,7 +489,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         chequeStatus.setDdfsFlag("Y");
         chequeStatus.setConsumerType(flagUpdate.getConsumerType());
         chequeStatus.setHandoverDate(flagUpdate.getDate());
-        chequeStatus.setUpdatedBy(flagUpdate.getEmailId());
+        chequeStatus.setUpdatedBy(flagUpdate.getUpdatedBy());
         chequeStatus.setUpdatedDate(Date.valueOf(LocalDate.now()));
 
         chequeStatusRepo.save(chequeStatus);
