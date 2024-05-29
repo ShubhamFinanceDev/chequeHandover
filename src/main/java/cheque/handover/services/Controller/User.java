@@ -29,8 +29,12 @@ public class User {
     private Logger logger = LoggerFactory.getLogger(User.class);
 
     @GetMapping("/get-user-details")
-    public ResponseEntity<?> userData(@RequestParam(name = "emailId") String emailId) {
-        return ResponseEntity.ok(service.findUserDetails(emailId).getBody());
+    public ResponseEntity<?> userData(@RequestParam(name = "name",required = false) String name) {
+        if (name == null || name.isEmpty()) {
+            return ResponseEntity.ok(service.allUser().getBody());
+        }else {
+            return ResponseEntity.ok(service.findUserDetails(name).getBody());
+        }
     }
 
     @GetMapping("/get-all-branches")

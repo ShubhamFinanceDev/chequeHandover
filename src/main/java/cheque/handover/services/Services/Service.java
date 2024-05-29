@@ -12,7 +12,9 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public interface Service {
-    ResponseEntity<?> findUserDetails(String emailId);
+    ResponseEntity<?> findUserDetails(String name);
+
+    ResponseEntity<?> allUser();
 
     List<BranchMaster> findAllBranches();
 
@@ -41,4 +43,6 @@ public interface Service {
     HttpServletResponse generateExcel(HttpServletResponse response, String emailId, String reportType, String branchName) throws IOException;
 
     AllAssignBranchResponse findAssignBranchList(String emailId);
+
+    CommonResponse statusEnableOrDisable(String emailId);
 }
