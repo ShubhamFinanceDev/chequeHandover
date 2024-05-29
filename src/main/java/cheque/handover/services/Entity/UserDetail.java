@@ -9,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
@@ -38,12 +39,12 @@ public class UserDetail implements UserDetails {
     @Column(name = "enable")
     private boolean enabled;
     @Column(name = "creation_date")
-    private String createDate;
+    private Timestamp createDate;
     @PrePersist
     private void onCreate() {
         LocalDate currentDate = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        createDate = currentDate.format(formatter);
+        createDate = Timestamp.valueOf(currentDate.format(formatter));
     }
 
     @OneToOne(mappedBy = "userMaster", cascade = CascadeType.ALL)

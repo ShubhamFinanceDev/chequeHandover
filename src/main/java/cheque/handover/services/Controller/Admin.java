@@ -62,8 +62,9 @@ public class Admin {
     }
 
     @PutMapping("/status-update")
-    public ResponseEntity<?> enableUser(@RequestParam(name = "emailId")String emailId){
-        return ResponseEntity.ok(service.statusEnableOrDisable(emailId));
+    public ResponseEntity<?> enableUser(@RequestParam(name = "emailId")String emailId,@RequestParam(name= "updatedBy")String updatedBy){
+        System.out.println(updatedBy);
+        return ResponseEntity.ok(service.statusEnableOrDisable(emailId,updatedBy));
     }
 
 }

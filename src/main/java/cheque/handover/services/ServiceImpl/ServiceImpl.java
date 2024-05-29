@@ -121,7 +121,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             userDetails.setMobileNo(userData.getMobileNo());
             userDetails.setCreatedBy(userData.getCreatedBy());
             userDetails.setEnabled(userData.isEnabled());
-            userDetails.setCreateDate(userData.getCreateDate());
+            userDetails.setCreateDate(String.valueOf(userData.getCreateDate()));
             List<Long> assignBranches = new ArrayList<>();
             if (!userData.getAssignBranches().isEmpty()) {
                 userData.getAssignBranches().forEach(branch -> {
@@ -671,10 +671,10 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return assignBranchResponse;
     }
 
-    public CommonResponse statusEnableOrDisable(String emailId) {
+    public CommonResponse statusEnableOrDisable(String emailId, String updatedBy) {
         CommonResponse commonResponse = new CommonResponse();
         try {
-            userDetailRepo.enableUserStatus(emailId);
+            userDetailRepo.enableUserStatus(emailId,updatedBy);
             commonResponse.setCode("0000");
             commonResponse.setMsg("Status update successfully");
         } catch (Exception e) {

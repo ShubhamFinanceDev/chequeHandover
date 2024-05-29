@@ -44,5 +44,5 @@ public interface Service {
 
     AllAssignBranchResponse findAssignBranchList(String emailId);
 
-    CommonResponse statusEnableOrDisable(String emailId);
+    CommonResponse statusEnableOrDisable(String emailId, String updatedBy);
 }
