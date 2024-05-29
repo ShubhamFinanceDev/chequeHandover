@@ -12,57 +12,37 @@ import java.sql.SQLException;
 @Service
 public class MisReportUtility {
 
-    public String misQuery(String emailId, String reportType , String branchName) {
+    public String misQuery(String emailId, String reportType, String branchName) {
 
-        String query = "";
+
+        String baseQuery = "SELECT em.applicant_name, em.loan_amount, em.cheque_amount, em.branch_name, \n" +
+                "em.application_number, cs.consumer_type, cs.handover_date, cs.updated_by \n" +
+                "FROM excel_master em \n" +
+                "JOIN cheque_status cs ON em.application_number = cs.application_number \n" +
+                "WHERE em.cheque_status = 'Y' ";
+
+        String condition = "";
 
         switch (reportType.toLowerCase()) {
-
             case "userwise":
-
-                query = "SELECT em.applicant_name, \n" +
-                        "em.loan_amount, \n" +
-                        "em.cheque_amount, \n" +
-                        "em.branch_name, \n" +
-                        "em.application_number, \n" +
-                        "cs.consumer_type, \n" +
-                        "cs.handover_date, \n" +
-                        "cs.updated_by \n" +
-                        "FROM excel_master em \n" +
-                        "JOIN cheque_status cs ON em.application_number = cs.application_number \n" +
-                        "WHERE em.cheque_status = 'Y' \n" +
-                        "AND cs.updated_by = '"+ emailId +"'  \n";
-
+                condition = "AND cs.updated_by = '" + emailId + "' ";
                 break;
 
             case "branchwise":
-                query =  "SELECT em.applicant_name, em.loan_amount, em.cheque_amount, em.branch_name, \n" +
-                        "       em.application_number, cs.consumer_type, cs.handover_date, cs.updated_by \n" +
-                        "FROM excel_master em \n" +
-                        "JOIN cheque_status cs ON em.application_number = cs.application_number \n" +
-                        "WHERE em.cheque_status = 'Y' AND em.branch_name = '" + branchName + "' ";
+                condition = "AND em.branch_name = '" + branchName + "' ";
                 break;
 
-            case "daily":
-
-                query = "SELECT em.applicant_name, em.loan_amount, em.cheque_amount, em.branch_name, \n" +
-                        "em.application_number, cs.consumer_type, cs.handover_date, cs.updated_by \n" +
-                        "FROM excel_master em \n" +
-                        "JOIN cheque_status cs ON em.application_number = cs.application_number \n" +
-                        "WHERE em.cheque_status = 'Y' AND cs.updated_date = CURDATE()";
-
+            case "daily-report":
+                condition = "AND cs.updated_date = CURDATE()";
                 break;
 
             default:
-
                 throw new IllegalArgumentException("Invalid report type: " + reportType);
-
-
         }
 
+        String query = baseQuery + condition;
 
         return query;
-
     }
 
     public static class MisReportRowMapper implements RowMapper<MisReport> {
