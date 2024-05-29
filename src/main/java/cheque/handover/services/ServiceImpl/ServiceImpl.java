@@ -6,6 +6,7 @@ import cheque.handover.services.Model.*;
 import cheque.handover.services.Repository.*;
 import cheque.handover.services.Utility.*;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -620,5 +621,50 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             assignBranchResponse.setMsg("No branch assign to you");
         }
         return assignBranchResponse;
+    }
+    @Transactional
+    @Override
+    public CommonResponse updateUserByEmail(UserDetail userDetail) {
+        CommonResponse commonResponse = new CommonResponse();
+        try {
+            Optional<UserDetail> existingUserOpt = userDetailRepo.findByEmailId(userDetail.getEmailId());
+            if (existingUserOpt.isPresent()) {
+                UserDetail existingUser = existingUserOpt.get();
+                existingUser.setFirstname(userDetail.getFirstname());
+                existingUser.setLastName(userDetail.getLastName());
+                existingUser.setMobileNo(userDetail.getMobileNo());
+
+                RoleMaster userRoleDetail = existingUser.getRoleMasters();
+                userRoleDetail.setRole(userDetail.getRoleMasters().getRole());
+                existingUser.setRoleMasters(userRoleDetail);
+
+                List<AssignBranch> existingBranches = existingUser.getAssignBranches();
+                List<AssignBranch> updatedBranches = userDetail.getAssignBranches();
+
+                if (existingBranches.size() == updatedBranches.size()) {
+                    for (int i = 0; i < existingBranches.size(); i++) {
+                        AssignBranch existingBranch = existingBranches.get(i);
+                        AssignBranch updatedBranch = updatedBranches.get(i);
+                        existingBranch.setBranchCode(updatedBranch.getBranchCode());
+                    }
+                    existingUser.setAssignBranches(existingBranches);
+                } else {
+                    commonResponse.setCode("1111");
+                    commonResponse.setMsg("Mismatch in number of branches");
+                    return commonResponse;
+                }
+
+                userDetailRepo.save(existingUser);
+                commonResponse.setCode("0000");
+                commonResponse.setMsg("User updated successfully");
+            } else {
+                commonResponse.setCode("1111");
+                commonResponse.setMsg("User not found");
+            }
+        } catch (Exception e) {
+            commonResponse.setCode("1111");
+            commonResponse.setMsg("Error: " + e.getMessage());
+        }
+        return commonResponse;
     }
 }

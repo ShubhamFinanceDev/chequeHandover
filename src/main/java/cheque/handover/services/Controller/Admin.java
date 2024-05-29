@@ -65,4 +65,20 @@ public class Admin {
         return ResponseEntity.ok(service.saveBranch(file));
     }
 
+
+    @PutMapping("/update-user")
+    public ResponseEntity<CommonResponse> updateUserDetail(@RequestBody UserDetail userDetail) {
+        CommonResponse commonResponse = new CommonResponse();
+        String emailId = userDetail.getEmailId();
+
+        if (!emailId.isEmpty() && emailId.contains("@shubham") ) {
+            commonResponse = service.updateUserByEmail(userDetail);
+            return ResponseEntity.ok(commonResponse);
+        } else {
+            commonResponse.setCode("1111");
+            commonResponse.setMsg("invalid user-email");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(commonResponse);
+        }
+    }
+
 }
