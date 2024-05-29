@@ -303,8 +303,12 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                                     ;
                                     break;
                                 case 9:
-                                    applicationDetails1.setChequeAmount(Long.valueOf(row.getCell(9).toString().replace(".0", "")));
-                                    ;
+                                    long chequeAmount = Long.parseLong(row.getCell(9).toString().replace(".0", ""));
+                                    if (chequeAmount < 0) {
+                                        errorMsg = "Cheque amount cannot be negative for row " + (row.getRowNum() + 1);
+                                    } else {
+                                        applicationDetails1.setChequeAmount(chequeAmount);
+                                    }
                                     break;
                             }
                         }
@@ -570,15 +574,16 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                             switch (i) {
                                 case 0:
                                     branchMaster.setBranchName(row.getCell(0).toString());
-                                    ;
                                     break;
                                 case 1:
                                     branchMaster.setBranchCode(row.getCell(1).toString().replace(".0", ""));
-                                    ;
+                                    if (branchMasterRepo.existsByBranchCode(branchMaster.getBranchCode())) {
+                                        errorMsg = "Branch code '" + branchMaster.getBranchCode() + "' already exists.";
+                                        break;
+                                    }
                                     break;
                                 case 2:
                                     branchMaster.setState(row.getCell(2).toString());
-                                    ;
                                     break;
                             }
                         }
@@ -587,6 +592,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                     }
                     if (!errorMsg.isEmpty())
                         break;
+
                     branchMasterList.add(branchMaster);
                 }
                 if (errorMsg.isEmpty()) {
