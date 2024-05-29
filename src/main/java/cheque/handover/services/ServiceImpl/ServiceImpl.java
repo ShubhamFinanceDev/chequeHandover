@@ -22,9 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.sql.Date;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -490,6 +489,8 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         chequeStatus.setDdfsFlag("Y");
         chequeStatus.setConsumerType(flagUpdate.getConsumerType());
         chequeStatus.setHandoverDate(flagUpdate.getDate());
+        chequeStatus.setUpdatedBy(flagUpdate.getEmailId());
+        chequeStatus.setUpdatedDate(Date.valueOf(LocalDate.now()));
 
         chequeStatusRepo.save(chequeStatus);
 
@@ -567,11 +568,10 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return commonResponse;
     }
 
-    public HttpServletResponse generateExcel(HttpServletResponse response,String emailId) throws IOException {
-
+    public HttpServletResponse generateExcel(HttpServletResponse response, String emailId, String reportType , String branchName) throws IOException {
         List<MisReport> applicationDetails = new ArrayList<>();
 
-        applicationDetails = jdbcTemplate.query(misReportUtility.misQuery(emailId), new MisReportUtility.MisReportRowMapper());
+        applicationDetails = jdbcTemplate.query(misReportUtility.misQuery(emailId, reportType, branchName), new MisReportUtility.MisReportRowMapper());
 
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet sheet = workbook.createSheet("MIS_Report");

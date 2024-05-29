@@ -9,4 +9,5 @@ public class ApplicationFlagUpdate {
     private String consumerType;
     private Date date;
     private String applicationNo;
+    private String emailId;
 }

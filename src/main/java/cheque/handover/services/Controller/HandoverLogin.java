@@ -4,6 +4,7 @@ import cheque.handover.services.JwtAuthentication.JwtHelper;
 import cheque.handover.services.Model.*;
 import cheque.handover.services.Repository.UserDetailRepo;
 import cheque.handover.services.Services.Service;
+import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,6 +98,14 @@ public class HandoverLogin {
             commonResponse.setMsg("Required field ");
             return ResponseEntity.ok(commonResponse);
         }
+    }
+
+    @GetMapping("/generate-mis-report")
+    public String generateMis(HttpServletResponse response, @RequestParam String emailId, @RequestParam String reportType, @RequestParam(required = false) String branchName ) throws IOException {
+        System.out.println(emailId);
+        System.out.println(reportType);
+        service.generateExcel(response, emailId, reportType, branchName);
+        return "Success";
     }
 
     @PostMapping("/reset-password")
