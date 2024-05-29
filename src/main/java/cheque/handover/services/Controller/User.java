@@ -3,6 +3,7 @@ package cheque.handover.services.Controller;
 import cheque.handover.services.Model.*;
 import cheque.handover.services.Repository.UserDetailRepo;
 import cheque.handover.services.Services.Service;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +29,12 @@ public class User {
     private Logger logger = LoggerFactory.getLogger(User.class);
 
     @GetMapping("/get-user-details")
-    public ResponseEntity<?> userData(@RequestParam(name = "emailId") String emailId) {
-        return ResponseEntity.ok(service.findUserDetails(emailId).getBody());
+    public ResponseEntity<?> userData(@RequestParam(name = "name",required = false) String name) {
+        if (name == null || name.isEmpty()) {
+            return ResponseEntity.ok(service.allUser().getBody());
+        }else {
+            return ResponseEntity.ok(service.findUserDetails(name).getBody());
+        }
     }
 
     @GetMapping("/get-all-branches")
@@ -37,7 +42,7 @@ public class User {
         CommonResponse commonResponse = new CommonResponse();
         BranchesResponse branchesResponse = new BranchesResponse();
 
-        if (branchName != null) {
+        if (branchName != null && !branchName.isEmpty()) {
             service.saveServiceResult(branchesResponse, commonResponse, service.findBranchByName(branchName));
         } else {
             service.saveServiceResult(branchesResponse, commonResponse, service.findAllBranches());
@@ -47,11 +52,11 @@ public class User {
     }
 
     @GetMapping("/fetch-excel-data")
-    public ResponseEntity<?> excelDataByUser(@RequestParam(name = "emailId")String emailId,@RequestParam(name = "applicationNo",required = false)String applicationNo,@RequestParam(name = "pageNo") int pageNo){
-        if (applicationNo == null || applicationNo.isEmpty()) {
-            return ResponseEntity.ok(service.fetchExcelData(emailId,pageNo));
-        }else {
-            return ResponseEntity.ok(service.fetchExcelDataByApplicationNo(applicationNo,pageNo));
+    public ResponseEntity<?> excelDataByUser(@RequestParam(name = "emailId")String emailId,@RequestParam(name = "applicationNo",required = false)String applicationNo,@RequestParam(name = "pageNo") int pageNo,@RequestParam(name = "branchName",required = false)String branchName){
+        if ((branchName != null && !branchName.isEmpty()) || (applicationNo != null && !applicationNo.isEmpty())) {
+            return ResponseEntity.ok(service.fetchExcelDataByApplicationNo(applicationNo, branchName, pageNo, emailId));
+        } else {
+            return ResponseEntity.ok(service.fetchExcelData(emailId, pageNo));
         }
     }
 
@@ -64,5 +69,14 @@ public class User {
         return ResponseEntity.ok(service.chequeStatus(applicationFlagUpdate,file));
     }
 
-
+    @GetMapping("/generate-mis-report")
+    public String generateMis(HttpServletResponse response,@RequestParam String emailId) throws IOException {
+        System.out.println(emailId);
+        service.generateExcel(response,emailId);
+        return "Success";
+    }
+    @GetMapping("/get-list-of-assign-branches")
+    public ResponseEntity<AllAssignBranchResponse> getAllAssignBranch(@RequestParam(name = "emailId")String emailId){
+        return ResponseEntity.ok(service.findAssignBranchList(emailId));
+    }
 }

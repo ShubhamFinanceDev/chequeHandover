@@ -2,15 +2,14 @@ package cheque.handover.services.Controller;
 
 import cheque.handover.services.Entity.UserDetail;
 import cheque.handover.services.Model.CommonResponse;
+import cheque.handover.services.Model.RestPasswordRequest;
 import cheque.handover.services.Services.Service;
+import org.apache.commons.collections4.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
 
 @RestController
 @RequestMapping("/admin")
@@ -20,12 +19,12 @@ public class Admin {
     private Service service;
 
     @PostMapping("/create-user")
-    public ResponseEntity<CommonResponse> userdetail(@RequestBody UserDetail userDetail) {
+    public ResponseEntity<CommonResponse> userDetail(@RequestBody UserDetail userDetail) {
         CommonResponse commonResponse = new CommonResponse();
         String emailId = userDetail.getEmailId();
 
         if (!emailId.isEmpty() && emailId.contains("@shubham") && !userDetail.getPassword().isEmpty()) {
-            commonResponse = service.saveuser(userDetail);
+            commonResponse = service.saveUser(userDetail);
             return ResponseEntity.ok(commonResponse);
         } else {
             commonResponse.setCode("1111");
@@ -40,13 +39,20 @@ public class Admin {
     }
 
     @PostMapping("/invoke-status-procedure")
-    public ResponseEntity<CommonResponse>invokeChequeStatus(){
-        CommonResponse commonResponse = service.disableChequeStatus();
-        if ("0000".equals(commonResponse.getCode())) {
-            return new ResponseEntity<>(commonResponse, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(commonResponse, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<HashedMap>invokeChequeStatus(@RequestBody RestPasswordRequest inputRequest){
+        HashedMap<String,Object> response=new HashedMap<>();
+        CommonResponse commonResponse=new CommonResponse();
+
+        if(inputRequest.getEmailId().isEmpty() || inputRequest.getEmailId()== null) {
+            commonResponse.setMsg("Required field missing or empty.");
+            commonResponse.setCode("1111");
+            response.put("commonResponse",commonResponse);
+            return ResponseEntity.ok(response);
         }
+        System.out.println(inputRequest.getEmailId());
+        commonResponse = service.disableChequeStatus();
+        response.put("commonResponse",commonResponse);
+        return ResponseEntity.ok(response);
 
     }
 
@@ -55,9 +61,9 @@ public class Admin {
         return ResponseEntity.ok(service.saveBranch(file));
     }
 
-    @GetMapping("/generate-mis-report")
-    public CommonResponse generateMis() throws IOException {
-        CommonResponse commonResponse = service.generateExcel();
-        return commonResponse;
+    @PutMapping("/status-update")
+    public ResponseEntity<?> enableUser(@RequestParam(name = "emailId")String emailId){
+        return ResponseEntity.ok(service.statusEnableOrDisable(emailId));
     }
+
 }

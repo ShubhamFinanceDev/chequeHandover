@@ -1,9 +1,9 @@
 package cheque.handover.services.Services;
 
-import cheque.handover.services.Entity.ApplicationDetails;
 import cheque.handover.services.Entity.BranchMaster;
 import cheque.handover.services.Entity.UserDetail;
 import cheque.handover.services.Model.*;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,7 +12,9 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public interface Service {
-    ResponseEntity<?> findUserDetails(String emailId);
+    ResponseEntity<?> findUserDetails(String name);
+
+    ResponseEntity<?> allUser();
 
     List<BranchMaster> findAllBranches();
 
@@ -20,7 +22,7 @@ public interface Service {
 
     void saveServiceResult(BranchesResponse branchesResponse, CommonResponse commonResponse, List<BranchMaster> branchByName);
 
-    CommonResponse saveuser(UserDetail userDetail );
+    CommonResponse saveUser(UserDetail userDetail );
     CommonResponse applicationDetailsUpload(MultipartFile file);
 
     ResponseEntity<?> resetPassword(RestPasswordRequest request);
@@ -31,13 +33,16 @@ public interface Service {
 
     FetchExcelData fetchExcelData(String emailId,int pageNo);
 
-    FetchExcelData fetchExcelDataByApplicationNo(String applicationNo,int pageNo);
+    FetchExcelData fetchExcelDataByApplicationNo(String applicationNo, String branchName, int pageNo, String emailId);
 
     CommonResponse disableChequeStatus();
     CommonResponse chequeStatus(ApplicationFlagUpdate flagUpdate, MultipartFile file) throws IOException, ExecutionException, InterruptedException;
 
     CommonResponse saveBranch(MultipartFile file);
 
-    CommonResponse generateExcel() throws IOException;
+    HttpServletResponse generateExcel(HttpServletResponse response,String emailId) throws IOException;
 
+    AllAssignBranchResponse findAssignBranchList(String emailId);
+
+    CommonResponse statusEnableOrDisable(String emailId);
 }

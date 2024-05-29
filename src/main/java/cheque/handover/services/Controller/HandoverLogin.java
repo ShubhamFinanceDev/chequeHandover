@@ -4,6 +4,7 @@ import cheque.handover.services.JwtAuthentication.JwtHelper;
 import cheque.handover.services.Model.*;
 import cheque.handover.services.Repository.UserDetailRepo;
 import cheque.handover.services.Services.Service;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/handover-service")
@@ -72,8 +75,7 @@ public class HandoverLogin {
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(email, password);
         try {
             manager.authenticate(authentication);
-
-
+            userDetailRepo.lastLogin(email);
         } catch (BadCredentialsException e) {
             throw new BadCredentialsException(" Invalid Username or Password  !!");
         }
@@ -101,5 +103,4 @@ public class HandoverLogin {
     public ResponseEntity<?> restUserPassword(@RequestBody ResetNewPassword rest){
         return ResponseEntity.ok(service.updatePassword(rest.getConfirmNewPassword(), rest.getNewPassword(), rest.getEmailId()));
     }
-
 }
