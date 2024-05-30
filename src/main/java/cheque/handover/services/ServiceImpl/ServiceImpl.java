@@ -616,17 +616,17 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return commonResponse;
     }
 
-    public HttpServletResponse generateExcel(HttpServletResponse response, String emailId, String reportType , String branchName) throws IOException {
+    public HttpServletResponse generateExcel(HttpServletResponse response, String emailId, String reportType , String branchName , String updatedBy) throws IOException {
 
         List<MisReport> applicationDetails = new ArrayList<>();
 
-        applicationDetails = jdbcTemplate.query(misReportUtility.misQuery(emailId, reportType, branchName), new MisReportUtility.MisReportRowMapper());
+        applicationDetails = jdbcTemplate.query(misReportUtility.misQuery( reportType, branchName, updatedBy ), new MisReportUtility.MisReportRowMapper());
 
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet sheet = workbook.createSheet("MIS_Report");
         int rowCount = 0;
 
-        String[] header = {"ApplicationNumber", "BranchName", "ApplicantName", "ChequeAmount", "ConsumerType", "HandoverDate", "LoanAmount"};
+        String[] header = {"ApplicationNumber", "BranchName", "ApplicantName", "ChequeAmount", "ConsumerType", "HandoverDate", "LoanAmount", "UpdatedBy"};
         Row headerRow = sheet.createRow(rowCount++);
         int cellCount = 0;
 
@@ -642,6 +642,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             row.createCell(4).setCellValue(details.getConsumerType());
             row.createCell(5).setCellValue(details.getHandoverDate().toString());
             row.createCell(6).setCellValue(details.getLoanAmount());
+            row.createCell(7).setCellValue(details.getUpdatedBy());
         }
 
         try {

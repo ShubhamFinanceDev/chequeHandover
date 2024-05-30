@@ -69,13 +69,16 @@ public class User {
         applicationFlagUpdate.setUpdatedBy(emailId);
         return ResponseEntity.ok(service.chequeStatus(applicationFlagUpdate,file));
     }
+
     @GetMapping("/generate-mis-report")
-    public String generateMis(HttpServletResponse response, @RequestParam String emailId, @RequestParam String reportType, @RequestParam(required = false) String branchName ) throws IOException {
+    public String generateMis(HttpServletResponse response, @RequestParam String emailId, @RequestParam String reportType, @RequestParam(required = false) String branchName, @RequestParam(name = "UserEmail") String updatedBy ) throws IOException {
         System.out.println(emailId);
         System.out.println(reportType);
-        service.generateExcel(response, emailId, reportType, branchName);
+        System.out.println(updatedBy);
+        service.generateExcel(response, emailId, reportType, branchName, updatedBy);
         return "Success";
     }
+
     @GetMapping("/get-list-of-assign-branches")
     public ResponseEntity<AllAssignBranchResponse> getAllAssignBranch(@RequestParam(name = "emailId")String emailId){
         return ResponseEntity.ok(service.findAssignBranchList(emailId));

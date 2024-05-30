@@ -104,4 +104,5 @@ public class HandoverLogin {
     public ResponseEntity<?> restUserPassword(@RequestBody ResetNewPassword rest){
         return ResponseEntity.ok(service.updatePassword(rest.getConfirmNewPassword(), rest.getNewPassword(), rest.getEmailId()));
     }
+
 }

@@ -18,6 +18,7 @@ public class MisReport {
     private String consumerType;
     private Date handoverDate;
     private Long loanAmount;
+    private String updatedBy;
 
 
 }
