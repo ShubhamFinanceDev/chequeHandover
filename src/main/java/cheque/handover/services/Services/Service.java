@@ -33,7 +33,7 @@ public interface Service {
 
     FetchExcelData fetchExcelData(String emailId,int pageNo);
 
-    FetchExcelData fetchExcelDataByApplicationNo(String applicationNo, String branchName, int pageNo, String emailId);
+    FetchExcelData fetchExcelDataByApplicationNo(String applicationNo, String branchName, int pageNo, String emailId,String status);
 
     CommonResponse disableChequeStatus();
     CommonResponse chequeStatus(ApplicationFlagUpdate flagUpdate, MultipartFile file) throws IOException, ExecutionException, InterruptedException;

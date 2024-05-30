@@ -461,7 +461,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return fetchExcelData;
     }
 
-    public FetchExcelData fetchExcelDataByApplicationNo(String applicationNo, String branchName, int pageNo, String emailId) {
+    public FetchExcelData fetchExcelDataByApplicationNo(String applicationNo, String branchName, int pageNo, String emailId, String status) {
         CommonResponse commonResponse = new CommonResponse();
         FetchExcelData fetchExcelData = new FetchExcelData();
         List<ApplicationDetails> applicationDetails = new ArrayList<>();
@@ -477,6 +477,14 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                     if ((applicationNo != null && !applicationNo.isEmpty()) && (branchName != null && !branchName.isEmpty())) {
                         applicationDetails = applicationDetailsRepo.findDetailByBranchAndApplication(branchName, applicationNo, pageable);
                         totalCount = applicationDetailsRepo.findDetailByBranchAndApplicationCount(branchName, applicationNo);
+                    }else if (((branchName != null && !branchName.isEmpty() && (status != null && !status.isEmpty())))) {
+                        applicationDetails = applicationDetailsRepo.findDetailsBybranchnameAndStatus(branchName, status);
+                    }else if (applicationNo != null && !applicationNo.isEmpty() && pageable != null){
+                        {
+                            applicationDetails = applicationDetailsRepo.findDetailByPagingAndApplication(applicationNo, pageable);
+                            totalCount = applicationDetailsRepo.findDetailByPageAndApplicationCount( applicationNo);
+
+                        }
                     } else {
                         applicationDetails = (applicationNo != null && !applicationNo.isEmpty()) ? applicationDetailsRepo.findDetailByApplication(applicationNo, assignBranches, pageable) : applicationDetailsRepo.findDetailByBranch(branchName, pageable);
                         totalCount = (applicationNo != null && !applicationNo.isEmpty()) ? applicationDetailsRepo.findDetailByApplicationCount(applicationNo, assignBranches) : applicationDetailsRepo.findDetailByBranchCount(branchName);
