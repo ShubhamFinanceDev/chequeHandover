@@ -2,8 +2,10 @@ package cheque.handover.services.Controller;
 
 import cheque.handover.services.JwtAuthentication.JwtHelper;
 import cheque.handover.services.Model.*;
+import cheque.handover.services.Repository.LoginDetailsRepo;
 import cheque.handover.services.Repository.UserDetailRepo;
 import cheque.handover.services.Services.Service;
+import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +42,8 @@ public class HandoverLogin {
     @Autowired
     private UserDetailRepo userDetailRepo;
     @Autowired
+    private LoginDetailsRepo loginDetailsRepo;
+    @Autowired
     private Service service;
     private Logger logger = LoggerFactory.getLogger(HandoverLogin.class);
 
@@ -75,7 +79,7 @@ public class HandoverLogin {
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(email, password);
         try {
             manager.authenticate(authentication);
-            userDetailRepo.lastLogin(email);
+            loginDetailsRepo.lastLogin(email);
         } catch (BadCredentialsException e) {
             throw new BadCredentialsException(" Invalid Username or Password  !!");
         }

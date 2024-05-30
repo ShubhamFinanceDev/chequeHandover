@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 @Table(name = "login_detail")
@@ -16,7 +18,14 @@ public class LoginDetails {
     @Column(name = "email_id")
     private String emailId;
     @Column(name="last_login")
-    private Timestamp timestamp;
+    private Timestamp lastLogin;
+    @Column(name = "enable")
+    private boolean enable;
+    @Column(name = "deactivation_date")
+    private Timestamp deactivationDate;
+    @Column(name = "updated_by")
+    private String updatedBy;
+
     @OneToOne
     @JoinColumn(name = "user_id")
     private UserDetail userMaster;
