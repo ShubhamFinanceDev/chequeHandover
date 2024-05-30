@@ -118,7 +118,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             userDetails.setFirstname(userData.getFirstname());
             userDetails.setLastName(userData.getLastName());
             userDetails.setEmailId(userData.getEmailId());
-            userDetails.setMobileNo(userData.getMobileNo());
+            userDetails.setMobileNo("******"+userData.getMobileNo().substring(userData.getMobileNo().length()-4,userData.getMobileNo().length()));
             userDetails.setCreatedBy(userData.getCreatedBy());
             userDetails.setEnabled(userData.isEnabled());
             userDetails.setCreateDate(String.valueOf(userData.getCreateDate()));
