@@ -60,4 +60,6 @@
   List<ApplicationDetails> findDetailByPagingAndApplication(String applicationNo, Pageable pageable);
   @Query("select count (d) from ApplicationDetails d where  d.applicationNumber =:applicationNo")
   long findDetailByPageAndApplicationCount(String applicationNo);
+  @Query("select count (d) from ApplicationDetails d where d.branchName =:branchName and d.chequeStatus =:status")
+  long findDetailsByBranchStatusCount(String branchName, String status);
  }
