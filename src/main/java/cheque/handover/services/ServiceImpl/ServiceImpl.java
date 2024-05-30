@@ -22,7 +22,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -547,7 +549,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return commonResponse;
     }
 
-    public CommonResponse saveBranch(MultipartFile file) {
+    public CommonResponse saveBranch(MultipartFile file, String emailId) {
         CommonResponse commonResponse = new CommonResponse();
         List<BranchMaster> branchMasterList = new ArrayList<>();
         int count = 0;
@@ -563,7 +565,6 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             System.out.println(fileFormat);
 
             if (fileFormat) {
-
                 while (rowIterator.hasNext()) {
                     count++;
                     Row row = rowIterator.next();
@@ -596,12 +597,16 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                     if (!errorMsg.isEmpty())
                         break;
 
+                    // Set the current timestamp
+                    branchMaster.setTimestamp(Timestamp.from(Instant.now()));
+                    branchMaster.setUploadedBy(emailId);
+
                     branchMasterList.add(branchMaster);
                 }
                 if (errorMsg.isEmpty()) {
                     branchMasterRepo.saveAll(branchMasterList);
                     commonResponse.setCode("0000");
-                    commonResponse.setMsg("file uploaded successfully " + branchMasterList.size() + "row uploaded.");
+                    commonResponse.setMsg("file uploaded successfully " + branchMasterList.size() + " rows uploaded.");
                 } else {
                     commonResponse.setMsg(errorMsg);
                     commonResponse.setCode("1111");
