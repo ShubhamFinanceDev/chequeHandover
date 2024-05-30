@@ -7,53 +7,73 @@ import org.springframework.stereotype.Service;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 
 @Data
 @Service
 public class MisReportUtility {
 
-    public String reportWise(String reportType,String value) {
-        System.out.println(reportType + "reportWise in");
-        String sql = "SELECT \n" +
-                "    em.applicant_name,\n" +
-                "    em.loan_amount,\n" +
-                "    em.cheque_amount,\n" +
-                "    em.branch_name,\n" +
-                "    em.application_number,\n" +
-                "    cs.consumer_type,\n" +
-                "    cs.handover_date,\n" +
-                "    cs.updated_by\n" +
-                "FROM \n" +
-                "    excel_master em\n" +
-                "JOIN \n" +
-                "    cheque_status cs ON em.application_number = cs.application_number\n" +
-                "WHERE \n" +
-                "    em.cheque_status = 'Y'\n";
+    public String misQuery(String emailId, String reportType, String branchName) {
 
-        if (reportType.equals("userWise")) {
-             sql+=" AND cs.updated_by = '" + value + "'\n";
-        } else if (reportType.equals("branchWise")) {
-             sql += " AND  em.branch_name= '" + value + "'\n";
-        } else {
-             sql += " AND cs.updated_date =CURDATE()\n";
+
+        String baseQuery = "SELECT em.applicant_name, em.loan_amount, em.cheque_amount, em.branch_name, \n" +
+                "em.application_number, cs.consumer_type, cs.handover_date, cs.updated_by \n" +
+                "FROM excel_master em \n" +
+                "JOIN cheque_status cs ON em.application_number = cs.application_number \n" +
+                "WHERE em.cheque_status = 'Y' ";
+
+        String condition = "";
+
+        switch (reportType.toLowerCase()) {
+            case "userwise":
+                condition = "AND cs.updated_by = '" + emailId + "' ";
+                break;
+
+            case "branchwise":
+                condition = "AND em.branch_name = '" + branchName + "' ";
+                break;
+
+            case "daily-report":
+                condition = "AND cs.updated_date = CURDATE()";
+                break;
+
+            default:
+                throw new IllegalArgumentException("Invalid report type: " + reportType);
         }
-        System.out.println(sql);
-        return sql;
+
+        String query = baseQuery + condition;
+
+        return query;
     }
 
     public static class MisReportRowMapper implements RowMapper<MisReport> {
+
         @Override
-        public MisReport mapRow(ResultSet rs, int rowNum) throws SQLException, SQLException {
+
+        public MisReport mapRow(ResultSet rs, int rowNum) throws SQLException {
+
             return new MisReport(
+
                     rs.getString("applicant_name"),
+
                     rs.getString("branch_name"),
+
                     rs.getString("application_number"),
+
                     rs.getLong("cheque_amount"),
+
+//                    rs.getString("ddfs_flag"),
+
                     rs.getString("consumer_type"),
+
                     rs.getDate("handover_date"),
+
                     rs.getLong("loan_amount")
+
             );
+
         }
+
     }
+
 }
+

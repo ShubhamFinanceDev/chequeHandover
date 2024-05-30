@@ -40,9 +40,9 @@ public interface Service {
 
     CommonResponse saveBranch(MultipartFile file);
 
-    HttpServletResponse generatedExcel(HttpServletResponse response, String emailId, String reportType, String value) throws IOException;
+    HttpServletResponse generateExcel(HttpServletResponse response, String emailId, String reportType, String branchName) throws IOException;
 
     AllAssignBranchResponse findAssignBranchList(String emailId);
 
-    CommonResponse statusEnableOrDisable(String emailId);
+    CommonResponse statusEnableOrDisable(String emailId, String updatedBy);
 }

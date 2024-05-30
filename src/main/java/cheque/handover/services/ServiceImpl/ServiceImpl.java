@@ -121,7 +121,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             userDetails.setMobileNo(userData.getMobileNo());
             userDetails.setCreatedBy(userData.getCreatedBy());
             userDetails.setEnabled(userData.isEnabled());
-            userDetails.setCreateDate(userData.getCreateDate());
+            userDetails.setCreateDate(String.valueOf(userData.getCreateDate()));
             List<Long> assignBranches = new ArrayList<>();
             if (!userData.getAssignBranches().isEmpty()) {
                 userData.getAssignBranches().forEach(branch -> {
@@ -534,8 +534,8 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         chequeStatus.setApplicationNo(flagUpdate.getApplicationNo());
         chequeStatus.setDdfsFlag("Y");
         chequeStatus.setConsumerType(flagUpdate.getConsumerType());
-        chequeStatus.setUpdatedBy(flagUpdate.getEmailId());
         chequeStatus.setHandoverDate(flagUpdate.getDate());
+        chequeStatus.setUpdatedBy(flagUpdate.getUpdatedBy());
         chequeStatus.setUpdatedDate(Date.valueOf(LocalDate.now()));
 
         chequeStatusRepo.save(chequeStatus);
@@ -616,9 +616,12 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return commonResponse;
     }
 
-    public HttpServletResponse generatedExcel(HttpServletResponse response, String emailId, String reportType, String value) throws IOException {
-        try {
-        List<MisReport> applicationDetails = jdbcTemplate.query(misReportUtility.reportWise(reportType,value), new MisReportUtility.MisReportRowMapper());
+    public HttpServletResponse generateExcel(HttpServletResponse response, String emailId, String reportType , String branchName) throws IOException {
+
+        List<MisReport> applicationDetails = new ArrayList<>();
+
+        applicationDetails = jdbcTemplate.query(misReportUtility.misQuery(emailId, reportType, branchName), new MisReportUtility.MisReportRowMapper());
+
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet sheet = workbook.createSheet("MIS_Report");
         int rowCount = 0;
@@ -641,6 +644,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             row.createCell(6).setCellValue(details.getLoanAmount());
         }
 
+        try {
             response.setContentType("text/csv");
             response.setHeader("Content-Disposition", "attachment; filename=MIS_Report.xlsx");
 
@@ -667,17 +671,12 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return assignBranchResponse;
     }
 
-    public CommonResponse statusEnableOrDisable(String emailId) {
+    public CommonResponse statusEnableOrDisable(String emailId, String updatedBy) {
         CommonResponse commonResponse = new CommonResponse();
         try {
-            if (emailId != null && !emailId.isEmpty()) {
-                userDetailRepo.enableUserStatus(emailId);
-                commonResponse.setCode("0000");
-                commonResponse.setMsg("Status update successfully");
-            }else {
-                commonResponse.setCode("1111");
-                commonResponse.setMsg("EmailId is required");
-            }
+            userDetailRepo.enableUserStatus(emailId,updatedBy);
+            commonResponse.setCode("0000");
+            commonResponse.setMsg("Status update successfully");
         } catch (Exception e) {
             commonResponse.setCode("1111");
             commonResponse.setMsg("User not found or Technical issue " + e.getMessage());

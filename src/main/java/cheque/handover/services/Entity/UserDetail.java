@@ -11,7 +11,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Collections;
@@ -43,8 +42,8 @@ public class UserDetail implements UserDetails {
     private Timestamp createDate;
     @PrePersist
     private void onCreate() {
-        LocalDateTime currentDate = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDate currentDate = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         createDate = Timestamp.valueOf(currentDate.format(formatter));
     }
 
