@@ -19,8 +19,8 @@ public class BranchMaster {
     private String branchCode;
     @Column(name = "state")
     private String state;
-    @Column(name = "timestamp")
-    private Timestamp timestamp;
+    @Column(name = "uploaded_date")
+    private Timestamp uploadedDate;
     @Column(name = "uploaded_by")
     private String uploadedBy;
 
