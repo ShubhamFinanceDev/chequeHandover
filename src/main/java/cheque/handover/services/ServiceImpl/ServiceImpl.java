@@ -609,7 +609,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                         break;
 
                     // Set the current timestamp
-                    branchMaster.setTimestamp(Timestamp.from(Instant.now()));
+                    branchMaster.setUploadedDate(Timestamp.from(Instant.now()));
                     branchMaster.setUploadedBy(emailId);
 
                     branchMasterList.add(branchMaster);
