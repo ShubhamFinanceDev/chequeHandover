@@ -38,9 +38,9 @@ public interface Service {
     CommonResponse disableChequeStatus();
     CommonResponse chequeStatus(ApplicationFlagUpdate flagUpdate, MultipartFile file) throws IOException, ExecutionException, InterruptedException;
 
-    CommonResponse saveBranch(MultipartFile file);
+    CommonResponse saveBranch(MultipartFile file, String emailId);
 
-    HttpServletResponse generateExcel(HttpServletResponse response, String emailId, String reportType, String branchName) throws IOException;
+    HttpServletResponse generateExcel(HttpServletResponse response, String emailId, String reportType, String branchName , String updatedBy) throws IOException;
 
     AllAssignBranchResponse findAssignBranchList(String emailId);
 

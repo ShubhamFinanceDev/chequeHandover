@@ -3,7 +3,7 @@ package cheque.handover.services.Entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.List;
+import java.sql.Timestamp;
 
 @Entity
 @Data
@@ -19,6 +19,10 @@ public class BranchMaster {
     private String branchCode;
     @Column(name = "state")
     private String state;
+    @Column(name = "timestamp")
+    private Timestamp timestamp;
+    @Column(name = "uploaded_by")
+    private String uploadedBy;
 
 //    @OneToMany(mappedBy = "branchMaster", cascade = CascadeType.ALL)
 //    private List<AssignBranch> assignBranches;

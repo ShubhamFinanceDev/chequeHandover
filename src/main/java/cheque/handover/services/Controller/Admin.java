@@ -57,8 +57,8 @@ public class Admin {
     }
 
     @PostMapping("/add-new-branch")
-    public ResponseEntity<?> addNewBranch(@RequestParam("file")MultipartFile file){
-        return ResponseEntity.ok(service.saveBranch(file));
+    public ResponseEntity<?> addNewBranch(@RequestParam("file") MultipartFile file, @RequestParam("emailId") String emailId) {
+        return ResponseEntity.ok(service.saveBranch(file, emailId));
     }
 
     @PutMapping("/status-update")
