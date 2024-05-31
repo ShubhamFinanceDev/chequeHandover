@@ -73,11 +73,8 @@ public class User {
     }
 
     @GetMapping("/generate-mis-report")
-    public String generateMis(HttpServletResponse response, @RequestParam String emailId, @RequestParam String reportType, @RequestParam(required = false) String branchName, @RequestParam(name = "UserEmail") String updatedBy ) throws IOException {
-        System.out.println(emailId);
-        System.out.println(reportType);
-        System.out.println(updatedBy);
-        service.generateExcel(response, emailId, reportType, branchName, updatedBy);
+    public String generateMis(HttpServletResponse response, @RequestParam String emailId, @RequestParam String reportType, @RequestParam(required = false) String selectedType) throws IOException {
+        service.generateExcel(response, emailId, reportType, selectedType);
         return "Success";
     }
 
