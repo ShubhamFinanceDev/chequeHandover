@@ -62,6 +62,8 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
     private MisReportUtility misReportUtility;
     @Autowired
     private UserUtility userUtility;
+    @Autowired
+    private LoginDetailsRepo loginDetailsRepo;
 
 
     private final Logger logger = LoggerFactory.getLogger(User.class);
@@ -134,7 +136,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             userDetails.setAssignBranches(userUtility.listOfBranch(assignBranches));
             userDetails.setRoleMaster(userData.getRoleMasters().getRole());
             if (userData.getLoginDetails() != null) {
-                userDetails.setLastLogin(userData.getLoginDetails().getTimestamp());
+                userDetails.setLastLogin(userData.getLoginDetails().getLastLogin());
             }
             userDetailResponseList.add(userDetails);
         }
@@ -205,12 +207,12 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                 userDetails.setFirstname(userDetail.getFirstname());
                 userDetails.setLastName(userDetail.getLastName());
                 userDetails.setMobileNo(userDetail.getMobileNo());
-                userDetails.setEnabled(true);
-                loginDetails.setUserMaster(userDetails);
                 loginDetails.setEmailId(userDetail.getEmailId());
-                userDetails.setLoginDetails(loginDetails);
                 userDetails.setCreatedBy(userDetail.getCreatedBy());
-                logger.info("createdBy : " + userDetail.getCreatedBy());
+                logger.info("createdBy : " + userDetails.getCreatedBy());
+                loginDetails.setEnable(true);
+                loginDetails.setUserMaster(userDetails);
+                userDetails.setLoginDetails(loginDetails);
 
 
                 userRoleDetail.setRole(String.valueOf(userDetail.getRoleMasters().getRole()));
@@ -689,9 +691,20 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
     public CommonResponse statusEnableOrDisable(String emailId, String updatedBy) {
         CommonResponse commonResponse = new CommonResponse();
         try {
-            userDetailRepo.enableUserStatus(emailId,updatedBy);
-            commonResponse.setCode("0000");
-            commonResponse.setMsg("Status update successfully");
+
+            Optional<UserDetail> userDetail = userDetailRepo.findByEmailId(emailId);
+            if (userDetail.isPresent()) {
+
+                UserDetail userDetail1 = userDetail.get();
+                if (userDetail1.getLoginDetails() != null) {
+                    userDetail1.getLoginDetails().setEnable(!userDetail1.getLoginDetails().isEnable());
+                    userDetail1.getLoginDetails().setUpdatedBy(updatedBy);
+                    userDetail1.getLoginDetails().setDeactivationDate(Timestamp.valueOf(LocalDateTime.now()));
+                    loginDetailsRepo.save(userDetail1.getLoginDetails());
+                }
+                commonResponse.setCode("0000");
+                commonResponse.setMsg("Status update successfully");
+            }
         } catch (Exception e) {
             commonResponse.setCode("1111");
             commonResponse.setMsg("User not found or Technical issue " + e.getMessage());

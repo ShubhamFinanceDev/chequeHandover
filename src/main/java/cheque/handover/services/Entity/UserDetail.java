@@ -37,8 +37,6 @@ public class UserDetail implements UserDetails {
     private String password;
     @Column(name = "created_by")
     private String createdBy;
-    @Column(name = "enable")
-    private boolean enabled;
     @Column(name = "creation_date")
     private Timestamp createDate;
     @PrePersist
@@ -91,6 +89,6 @@ public class UserDetail implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return this.enabled;
+        return this.loginDetails.isEnable();
     }
 }
