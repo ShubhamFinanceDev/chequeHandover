@@ -124,7 +124,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             userDetails.setMobileNo("******"+userData.getMobileNo().substring(userData.getMobileNo().length()-4,userData.getMobileNo().length()));
             userDetails.setCreatedBy(userData.getCreatedBy());
             userDetails.setEnabled(userData.isEnabled());
-            userDetails.setCreateDate(String.valueOf(userData.getCreationDate()));
+            userDetails.setCreateDate(String.valueOf(userData.getCreateDate()));
             List<Long> assignBranches = new ArrayList<>();
             if (!userData.getAssignBranches().isEmpty()) {
                 userData.getAssignBranches().forEach(branch -> {
@@ -192,7 +192,6 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
 
     @Override
     public CommonResponse saveUser(UserDetail userDetail) {
-
         CommonResponse commonResponse = new CommonResponse();
         UserDetail userDetails = new UserDetail();
         RoleMaster userRoleDetail = new RoleMaster();

@@ -38,12 +38,15 @@ public class UserDetail implements UserDetails {
     @Column(name = "created_by")
     private String createdBy;
     @Column(name = "creation_date")
-    private Timestamp creationDate;
+    private Timestamp createDate;
     @PrePersist
     private void onCreate() {
-        LocalDateTime currentDate = LocalDateTime.now();
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+        LocalDateTime localDateTime = timestamp.toLocalDateTime();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        creationDate = Timestamp.valueOf(currentDate.format(formatter));
+
+        createDate = Timestamp.valueOf(localDateTime.format(formatter));
     }
 
     @OneToOne(mappedBy = "userMaster", cascade = CascadeType.ALL)
@@ -54,7 +57,6 @@ public class UserDetail implements UserDetails {
 
     @OneToOne(mappedBy = "userMaster", cascade = CascadeType.ALL)
     private LoginDetails loginDetails;
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singleton(new SimpleGrantedAuthority(this.roleMasters.getRole()));
