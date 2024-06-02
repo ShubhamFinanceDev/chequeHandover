@@ -2,6 +2,7 @@ package cheque.handover.services.Controller;
 
 import cheque.handover.services.Entity.UserDetail;
 import cheque.handover.services.Model.CommonResponse;
+import cheque.handover.services.Model.EditUserDetails;
 import cheque.handover.services.Model.RestPasswordRequest;
 import cheque.handover.services.Services.Service;
 import org.apache.commons.collections4.map.HashedMap;
@@ -65,6 +66,11 @@ public class Admin {
     public ResponseEntity<?> enableUser(@RequestParam(name = "emailId")String emailId,@RequestParam(name= "updatedBy")String updatedBy){
         System.out.println(updatedBy);
         return ResponseEntity.ok(service.statusEnableOrDisable(emailId,updatedBy));
+    }
+
+    @PutMapping("/update-user/{emailId}")
+    public ResponseEntity<?> editUserDetails(@PathVariable String emailId, @RequestBody EditUserDetails inputUpdate) {
+        return ResponseEntity.ok(service.userUpdate(emailId,inputUpdate));
     }
 
 }

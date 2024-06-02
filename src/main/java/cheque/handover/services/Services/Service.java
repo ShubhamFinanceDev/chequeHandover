@@ -1,6 +1,8 @@
 package cheque.handover.services.Services;
 
+import cheque.handover.services.Entity.AssignBranch;
 import cheque.handover.services.Entity.BranchMaster;
+import cheque.handover.services.Entity.RoleMaster;
 import cheque.handover.services.Entity.UserDetail;
 import cheque.handover.services.Model.*;
 import jakarta.servlet.http.HttpServletResponse;
@@ -45,4 +47,6 @@ public interface Service {
     AllAssignBranchResponse findAssignBranchList(String emailId);
 
     CommonResponse statusEnableOrDisable(String emailId, String updatedBy);
+
+    ResponseEntity<CommonResponse> userUpdate(String emailId,EditUserDetails inputUpdate);
 }

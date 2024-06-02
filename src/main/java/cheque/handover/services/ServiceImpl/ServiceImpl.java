@@ -27,10 +27,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -64,6 +61,8 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
     private UserUtility userUtility;
     @Autowired
     private LoginDetailsRepo loginDetailsRepo;
+    @Autowired
+    private AssignBranchRepo assignBranchRepo;
 
 
     private final Logger logger = LoggerFactory.getLogger(User.class);
@@ -122,7 +121,8 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             userDetails.setFirstname(userData.getFirstname());
             userDetails.setLastName(userData.getLastName());
             userDetails.setEmailId(userData.getEmailId());
-            userDetails.setMobileNo("******"+userData.getMobileNo().substring(userData.getMobileNo().length()-4,userData.getMobileNo().length()));
+            userDetails.setMobileNo("******" + userData.getMobileNo().substring(userData.getMobileNo().length() - 4));
+            userDetails.setEncodedMobileNo(Base64.getEncoder().encodeToString(userData.getMobileNo().getBytes()));
             userDetails.setCreatedBy(userData.getCreatedBy());
             userDetails.setEnabled(userData.isEnabled());
             userDetails.setCreateDate(String.valueOf(userData.getCreateDate()));
@@ -134,6 +134,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                 });
             }
             userDetails.setAssignBranches(userUtility.listOfBranch(assignBranches));
+            userDetails.setBranchesCode(assignBranches);
             userDetails.setRoleMaster(userData.getRoleMasters().getRole());
             if (userData.getLoginDetails() != null) {
                 userDetails.setLastLogin(userData.getLoginDetails().getLastLogin());
@@ -146,7 +147,6 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         allUserDetailList.setCommonResponse(commonResponse);
         allUserDetailList.setUserDetailResponse(userDetailResponseList);
     }
-
 
 
     public List<BranchMaster> findAllBranches() {
@@ -481,13 +481,13 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                     if ((applicationNo != null && !applicationNo.isEmpty()) && (branchName != null && !branchName.isEmpty())) {
                         applicationDetails = applicationDetailsRepo.findDetailByBranchAndApplication(branchName, applicationNo, pageable);
                         totalCount = applicationDetailsRepo.findDetailByBranchAndApplicationCount(branchName, applicationNo);
-                    }else if (((branchName != null && !branchName.isEmpty() && (status != null && !status.isEmpty())))) {
+                    } else if (((branchName != null && !branchName.isEmpty() && (status != null && !status.isEmpty())))) {
                         applicationDetails = applicationDetailsRepo.findDetailsBybranchnameAndStatus(branchName, status);
-                        totalCount=applicationDetailsRepo.findDetailsByBranchStatusCount(branchName,status);
-                    }else if (applicationNo != null && !applicationNo.isEmpty() && pageable != null){
+                        totalCount = applicationDetailsRepo.findDetailsByBranchStatusCount(branchName, status);
+                    } else if (applicationNo != null && !applicationNo.isEmpty() && pageable != null) {
                         {
                             applicationDetails = applicationDetailsRepo.findDetailByPagingAndApplication(applicationNo, pageable);
-                            totalCount = applicationDetailsRepo.findDetailByPageAndApplicationCount( applicationNo);
+                            totalCount = applicationDetailsRepo.findDetailByPageAndApplicationCount(applicationNo);
 
                         }
                     } else {
@@ -632,11 +632,11 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return commonResponse;
     }
 
-    public HttpServletResponse generateExcel(HttpServletResponse response, String emailId, String reportType , String selectedType) throws IOException {
+    public HttpServletResponse generateExcel(HttpServletResponse response, String emailId, String reportType, String selectedType) throws IOException {
 
         List<MisReport> applicationDetails = new ArrayList<>();
 
-        applicationDetails = jdbcTemplate.query(misReportUtility.misQuery( reportType,selectedType ), new MisReportUtility.MisReportRowMapper());
+        applicationDetails = jdbcTemplate.query(misReportUtility.misQuery(reportType, selectedType), new MisReportUtility.MisReportRowMapper());
 
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet sheet = workbook.createSheet("MIS_Report");
@@ -658,7 +658,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             row.createCell(4).setCellValue(details.getConsumerType());
             row.createCell(5).setCellValue(details.getHandoverDate().toString());
             row.createCell(6).setCellValue(details.getLoanAmount());
-            row.createCell(7).setCellValue(details.getUpdatedBy());
+//            row.createCell(7).setCellValue(details.getUpdatedBy());
         }
 
         try {
@@ -710,5 +710,39 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             commonResponse.setMsg("User not found or Technical issue " + e.getMessage());
         }
         return commonResponse;
+    }
+
+    public ResponseEntity<CommonResponse> userUpdate(String emailId, EditUserDetails inputDetails) {
+
+        CommonResponse commonResponse = new CommonResponse();
+        try {
+            Optional<UserDetail> userDetail1 = userDetailRepo.findByEmailId(emailId);
+            UserDetail userDetails = userDetail1.get();
+
+            userDetails.setEmailId(emailId);
+            userDetails.setFirstname(inputDetails.getFirstName());
+            userDetails.setLastName(inputDetails.getLastName());
+            userDetails.setMobileNo(inputDetails.getMobileNo());
+            userDetails.setRoleMasters(inputDetails.getRoleMaster());
+
+            for (AssignBranch assignBranch : userDetails.getAssignBranches()) {
+
+                inputDetails.getAssignBranches().removeIf(assignBranch1 -> assignBranch.getBranchCode().equals(assignBranch1.getBranchCode()));
+            }
+            inputDetails.getAssignBranches().forEach(branch -> {
+                branch.setUserMaster(userDetails);
+            });
+
+            userDetails.setAssignBranches(inputDetails.getAssignBranches());
+            userDetailRepo.save(userDetails);
+            commonResponse.setMsg("Updated successfully.");
+            commonResponse.setCode("0000");
+            return ResponseEntity.ok(commonResponse);
+
+        } catch (Exception e) {
+            commonResponse.setCode("1111");
+            commonResponse.setMsg("User not exist.");
+            return ResponseEntity.ok(commonResponse);
+        }
     }
 }
