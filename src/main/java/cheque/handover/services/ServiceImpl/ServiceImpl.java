@@ -308,11 +308,19 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                                     ;
                                     break;
                                 case 9:
-                                    long chequeAmount = Long.parseLong(row.getCell(9).toString().replace(".0", ""));
-                                    if (chequeAmount < 0) {
-                                        errorMsg = "Cheque amount cannot be negative for row " + (row.getRowNum() + 1);
-                                    } else {
-                                        applicationDetails1.setChequeAmount(chequeAmount);
+                                    try {
+                                        Integer chequeAmount = Integer.parseInt(row.getCell(9).toString().replace(".0",""));
+                                        System.out.println("Cheque amount"+chequeAmount);
+                                        if(chequeAmount<0){
+                                            errorMsg="Cheque-Amount is not in the correct format.";
+                                        }else {
+                                            applicationDetails1.setChequeAmount(chequeAmount);
+                                        }
+                                    }
+                                    catch (Exception e){
+                                        System.out.println(e);
+                                        logger.info("Cheque-Amount is not in the correct format.");
+                                        errorMsg="Cheque-Amount is not in the correct format.";
                                     }
                                     break;
                             }
