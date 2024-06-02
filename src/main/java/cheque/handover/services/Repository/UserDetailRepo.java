@@ -22,7 +22,7 @@ public interface UserDetailRepo extends JpaRepository<UserDetail,Long> {
     void updatePassword(String emailId, String password);
 
      @Query("select e from UserDetail e where e.emailId=:emailId")
-    Optional<UserDetail> findByEmailId(String emailId);
+     Optional<UserDetail> findByEmailId(String emailId);
 //    @Modifying
 //    @Transactional
 //    @Query("UPDATE UserDetail u\n" +

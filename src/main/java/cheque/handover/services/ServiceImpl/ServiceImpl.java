@@ -61,6 +61,8 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
     private UserUtility userUtility;
     @Autowired
     private LoginDetailsRepo loginDetailsRepo;
+    @Autowired
+    private AssignBranchRepo assignBranchRepo;
 
 
     private final Logger logger = LoggerFactory.getLogger(User.class);
@@ -120,7 +122,10 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             userDetails.setLastName(userData.getLastName());
             userDetails.setEmailId(userData.getEmailId());
             userDetails.setMobileNo("******" + userData.getMobileNo().substring(userData.getMobileNo().length() - 4, userData.getMobileNo().length()));
+<<<<<<< Updated upstream
             userDetails.setEncodedMobileNo(Base64.getEncoder().encodeToString(userData.getMobileNo().getBytes()));
+=======
+>>>>>>> Stashed changes
             userDetails.setCreatedBy(userData.getCreatedBy());
             userDetails.setEnabled(userData.isEnabled());
             userDetails.setCreateDate(String.valueOf(userData.getCreateDate()));
@@ -708,5 +713,39 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             commonResponse.setMsg("User not found or Technical issue " + e.getMessage());
         }
         return commonResponse;
+    }
+
+    public ResponseEntity<CommonResponse> userUpdate(String emailId, EditUserDetails inputDetails) {
+
+        CommonResponse commonResponse = new CommonResponse();
+        try {
+            Optional<UserDetail> userDetail1 = userDetailRepo.findByEmailId(emailId);
+            UserDetail userDetails = userDetail1.get();
+
+            userDetails.setEmailId(emailId);
+            userDetails.setFirstname(inputDetails.getFirstName());
+            userDetails.setLastName(inputDetails.getLastName());
+            userDetails.setMobileNo(inputDetails.getMobileNo());
+            userDetails.setRoleMasters(inputDetails.getRoleMaster());
+
+            for (AssignBranch assignBranch : userDetails.getAssignBranches()) {
+
+                inputDetails.getAssignBranches().removeIf(assignBranch1 -> assignBranch.getBranchCode().equals(assignBranch1.getBranchCode()));
+            }
+            inputDetails.getAssignBranches().forEach(branch -> {
+                branch.setUserMaster(userDetails);
+            });
+
+            userDetails.setAssignBranches(inputDetails.getAssignBranches());
+            userDetailRepo.save(userDetails);
+            commonResponse.setMsg("Updated successfully.");
+            commonResponse.setCode("0000");
+            return ResponseEntity.ok(commonResponse);
+
+        } catch (Exception e) {
+            commonResponse.setCode("1111");
+            commonResponse.setMsg("User not exist.");
+            return ResponseEntity.ok(commonResponse);
+        }
     }
 }
