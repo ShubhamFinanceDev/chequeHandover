@@ -26,7 +26,7 @@ public class User {
     @Autowired
     private Service service;
 
-    private Logger logger = LoggerFactory.getLogger(User.class);
+    private final Logger logger = LoggerFactory.getLogger(User.class);
 
     @GetMapping("/get-user-details")
     public ResponseEntity<?> userData(@RequestParam(name = "name",required = false) String name) {
@@ -79,6 +79,7 @@ public class User {
     }
 
     @GetMapping("/get-list-of-assign-branches")
+
     public ResponseEntity<AllAssignBranchResponse> getAllAssignBranch(@RequestParam(name = "emailId")String emailId){
         return ResponseEntity.ok(service.findAssignBranchList(emailId));
     }
