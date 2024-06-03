@@ -67,14 +67,14 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
 
     private final Logger logger = LoggerFactory.getLogger(User.class);
 
-    public ResponseEntity<?> findUserDetails(String name) {
+    public ResponseEntity<?> findUserDetails(String name, String empCode) {
 
         List<UserDetailResponse> userDetailResponseList = new ArrayList<>();
         AllUserDetailList allUserDetailList = new AllUserDetailList();
         CommonResponse commonResponse = new CommonResponse();
 
         try {
-            List<UserDetail> userDetail = userDetailRepo.findByFirstName(name);
+            List<UserDetail> userDetail = userDetailRepo.findByFirstName(name,empCode);
             setUserDetail(userDetail, userDetailResponseList, commonResponse, allUserDetailList);
 
             return ResponseEntity.ok(allUserDetailList);
@@ -139,6 +139,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             if (userData.getLoginDetails() != null) {
                 userDetails.setLastLogin(userData.getLoginDetails().getLastLogin());
             }
+            userDetails.setEmpCode(userData.getEmpCode());
             userDetailResponseList.add(userDetails);
         }
 

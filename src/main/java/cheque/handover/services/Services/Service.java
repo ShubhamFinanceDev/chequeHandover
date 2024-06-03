@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public interface Service {
-    ResponseEntity<?> findUserDetails(String name);
+    ResponseEntity<?> findUserDetails(String name, String empCode);
 
     ResponseEntity<?> allUser();
 
