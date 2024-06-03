@@ -731,9 +731,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             userDetails.setFirstname(inputDetails.getFirstName());
             userDetails.setLastName(inputDetails.getLastName());
             userDetails.setMobileNo(inputDetails.getMobileNo());
-            RoleMaster roleMaster=new RoleMaster();
-            roleMaster.setUserMaster(userDetails);
-            userDetails.setRoleMasters(inputDetails.getRoleMaster());
+            userDetails.getRoleMasters().setRole(inputDetails.getRoleMaster().getRole());
 
             for (AssignBranch assignBranch : userDetails.getAssignBranches()) {
 

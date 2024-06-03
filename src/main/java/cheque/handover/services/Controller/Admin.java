@@ -70,7 +70,7 @@ public class Admin {
 
     @PutMapping("/update-user/{emailId}")
     public ResponseEntity<?> editUserDetails(@PathVariable String emailId, @RequestBody EditUserDetails inputUpdate) {
-        return ResponseEntity.ok(service.userUpdate(emailId,inputUpdate));
+        return ResponseEntity.ok(service.userUpdate(emailId,inputUpdate).getBody());
     }
 
 }
