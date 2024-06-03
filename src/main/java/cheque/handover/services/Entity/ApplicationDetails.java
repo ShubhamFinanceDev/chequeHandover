@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.sql.Date;
-import java.sql.Timestamp;
 
 @Entity
 @Data
@@ -36,8 +35,4 @@ public class ApplicationDetails {
     private Integer chequeAmount;
     @Column(name = "cheque_status")
     private String chequeStatus;
-    @Column(name = "upload_by")
-    private String uploadBy;
-    @Column(name = "uploaded_date")
-    private Timestamp uploadedDate;
 }
