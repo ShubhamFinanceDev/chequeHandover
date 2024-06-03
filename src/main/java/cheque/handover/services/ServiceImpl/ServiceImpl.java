@@ -557,7 +557,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         chequeStatus.setConsumerType(flagUpdate.getConsumerType());
         chequeStatus.setHandoverDate(flagUpdate.getDate());
         chequeStatus.setUpdatedBy(flagUpdate.getUpdatedBy());
-        chequeStatus.setUpdatedDate(Date.valueOf(LocalDate.now()));
+        chequeStatus.setUpdatedDate(Timestamp.valueOf(LocalDateTime.now()));
 
         chequeStatusRepo.save(chequeStatus);
 

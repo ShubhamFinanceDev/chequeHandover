@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 
 @Entity
 @Table(name = "cheque_status")
@@ -24,7 +25,7 @@ public class ChequeStatus {
     private String ddfsFlag;
 
     @Column(name = "updated_date")
-    private Date updatedDate;
+    private Timestamp updatedDate;
     @Column(name = "updated_by")
     private String updatedBy;
 }
