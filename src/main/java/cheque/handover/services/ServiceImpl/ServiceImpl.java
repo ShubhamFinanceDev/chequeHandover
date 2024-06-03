@@ -727,7 +727,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             Optional<UserDetail> userDetail1 = userDetailRepo.findByEmailId(emailId);
             UserDetail userDetails = userDetail1.get();
 
-            userDetails.setEmailId(emailId);
+            userDetails.setEmailId(inputDetails.getEmailId());
             userDetails.setFirstname(inputDetails.getFirstName());
             userDetails.setLastName(inputDetails.getLastName());
             userDetails.setMobileNo(inputDetails.getMobileNo());
