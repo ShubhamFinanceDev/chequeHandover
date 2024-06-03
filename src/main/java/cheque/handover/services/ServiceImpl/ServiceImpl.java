@@ -121,8 +121,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             userDetails.setFirstname(userData.getFirstname());
             userDetails.setLastName(userData.getLastName());
             userDetails.setEmailId(userData.getEmailId());
-            userDetails.setMobileNo("******" + userData.getMobileNo().substring(userData.getMobileNo().length() - 4));
-            userDetails.setEncodedMobileNo(Base64.getEncoder().encodeToString(userData.getMobileNo().getBytes()));
+            userDetails.setMobileNo("******"+userData.getMobileNo().substring(userData.getMobileNo().length()-4,userData.getMobileNo().length()));
             userDetails.setCreatedBy(userData.getCreatedBy());
             userDetails.setEnabled(userData.isEnabled());
             userDetails.setCreateDate(String.valueOf(userData.getCreateDate()));
@@ -134,7 +133,6 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                 });
             }
             userDetails.setAssignBranches(userUtility.listOfBranch(assignBranches));
-            userDetails.setBranchesCode(assignBranches);
             userDetails.setRoleMaster(userData.getRoleMasters().getRole());
             if (userData.getLoginDetails() != null) {
                 userDetails.setLastLogin(userData.getLoginDetails().getLastLogin());
@@ -296,7 +294,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                                     ;
                                     break;
                                 case 6:
-                                    applicationDetails1.setLoanAmount(Long.valueOf(row.getCell(6).toString().replace(".0", "")));
+                                    applicationDetails1.setLoanAmount(Double.parseDouble(row.getCell(6).toString()));
                                     ;
                                     break;
                                 case 7:
@@ -309,18 +307,16 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                                     break;
                                 case 9:
                                     try {
-                                        Integer chequeAmount = Integer.parseInt(row.getCell(9).toString().replace(".0",""));
-                                        System.out.println("Cheque amount"+chequeAmount);
+                                        double chequeAmount = Double.parseDouble(row.getCell(9).toString());
                                         if(chequeAmount<0){
-                                            errorMsg="Cheque-Amount is not in the correct format.";
+                                            errorMsg="Cheque-Amount is not in the correct format " + (row.getRowNum() + 1) + " rows.";
                                         }else {
                                             applicationDetails1.setChequeAmount(chequeAmount);
                                         }
                                     }
                                     catch (Exception e){
-                                        System.out.println(e);
-                                        logger.info("Cheque-Amount is not in the correct format.");
-                                        errorMsg="Cheque-Amount is not in the correct format.";
+                                        logger.info("Cheque-Amount is not in the correct format");
+                                        errorMsg="Cheque-Amount is not in the correct format " + (row.getRowNum() + 1) + " rows.";
                                     }
                                     break;
                             }
@@ -489,13 +485,13 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                     if ((applicationNo != null && !applicationNo.isEmpty()) && (branchName != null && !branchName.isEmpty())) {
                         applicationDetails = applicationDetailsRepo.findDetailByBranchAndApplication(branchName, applicationNo, pageable);
                         totalCount = applicationDetailsRepo.findDetailByBranchAndApplicationCount(branchName, applicationNo);
-                    } else if (((branchName != null && !branchName.isEmpty() && (status != null && !status.isEmpty())))) {
+                    }else if (((branchName != null && !branchName.isEmpty() && (status != null && !status.isEmpty())))) {
                         applicationDetails = applicationDetailsRepo.findDetailsBybranchnameAndStatus(branchName, status);
-                        totalCount = applicationDetailsRepo.findDetailsByBranchStatusCount(branchName, status);
-                    } else if (applicationNo != null && !applicationNo.isEmpty() && pageable != null) {
+                        totalCount=applicationDetailsRepo.findDetailsByBranchStatusCount(branchName,status);
+                    }else if (applicationNo != null && !applicationNo.isEmpty() && pageable != null){
                         {
                             applicationDetails = applicationDetailsRepo.findDetailByPagingAndApplication(applicationNo, pageable);
-                            totalCount = applicationDetailsRepo.findDetailByPageAndApplicationCount(applicationNo);
+                            totalCount = applicationDetailsRepo.findDetailByPageAndApplicationCount( applicationNo);
 
                         }
                     } else {
@@ -640,11 +636,11 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return commonResponse;
     }
 
-    public HttpServletResponse generateExcel(HttpServletResponse response, String emailId, String reportType, String selectedType) throws IOException {
+    public HttpServletResponse generateExcel(HttpServletResponse response, String emailId, String reportType , String selectedType) throws IOException {
 
         List<MisReport> applicationDetails = new ArrayList<>();
 
-        applicationDetails = jdbcTemplate.query(misReportUtility.misQuery(reportType, selectedType), new MisReportUtility.MisReportRowMapper());
+        applicationDetails = jdbcTemplate.query(misReportUtility.misQuery( reportType, selectedType), new MisReportUtility.MisReportRowMapper());
 
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet sheet = workbook.createSheet("MIS_Report");
@@ -666,7 +662,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             row.createCell(4).setCellValue(details.getConsumerType());
             row.createCell(5).setCellValue(details.getHandoverDate().toString());
             row.createCell(6).setCellValue(details.getLoanAmount());
-//            row.createCell(7).setCellValue(details.getUpdatedBy());
+            row.createCell(7).setCellValue(details.getUpdatedBy());
         }
 
         try {
