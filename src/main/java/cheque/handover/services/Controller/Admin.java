@@ -35,8 +35,8 @@ public class Admin {
     }
 
     @PostMapping("/import-data")
-    public ResponseEntity<CommonResponse> FileUpload(@RequestParam("file") MultipartFile file) {
-        return ResponseEntity.ok(service.applicationDetailsUpload(file));
+    public ResponseEntity<CommonResponse> FileUpload(@RequestParam("file") MultipartFile file,String emailId) {
+        return ResponseEntity.ok(service.applicationDetailsUpload(file,emailId));
     }
 
     @PostMapping("/invoke-status-procedure")

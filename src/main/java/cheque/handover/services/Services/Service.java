@@ -1,8 +1,6 @@
 package cheque.handover.services.Services;
 
-import cheque.handover.services.Entity.AssignBranch;
 import cheque.handover.services.Entity.BranchMaster;
-import cheque.handover.services.Entity.RoleMaster;
 import cheque.handover.services.Entity.UserDetail;
 import cheque.handover.services.Model.*;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,7 +23,7 @@ public interface Service {
     void saveServiceResult(BranchesResponse branchesResponse, CommonResponse commonResponse, List<BranchMaster> branchByName);
 
     CommonResponse saveUser(UserDetail userDetail );
-    CommonResponse applicationDetailsUpload(MultipartFile file);
+    CommonResponse applicationDetailsUpload(MultipartFile file, String emailId);
 
     ResponseEntity<?> resetPassword(RestPasswordRequest request);
 

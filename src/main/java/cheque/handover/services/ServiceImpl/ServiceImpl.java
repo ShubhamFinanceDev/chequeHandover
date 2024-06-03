@@ -25,7 +25,6 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -239,7 +238,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
     }
 
     @Override
-    public CommonResponse applicationDetailsUpload(MultipartFile file) {
+    public CommonResponse applicationDetailsUpload(MultipartFile file, String emailId) {
 
         CommonResponse commonResponse = new CommonResponse();
         List<ApplicationDetails> applicationDetails = new ArrayList<>();
@@ -309,18 +308,17 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                                     break;
                                 case 9:
                                     try {
-                                        Integer chequeAmount = Integer.parseInt(row.getCell(9).toString().replace(".0",""));
-                                        System.out.println("Cheque amount"+chequeAmount);
-                                        if(chequeAmount<0){
-                                            errorMsg="Cheque-Amount is not in the correct format.";
-                                        }else {
+                                        Integer chequeAmount = Integer.parseInt(row.getCell(9).toString().replace(".0", ""));
+                                        System.out.println("Cheque amount" + chequeAmount);
+                                        if (chequeAmount < 0) {
+                                            errorMsg = "Cheque-Amount is not in the correct format.";
+                                        } else {
                                             applicationDetails1.setChequeAmount(chequeAmount);
                                         }
-                                    }
-                                    catch (Exception e){
+                                    } catch (Exception e) {
                                         System.out.println(e);
                                         logger.info("Cheque-Amount is not in the correct format.");
-                                        errorMsg="Cheque-Amount is not in the correct format.";
+                                        errorMsg = "Cheque-Amount is not in the correct format.";
                                     }
                                     break;
                             }
@@ -330,6 +328,11 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                     }
                     if (!errorMsg.isEmpty())
                         break;
+                    applicationDetails1.setUploadedDate(Timestamp.valueOf(LocalDateTime.now()));
+
+                    applicationDetails1.setUploadBy(emailId);
+                    applicationDetails.add(applicationDetails1);
+
                     applicationDetails1.setChequeStatus("N");
                     applicationDetails.add(applicationDetails1);
                 }
@@ -557,7 +560,8 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         chequeStatus.setConsumerType(flagUpdate.getConsumerType());
         chequeStatus.setHandoverDate(flagUpdate.getDate());
         chequeStatus.setUpdatedBy(flagUpdate.getUpdatedBy());
-        chequeStatus.setUpdatedDate(Date.valueOf(LocalDate.now()));
+        chequeStatus.setUpdatedDate(Timestamp.valueOf(LocalDateTime.now()));
+
 
         chequeStatusRepo.save(chequeStatus);
 
@@ -731,7 +735,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             userDetails.setFirstname(inputDetails.getFirstName());
             userDetails.setLastName(inputDetails.getLastName());
             userDetails.setMobileNo(inputDetails.getMobileNo());
-            RoleMaster roleMaster=new RoleMaster();
+            RoleMaster roleMaster = new RoleMaster();
             roleMaster.setUserMaster(userDetails);
             userDetails.setRoleMasters(inputDetails.getRoleMaster());
 
