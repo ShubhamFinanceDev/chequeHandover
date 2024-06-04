@@ -29,11 +29,11 @@ public class User {
     private final Logger logger = LoggerFactory.getLogger(User.class);
 
     @GetMapping("/get-user-details")
-    public ResponseEntity<?> userData(@RequestParam(name = "name",required = false) String name) {
-        if (name == null || name.isEmpty()) {
+    public ResponseEntity<?> userData(@RequestParam(name = "name",required = false) String name, @RequestParam(name = "EmpCode", required = false) String empCode) {
+        if (name == null || name.isEmpty()&& (empCode == null || empCode.isEmpty())) {
             return ResponseEntity.ok(service.allUser().getBody());
         }else {
-            return ResponseEntity.ok(service.findUserDetails(name).getBody());
+            return ResponseEntity.ok(service.findUserDetails(name, empCode).getBody());
         }
     }
 
