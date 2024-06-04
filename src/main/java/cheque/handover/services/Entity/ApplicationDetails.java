@@ -26,13 +26,13 @@ public class ApplicationDetails {
     @Column(name = "product_name")
     private String productName;
     @Column(name = "loan_amount")
-    private double loanAmount;
+    private Double loanAmount;
     @Column(name = "sanction_date")
     private Date sanctionDate;
     @Column(name = "disbursal_date")
     private Date disbursalDate;
     @Column(name = "cheque_amount")
-    private double chequeAmount;
+    private Double chequeAmount;
     @Column(name = "cheque_status")
     private String chequeStatus;
 }

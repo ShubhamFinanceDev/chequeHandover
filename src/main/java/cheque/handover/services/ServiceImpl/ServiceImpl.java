@@ -120,8 +120,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             userDetails.setFirstname(userData.getFirstname());
             userDetails.setLastName(userData.getLastName());
             userDetails.setEmailId(userData.getEmailId());
-            userDetails.setMobileNo("******" + userData.getMobileNo().substring(userData.getMobileNo().length() - 4));
-            userDetails.setEncodedMobileNo(Base64.getEncoder().encodeToString(userData.getMobileNo().getBytes()));
+            userDetails.setMobileNo("******"+userData.getMobileNo().substring(userData.getMobileNo().length()-4,userData.getMobileNo().length()));
             userDetails.setCreatedBy(userData.getCreatedBy());
             userDetails.setEnabled(userData.isEnabled());
             userDetails.setCreateDate(String.valueOf(userData.getCreateDate()));
@@ -133,7 +132,6 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                 });
             }
             userDetails.setAssignBranches(userUtility.listOfBranch(assignBranches));
-            userDetails.setBranchesCode(assignBranches);
             userDetails.setRoleMaster(userData.getRoleMasters().getRole());
             if (userData.getLoginDetails() != null) {
                 userDetails.setLastLogin(userData.getLoginDetails().getLastLogin());
@@ -299,7 +297,6 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                                     errorMsg = excelUtilityValidation.chequeAmount(loanAmount, row.getRowNum(),"loan");
                                     if (errorMsg.isEmpty())
                                         applicationDetails1.setLoanAmount(Double.valueOf(loanAmount));
-
                                     break;
                                 case 7:
                                     applicationDetails1.setSanctionDate(Date.valueOf(dateFormatUtility.changeDateFormate(row.getCell(7).toString())));
@@ -313,7 +310,6 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                                     errorMsg = excelUtilityValidation.chequeAmount(chequeAmount, row.getRowNum(), "Cheque");
                                     if (errorMsg.isEmpty())
                                         applicationDetails1.setChequeAmount(Double.valueOf(chequeAmount));
-
                                     break;
                             }
                         }
@@ -481,13 +477,13 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                     if ((applicationNo != null && !applicationNo.isEmpty()) && (branchName != null && !branchName.isEmpty())) {
                         applicationDetails = applicationDetailsRepo.findDetailByBranchAndApplication(branchName, applicationNo, pageable);
                         totalCount = applicationDetailsRepo.findDetailByBranchAndApplicationCount(branchName, applicationNo);
-                    } else if (((branchName != null && !branchName.isEmpty() && (status != null && !status.isEmpty())))) {
+                    }else if (((branchName != null && !branchName.isEmpty() && (status != null && !status.isEmpty())))) {
                         applicationDetails = applicationDetailsRepo.findDetailsBybranchnameAndStatus(branchName, status);
-                        totalCount = applicationDetailsRepo.findDetailsByBranchStatusCount(branchName, status);
-                    } else if (applicationNo != null && !applicationNo.isEmpty() && pageable != null) {
+                        totalCount=applicationDetailsRepo.findDetailsByBranchStatusCount(branchName,status);
+                    }else if (applicationNo != null && !applicationNo.isEmpty() && pageable != null){
                         {
                             applicationDetails = applicationDetailsRepo.findDetailByPagingAndApplication(applicationNo, pageable);
-                            totalCount = applicationDetailsRepo.findDetailByPageAndApplicationCount(applicationNo);
+                            totalCount = applicationDetailsRepo.findDetailByPageAndApplicationCount( applicationNo);
 
                         }
                     } else {
@@ -632,11 +628,11 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return commonResponse;
     }
 
-    public HttpServletResponse generateExcel(HttpServletResponse response, String emailId, String reportType, String selectedType) throws IOException {
+    public HttpServletResponse generateExcel(HttpServletResponse response, String emailId, String reportType , String selectedType) throws IOException {
 
         List<MisReport> applicationDetails = new ArrayList<>();
 
-        applicationDetails = jdbcTemplate.query(misReportUtility.misQuery(reportType, selectedType), new MisReportUtility.MisReportRowMapper());
+        applicationDetails = jdbcTemplate.query(misReportUtility.misQuery( reportType, selectedType), new MisReportUtility.MisReportRowMapper());
 
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet sheet = workbook.createSheet("MIS_Report");
@@ -658,7 +654,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             row.createCell(4).setCellValue(details.getConsumerType());
             row.createCell(5).setCellValue(details.getHandoverDate().toString());
             row.createCell(6).setCellValue(details.getLoanAmount());
-//            row.createCell(7).setCellValue(details.getUpdatedBy());
+            row.createCell(7).setCellValue(details.getUpdatedBy());
         }
 
         try {
