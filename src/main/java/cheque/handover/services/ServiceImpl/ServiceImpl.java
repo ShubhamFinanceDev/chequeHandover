@@ -576,6 +576,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             Iterator<Row> rowIterator = sheet.iterator();
             Row headerRow = rowIterator.next();
             boolean fileFormat = excelUtilityValidation.branchAddValidation(headerRow);
+            List<BranchMaster> branchMasters=branchMasterRepo.findAll();
 
             System.out.println(fileFormat);
 
@@ -596,7 +597,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                                     break;
                                 case 1:
                                     String branchCode = row.getCell(1).toString().replace(".0", "");
-                                    errorMsg = excelUtilityValidation.checkSheetDuplicateBranchCod(branchCodesList, branchCode, row.getRowNum());
+                                    errorMsg = excelUtilityValidation.checkSheetDuplicateBranchCod(branchCodesList, branchCode, row.getRowNum(),branchMasters);
                                     branchCodesList.add(branchCode);
                                     branchMaster.setBranchCode(branchCode);
                                     break;
