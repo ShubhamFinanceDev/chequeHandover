@@ -71,7 +71,7 @@ public class ExcelUtilityValidation {
     public String checkSheetDuplicateBranchCod(List<String> branchCodesList, String branchCode, int rowNum) {
         String errorMsg ="";
         for (String sheetBranchCode : branchCodesList) {
-            errorMsg = (sheetBranchCode.equals(branchCode)) ? "Duplicate branch code " + branchCode + " found in the file at row no " + (rowNum + 1) : "";
+            errorMsg = (sheetBranchCode.equalsIgnoreCase(branchCode)) ? "Duplicate branch code " + branchCode + " found in the file at row no " + (rowNum + 1) : "";
             if(!errorMsg.isEmpty()) break;
             errorMsg = (branchMasterRepo.existsByBranchCode(branchCode)) ? "Branch code " + branchCode + " already exists." : "";
             if(!errorMsg.isEmpty()) break;
