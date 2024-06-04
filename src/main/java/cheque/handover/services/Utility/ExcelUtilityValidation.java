@@ -40,17 +40,17 @@ public class ExcelUtilityValidation {
 
     public boolean branchAddValidation(Row headerRow) {
         String[] expectedHeaders = {"Branch Name", "Branch Code", "State"};
-        boolean match = true;
+
         for (int i = 0; i < expectedHeaders.length; i++) {
             Cell cell = headerRow.getCell(i);
             if (cell == null || cell.getCellType() == CellType.BLANK)
-                return match = false;
+                return false;
 
             String cellName = cell.toString();
             if (!cellName.equals(expectedHeaders[i]))
-                return match = false;
+                return  false;
         }
-        return match;
+        return true;
     }
 
     public String chequeAmount(String amount, int rowNum, String loan) {
@@ -71,10 +71,12 @@ public class ExcelUtilityValidation {
     public String checkSheetDuplicateBranchCod(List<String> branchCodesList, String branchCode, int rowNum, List<BranchMaster> branchMasters) {
         String errorMsg = "";
         for (String sheetBranchCode : branchCodesList) {
-            errorMsg = (sheetBranchCode.equalsIgnoreCase(branchCode)) ? "Duplicate branch code " + branchCode + " found in the file at row no " + (rowNum + 1) : "";
+            errorMsg = (sheetBranchCode.equalsIgnoreCase(branchCode)) ? "Duplicate branch code '" + branchCode + "' found in the file at row no " + (rowNum + 1) : "";
             if (!errorMsg.isEmpty()) break;
+        }
+        if(errorMsg.isEmpty()) {
             for (BranchMaster exitingBranchMaster : branchMasters) {
-                errorMsg = (exitingBranchMaster.getBranchCode().equalsIgnoreCase(branchCode)) ? "Branch code " + branchCode + " already exists." : "";
+                errorMsg = (exitingBranchMaster.getBranchCode().equalsIgnoreCase(branchCode)) ? "Branch code '" + branchCode + "' already exists." : "";
                 if (!errorMsg.isEmpty()) break;
             }
         }
