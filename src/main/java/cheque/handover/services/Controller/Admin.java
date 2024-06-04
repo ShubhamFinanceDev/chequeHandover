@@ -6,6 +6,8 @@ import cheque.handover.services.Model.EditUserDetails;
 import cheque.handover.services.Model.RestPasswordRequest;
 import cheque.handover.services.Services.Service;
 import org.apache.commons.collections4.map.HashedMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class Admin {
     @Autowired
     private Service service;
+    private final Logger logger = LoggerFactory.getLogger(Admin.class);
 
     @PostMapping("/create-user")
     public ResponseEntity<CommonResponse> userDetail(@RequestBody UserDetail userDetail) {
