@@ -139,6 +139,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             if (userData.getLoginDetails() != null) {
                 userDetails.setLastLogin(userData.getLoginDetails().getLastLogin());
             }
+            userDetails.setEmpCode(userData.getEmpCode());
             userDetailResponseList.add(userDetails);
         }
 
@@ -209,6 +210,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                 userDetails.setMobileNo(userDetail.getMobileNo());
                 loginDetails.setEmailId(userDetail.getEmailId());
                 userDetails.setCreatedBy(userDetail.getCreatedBy());
+                userDetails.setEmpCode(userDetail.getEmpCode());
                 logger.info("createdBy : " + userDetails.getCreatedBy());
                 loginDetails.setEnable(true);
                 loginDetails.setUserMaster(userDetails);

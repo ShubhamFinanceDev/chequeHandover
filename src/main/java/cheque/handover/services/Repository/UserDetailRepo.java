@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface UserDetailRepo extends JpaRepository<UserDetail,Long> {
     @Query("select u from UserDetail u where u.emailId=:userName")
     Optional<UserDetail> findUser(String userName);
-    @Query("select e from UserDetail e where e.firstname LIKE :name%")
+    @Query("select e from UserDetail e where e.firstname LIKE :name% ")
     List<UserDetail> findByFirstName(String name);
     @Transactional
     @Modifying
