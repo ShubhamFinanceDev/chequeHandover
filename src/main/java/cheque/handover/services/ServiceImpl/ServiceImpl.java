@@ -126,7 +126,6 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             userDetails.setCreatedBy(userData.getCreatedBy());
             userDetails.setEnabled(userData.isEnabled());
             userDetails.setCreateDate(String.valueOf(userData.getCreateDate()));
-            userDetails.setEmployeeId(userData.getEmployeeId());
             List<Long> assignBranches = new ArrayList<>();
             if (!userData.getAssignBranches().isEmpty()) {
                 userData.getAssignBranches().forEach(branch -> {
@@ -140,6 +139,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             if (userData.getLoginDetails() != null) {
                 userDetails.setLastLogin(userData.getLoginDetails().getLastLogin());
             }
+            userDetails.setEmpCode(userData.getEmpCode());
             userDetailResponseList.add(userDetails);
         }
 
@@ -210,11 +210,11 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                 userDetails.setMobileNo(userDetail.getMobileNo());
                 loginDetails.setEmailId(userDetail.getEmailId());
                 userDetails.setCreatedBy(userDetail.getCreatedBy());
+                userDetails.setEmpCode(userDetail.getEmpCode());
                 logger.info("createdBy : " + userDetails.getCreatedBy());
                 loginDetails.setEnable(true);
                 loginDetails.setUserMaster(userDetails);
                 userDetails.setLoginDetails(loginDetails);
-                userDetails.setEmployeeId(userDetail.getEmployeeId());
 
                 userRoleDetail.setRole(String.valueOf(userDetail.getRoleMasters().getRole()));
                 userRoleDetail.setUserMaster(userDetails);

@@ -22,6 +22,6 @@ public class UserDetailResponse {
     private List<Long> branchesCode;
     private List<String> assignBranches;
     private String roleMaster;
-    private String employeeId;
+    private String empCode;
 
 }
