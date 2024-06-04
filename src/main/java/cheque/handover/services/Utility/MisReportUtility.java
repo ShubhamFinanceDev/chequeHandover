@@ -24,11 +24,11 @@ public class MisReportUtility {
         String condition = "";
 
         switch (reportType.toLowerCase()) {
-            case "userwise":
+            case "user-wise":
                 condition = "AND cs.updated_by = '" + selectedType + "' ";
                 break;
 
-            case "branchwise":
+            case "branch-wise":
                 condition = "AND em.branch_name = '" + selectedType + "' ";
                 break;
 

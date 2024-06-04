@@ -1,15 +1,23 @@
 package cheque.handover.services.Utility;
 
 import cheque.handover.services.Controller.Admin;
+import cheque.handover.services.Repository.BranchMasterRepo;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ExcelUtilityValidation {
+
+    @Autowired
+    private BranchMasterRepo branchMasterRepo;
+
 
     private final Logger logger = LoggerFactory.getLogger(Admin.class);
 
@@ -59,5 +67,17 @@ public class ExcelUtilityValidation {
         }
         return errorMsg;
     }
+
+    public String checkSheetDuplicateBranchCod(List<String> branchCodesList, String branchCode, int rowNum) {
+        String errorMsg ="";
+        for (String sheetBranchCode : branchCodesList) {
+            errorMsg = (sheetBranchCode.equals(branchCode)) ? "Duplicate branch code " + branchCode + " found in the file at row no " + (rowNum + 1) : "";
+            if(!errorMsg.isEmpty()) break;
+            errorMsg = (branchMasterRepo.existsByBranchCode(branchCode)) ? "Branch code " + branchCode + " already exists." : "";
+            if(!errorMsg.isEmpty()) break;
+        }
+        return errorMsg;
+    }
+
 }
 

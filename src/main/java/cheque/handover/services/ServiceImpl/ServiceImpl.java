@@ -25,6 +25,7 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -563,6 +564,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
     public CommonResponse saveBranch(MultipartFile file, String emailId) {
         CommonResponse commonResponse = new CommonResponse();
         List<BranchMaster> branchMasterList = new ArrayList<>();
+        List<String> branchCodesList = new ArrayList<>();
         int count = 0;
         String errorMsg = "";
 
@@ -591,11 +593,10 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                                     branchMaster.setBranchName(row.getCell(0).toString());
                                     break;
                                 case 1:
-                                    branchMaster.setBranchCode(row.getCell(1).toString().replace(".0", ""));
-                                    if (branchMasterRepo.existsByBranchCode(branchMaster.getBranchCode())) {
-                                        errorMsg = "Branch code '" + branchMaster.getBranchCode() + "' already exists.";
-                                        break;
-                                    }
+                                    String branchCode = row.getCell(1).toString().replace(".0", "");
+                                    errorMsg = excelUtilityValidation.checkSheetDuplicateBranchCod(branchCodesList, branchCode, row.getRowNum());
+                                    branchCodesList.add(branchCode);
+                                    branchMaster.setBranchCode(branchCode);
                                     break;
                                 case 2:
                                     branchMaster.setState(row.getCell(2).toString());
@@ -632,11 +633,18 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return commonResponse;
     }
 
-    public HttpServletResponse generateExcel(HttpServletResponse response, String emailId, String reportType, String selectedType) throws IOException {
+
+    public ResponseEntity<?> generateExcel(HttpServletResponse response, String emailId, String reportType, String selectedType) throws IOException {
 
         List<MisReport> applicationDetails = new ArrayList<>();
+        CommonResponse commonResponse = new CommonResponse();
 
         applicationDetails = jdbcTemplate.query(misReportUtility.misQuery(reportType, selectedType), new MisReportUtility.MisReportRowMapper());
+        if (applicationDetails.isEmpty()) {
+            commonResponse.setMsg("No data available for the selected criteria.");
+            commonResponse.setCode("1111");
+            return ResponseEntity.ok(commonResponse);
+        }
 
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet sheet = workbook.createSheet("MIS_Report");
@@ -671,7 +679,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
-        return response;
+        return ResponseEntity.ok(response);
     }
 
     public AllAssignBranchResponse findAssignBranchList(String emailId) {
