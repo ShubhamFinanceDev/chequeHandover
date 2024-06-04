@@ -25,7 +25,6 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -271,53 +270,46 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                             switch (i) {
                                 case 0:
                                     applicationDetails1.setApplicantName(row.getCell(0).toString());
-                                    ;
+
                                     break;
                                 case 1:
                                     applicationDetails1.setBranchName(row.getCell(1).toString());
-                                    ;
+
                                     break;
                                 case 2:
                                     applicationDetails1.setRegion(row.getCell(2).toString());
-                                    ;
+
                                     break;
                                 case 3:
                                     applicationDetails1.setHubName(row.getCell(3).toString());
-                                    ;
+
                                     break;
                                 case 4:
                                     applicationDetails1.setApplicationNumber(row.getCell(4).toString());
-                                    ;
+
                                     break;
                                 case 5:
                                     applicationDetails1.setProductName(row.getCell(5).toString());
-                                    ;
+
                                     break;
                                 case 6:
-                                    applicationDetails1.setLoanAmount(Double.parseDouble(row.getCell(6).toString()));
-                                    ;
+                                    String loanAmount = row.getCell(6).toString();
+                                    errorMsg = excelUtilityValidation.chequeAmount(loanAmount, row.getRowNum(),"loan");
+                                    if (errorMsg.isEmpty())
+                                        applicationDetails1.setLoanAmount(Double.valueOf(loanAmount));
                                     break;
                                 case 7:
                                     applicationDetails1.setSanctionDate(Date.valueOf(dateFormatUtility.changeDateFormate(row.getCell(7).toString())));
-                                    ;
                                     break;
                                 case 8:
                                     applicationDetails1.setDisbursalDate(Date.valueOf(dateFormatUtility.changeDateFormate(row.getCell(8).toString())));
-                                    ;
+
                                     break;
                                 case 9:
-                                    try {
-                                        double chequeAmount = Double.parseDouble(row.getCell(9).toString());
-                                        if(chequeAmount<0){
-                                            errorMsg="Cheque-Amount is not in the correct format " + (row.getRowNum() + 1) + " rows.";
-                                        }else {
-                                            applicationDetails1.setChequeAmount(chequeAmount);
-                                        }
-                                    }
-                                    catch (Exception e){
-                                        logger.info("Cheque-Amount is not in the correct format");
-                                        errorMsg="Cheque-Amount is not in the correct format " + (row.getRowNum() + 1) + " rows.";
-                                    }
+                                    String chequeAmount = row.getCell(9).toString();
+                                    errorMsg = excelUtilityValidation.chequeAmount(chequeAmount, row.getRowNum(), "Cheque");
+                                    if (errorMsg.isEmpty())
+                                        applicationDetails1.setChequeAmount(Double.valueOf(chequeAmount));
                                     break;
                             }
                         }
