@@ -73,9 +73,8 @@ public class User {
     }
 
     @GetMapping("/generate-mis-report")
-    public String generateMis(HttpServletResponse response, @RequestParam String emailId, @RequestParam String reportType, @RequestParam(required = false) String selectedType) throws IOException {
-        service.generateExcel(response, emailId, reportType, selectedType);
-        return "Success";
+    public ResponseEntity<?> generateMis(HttpServletResponse response, @RequestParam String emailId, @RequestParam String reportType, @RequestParam(required = false) String selectedType) throws IOException {
+            return ResponseEntity.ok(service.generateExcel(response, emailId, reportType, selectedType));
     }
 
     @GetMapping("/get-list-of-assign-branches")
