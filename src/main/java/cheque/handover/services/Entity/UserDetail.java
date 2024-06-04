@@ -39,6 +39,8 @@ public class UserDetail implements UserDetails {
     private String createdBy;
     @Column(name = "creation_date")
     private Timestamp createDate;
+    @Column(name = "employee_id")
+    private String employeeId;
     @PrePersist
     private void onCreate() {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
