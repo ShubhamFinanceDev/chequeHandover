@@ -67,14 +67,14 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
 
     private final Logger logger = LoggerFactory.getLogger(User.class);
 
-    public ResponseEntity<?> findUserDetails(String name, String empCode) {
+    public ResponseEntity<?> findUserDetails(String name) {
 
         List<UserDetailResponse> userDetailResponseList = new ArrayList<>();
         AllUserDetailList allUserDetailList = new AllUserDetailList();
         CommonResponse commonResponse = new CommonResponse();
 
         try {
-            List<UserDetail> userDetail = userDetailRepo.findByFirstName(name,empCode);
+            List<UserDetail> userDetail = userDetailRepo.findByFirstName(name);
             setUserDetail(userDetail, userDetailResponseList, commonResponse, allUserDetailList);
 
             return ResponseEntity.ok(allUserDetailList);
