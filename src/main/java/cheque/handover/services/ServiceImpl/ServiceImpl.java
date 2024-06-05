@@ -565,7 +565,6 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
     public CommonResponse saveBranch(MultipartFile file, String emailId) {
         CommonResponse commonResponse = new CommonResponse();
         List<BranchMaster> branchMasterList = new ArrayList<>();
-        List<String> branchCodesList = new ArrayList<>();
         int count = 0;
         String errorMsg = "";
 
@@ -596,8 +595,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                                     break;
                                 case 1:
                                     String branchCode = row.getCell(1).toString().replace(".0", "");
-                                    errorMsg = excelUtilityValidation.checkSheetDuplicateBranchCod(branchCodesList, branchCode, row.getRowNum(),branchMasters);
-                                    branchCodesList.add(branchCode);
+                                    errorMsg = excelUtilityValidation.checkSheetDuplicateBranchCod(branchMasterList, branchCode, row.getRowNum(),branchMasters);
                                     branchMaster.setBranchCode(branchCode);
                                     break;
                                 case 2:
