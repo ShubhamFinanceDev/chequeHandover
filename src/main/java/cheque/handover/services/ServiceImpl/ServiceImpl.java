@@ -126,7 +126,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             userDetails.setCreatedBy(userData.getCreatedBy());
             userDetails.setEnabled(userData.isEnabled());
             userDetails.setCreateDate(String.valueOf(userData.getCreateDate()));
-            List<Long> assignBranches = new ArrayList<>();
+            List<String> assignBranches = new ArrayList<>();
             if (!userData.getAssignBranches().isEmpty()) {
                 userData.getAssignBranches().forEach(branch -> {
 
