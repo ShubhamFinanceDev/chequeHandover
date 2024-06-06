@@ -303,9 +303,9 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                                 case 6:
                                     String loanAmount = row.getCell(6).toString();
                                     errorMsg = excelUtilityValidation.chequeAmount(loanAmount, row.getRowNum(),"loan");
-                                    if (errorMsg.isEmpty())
-                                    applicationDetails1.setLoanAmount(excelUtilityValidation.decimalFormat(loanAmount));
-
+                                    if (errorMsg.isEmpty()) {
+                                        applicationDetails1.setLoanAmount(excelUtilityValidation.decimalFormat(loanAmount));
+                                    }
                                     break;
                                 case 7:
                                     applicationDetails1.setSanctionDate(Date.valueOf(dateFormatUtility.changeDateFormate(row.getCell(7).toString())));
