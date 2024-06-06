@@ -73,6 +73,14 @@ public class Admin {
 
     @PutMapping("/update-user/{emailId}")
     public ResponseEntity<?> editUserDetails(@PathVariable String emailId, @RequestBody EditUserDetails inputUpdate) {
+        CommonResponse commonResponse=new CommonResponse();
+        if(!inputUpdate.getEmailId().contains("@shubham.co")) {
+            commonResponse.setMsg("Invalid user-email.");
+            commonResponse.setCode("1111");
+
+            return ResponseEntity.ok(commonResponse);
+        }
+
         return ResponseEntity.ok(service.userUpdate(emailId,inputUpdate).getBody());
     }
 
