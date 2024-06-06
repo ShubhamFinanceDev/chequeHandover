@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 @Service
@@ -83,5 +85,12 @@ public class ExcelUtilityValidation {
         return errorMsg;
     }
 
+    public double decimalFormat(String amount) {
+        double chequeAmount = Double.parseDouble(amount);
+        BigDecimal bd = new BigDecimal(chequeAmount);
+        bd = bd.setScale(2, RoundingMode.HALF_UP);
+        chequeAmount = bd.doubleValue();
+        return chequeAmount;
+    }
 }
 

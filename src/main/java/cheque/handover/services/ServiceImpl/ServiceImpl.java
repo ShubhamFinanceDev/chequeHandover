@@ -126,7 +126,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             userDetails.setCreatedBy(userData.getCreatedBy());
             userDetails.setEnabled(userData.isEnabled());
             userDetails.setCreateDate(String.valueOf(userData.getCreateDate()));
-            List<Long> assignBranches = new ArrayList<>();
+            List<String> assignBranches = new ArrayList<>();
             if (!userData.getAssignBranches().isEmpty()) {
                 userData.getAssignBranches().forEach(branch -> {
 
@@ -300,7 +300,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                                     String loanAmount = row.getCell(6).toString();
                                     errorMsg = excelUtilityValidation.chequeAmount(loanAmount, row.getRowNum(),"loan");
                                     if (errorMsg.isEmpty())
-                                        applicationDetails1.setLoanAmount(Double.valueOf(loanAmount));
+                                    applicationDetails1.setLoanAmount(excelUtilityValidation.decimalFormat(loanAmount));
 
                                     break;
                                 case 7:
@@ -314,7 +314,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                                     String chequeAmount = row.getCell(9).toString();
                                     errorMsg = excelUtilityValidation.chequeAmount(chequeAmount, row.getRowNum(), "Cheque");
                                     if (errorMsg.isEmpty())
-                                        applicationDetails1.setChequeAmount(Double.valueOf(chequeAmount));
+                                        applicationDetails1.setChequeAmount(excelUtilityValidation.decimalFormat(chequeAmount));
 
                                     break;
                             }

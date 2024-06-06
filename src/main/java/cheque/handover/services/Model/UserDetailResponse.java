@@ -19,7 +19,7 @@ public class UserDetailResponse {
     private boolean enabled;
     private String createDate;
     private Timestamp lastLogin;
-    private List<Long> branchesCode;
+    private List<String> branchesCode;
     private List<String> assignBranches;
     private String roleMaster;
     private String empCode;
