@@ -33,7 +33,7 @@ public class MisReportUtility {
                 break;
 
             case "daily-report":
-                condition = "AND cs.updated_date = CURDATE()";
+                condition = "AND DATE(cs.updated_date) = CURDATE()";
                 break;
 
             default:
