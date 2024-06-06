@@ -41,8 +41,8 @@ public interface Service {
     CommonResponse chequeStatus(ApplicationFlagUpdate flagUpdate, MultipartFile file) throws IOException, ExecutionException, InterruptedException;
 
     CommonResponse saveBranch(MultipartFile file, String emailId);
-
-    ResponseEntity<?> generateExcel(HttpServletResponse response, String emailId, String reportType, String selectedType) throws IOException;
+    List<MisReport> fetchReportData(String reportType, String selectedType);
+    void generateExcel(HttpServletResponse response, List<MisReport> applicationDetails) throws IOException;
 
     AllAssignBranchResponse findAssignBranchList(String emailId);
 

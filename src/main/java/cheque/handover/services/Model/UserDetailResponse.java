@@ -10,7 +10,7 @@ import java.util.List;
 public class UserDetailResponse {
 
     private Long userId;
-    private String firstname;
+    private String firstName;
     private String lastName;
     private String emailId;
     private String mobileNo;

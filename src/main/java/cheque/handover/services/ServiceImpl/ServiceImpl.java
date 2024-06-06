@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -118,7 +119,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             UserDetailResponse userDetails = new UserDetailResponse();
 
             userDetails.setUserId(userData.getUserId());
-            userDetails.setFirstname(userData.getFirstname());
+            userDetails.setFirstName(userData.getFirstName());
             userDetails.setLastName(userData.getLastName());
             userDetails.setEmailId(userData.getEmailId());
             userDetails.setMobileNo("******" + userData.getMobileNo().substring(userData.getMobileNo().length() - 4));
@@ -205,7 +206,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             if (emailExist.isEmpty()) {
                 userDetails.setPassword(passwordEncoder.encode(userDetail.getPassword()));
                 userDetails.setEmailId(userDetail.getEmailId());
-                userDetails.setFirstname(userDetail.getFirstname());
+                userDetails.setFirstName(userDetail.getFirstName());
                 userDetails.setLastName(userDetail.getLastName());
                 userDetails.setMobileNo(userDetail.getMobileNo());
                 loginDetails.setEmailId(userDetail.getEmailId());
@@ -636,18 +637,20 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return commonResponse;
     }
 
+    public List<MisReport> fetchReportData(String reportType, String selectedType)
+    {
+        List<MisReport> fetchedData=new ArrayList<>();
+        try {
 
-    public ResponseEntity<?> generateExcel(HttpServletResponse response, String emailId, String reportType, String selectedType) throws IOException {
-
-        List<MisReport> applicationDetails = new ArrayList<>();
-        CommonResponse commonResponse = new CommonResponse();
-
-        applicationDetails = jdbcTemplate.query(misReportUtility.misQuery(reportType, selectedType), new MisReportUtility.MisReportRowMapper());
-        if (applicationDetails.isEmpty()) {
-            commonResponse.setMsg("No data available for the selected criteria.");
-            commonResponse.setCode("1111");
-            return ResponseEntity.ok(commonResponse);
+            return jdbcTemplate.query(misReportUtility.misQuery(reportType, selectedType), new MisReportUtility.MisReportRowMapper());
         }
+        catch (Exception e){
+            logger.error("Error while executing report query"+e.getMessage());
+            return fetchedData;
+        }
+    }
+
+    public void generateExcel(HttpServletResponse response,List<MisReport> applicationDetails) throws IOException {
 
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet sheet = workbook.createSheet("MIS_Report");
@@ -682,7 +685,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
-        return ResponseEntity.ok(response);
+//        return response;
     }
 
     public AllAssignBranchResponse findAssignBranchList(String emailId) {
@@ -731,10 +734,10 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             UserDetail userDetails = userDetail1.get();
 
             userDetails.setEmailId(inputDetails.getEmailId());
-            userDetails.setFirstname(inputDetails.getFirstName());
+            userDetails.setFirstName(inputDetails.getFirstName());
             userDetails.setLastName(inputDetails.getLastName());
             userDetails.setMobileNo(inputDetails.getMobileNo());
-            userDetails.getRoleMasters().setRole(inputDetails.getRoleMaster().getRole());
+            userDetails.getRoleMasters().setRole(inputDetails.getRoleMasters().getRole());
 
             for (AssignBranch assignBranch : userDetails.getAssignBranches()) {
 
