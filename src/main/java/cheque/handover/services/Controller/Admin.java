@@ -71,8 +71,8 @@ public class Admin {
         return ResponseEntity.ok(service.statusEnableOrDisable(emailId,updatedBy));
     }
 
-    @PutMapping("/update-user/{emailId}")
-    public ResponseEntity<?> editUserDetails(@PathVariable String emailId, @RequestBody EditUserDetails inputUpdate) {
+    @PutMapping("/update-user/{userId}")
+    public ResponseEntity<?> editUserDetails(@PathVariable Long userId, @RequestBody EditUserDetails inputUpdate) {
         CommonResponse commonResponse=new CommonResponse();
         if(!inputUpdate.getEmailId().contains("@shubham.co")) {
             commonResponse.setMsg("Invalid user-email.");
@@ -81,7 +81,7 @@ public class Admin {
             return ResponseEntity.ok(commonResponse);
         }
 
-        return ResponseEntity.ok(service.userUpdate(emailId,inputUpdate).getBody());
+        return ResponseEntity.ok(service.userUpdate(userId,inputUpdate).getBody());
     }
 
 }

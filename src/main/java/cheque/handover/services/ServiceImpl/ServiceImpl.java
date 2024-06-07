@@ -720,16 +720,12 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return commonResponse;
     }
 
-    public ResponseEntity<CommonResponse> userUpdate(String emailId, EditUserDetails inputDetails) {
+    public ResponseEntity<CommonResponse> userUpdate(Long userId, EditUserDetails inputDetails) {
 
         CommonResponse commonResponse = new CommonResponse();
         try {
-            Optional<UserDetail> userDetail1 = userDetailRepo.findByEmailId(emailId);
-            int count = userDetailRepo.checkEditedEmail(inputDetails.getEmailId());
-            if (!(emailId.equals(inputDetails.getEmailId())) && count == 1) {
-                commonResponse.setCode("1111");
-                commonResponse.setMsg("Email-Id already exist.");
-            } else {
+            Optional<UserDetail> userDetail1 = userDetailRepo.findById(userId);
+            if (userDetailRepo.checkEditedEmail(inputDetails.getEmailId()) == 0) {
                 UserDetail userDetails = userDetail1.get();
                 userDetails.setEmailId(inputDetails.getEmailId());
                 userDetails.setFirstName(inputDetails.getFirstName());
@@ -749,6 +745,10 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                 userDetailRepo.save(userDetails);
                 commonResponse.setCode("0000");
                 commonResponse.setMsg("Updated successfully");
+            } else {
+                commonResponse.setCode("1111");
+                commonResponse.setMsg("Email-Id already exist");
+
             }
             return ResponseEntity.ok(commonResponse);
 
