@@ -48,5 +48,5 @@ public interface Service {
 
     CommonResponse statusEnableOrDisable(String emailId, String updatedBy);
 
-    ResponseEntity<CommonResponse> userUpdate(String emailId,EditUserDetails inputUpdate);
+    ResponseEntity<CommonResponse> userUpdate(Long userId,EditUserDetails inputUpdate);
 }
