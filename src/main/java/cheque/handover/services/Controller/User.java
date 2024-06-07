@@ -31,10 +31,10 @@ public class User {
     private final Logger logger = LoggerFactory.getLogger(User.class);
 
     @GetMapping("/get-user-details")
-    public ResponseEntity<?> userData(@RequestParam(name = "name",required = false) String name) {
+    public ResponseEntity<?> userData(@RequestParam(name = "name", required = false) String name) {
         if (name == null || name.isEmpty()) {
             return ResponseEntity.ok(service.allUser().getBody());
-        }else {
+        } else {
             return ResponseEntity.ok(service.findUserDetails(name).getBody());
         }
     }
@@ -54,7 +54,7 @@ public class User {
     }
 
     @GetMapping("/fetch-excel-data")
-    public ResponseEntity<?> excelDataByUser(@RequestParam(name = "emailId")String emailId,@RequestParam(name = "applicationNo",required = false)String applicationNo,@RequestParam(name = "pageNo") int pageNo,@RequestParam(name = "branchName",required = false)String branchName,@RequestParam(name = "status",required = false)String status){
+    public ResponseEntity<?> excelDataByUser(@RequestParam(name = "emailId") String emailId, @RequestParam(name = "applicationNo", required = false) String applicationNo, @RequestParam(name = "pageNo") int pageNo, @RequestParam(name = "branchName", required = false) String branchName, @RequestParam(name = "status", required = false) String status) {
         if ((branchName != null && !branchName.isEmpty()) ||
                 (applicationNo != null && !applicationNo.isEmpty()) ||
                 (status != null && !status.isEmpty())) {
@@ -66,12 +66,12 @@ public class User {
 
     @PostMapping("/update-application-flag")
     public ResponseEntity<?> updateFlag(@RequestParam("file") MultipartFile file, @RequestParam("consumerType") String consumerType, @RequestParam("date") Date date, @RequestParam("applicationNo") String applicationNo, @RequestParam("emailId") String emailId) throws IOException, ExecutionException, InterruptedException {
-        ApplicationFlagUpdate applicationFlagUpdate=new ApplicationFlagUpdate();
+        ApplicationFlagUpdate applicationFlagUpdate = new ApplicationFlagUpdate();
         applicationFlagUpdate.setApplicationNo(applicationNo);
         applicationFlagUpdate.setConsumerType(consumerType);
         applicationFlagUpdate.setDate(date);
         applicationFlagUpdate.setUpdatedBy(emailId);
-        return ResponseEntity.ok(service.chequeStatus(applicationFlagUpdate,file));
+        return ResponseEntity.ok(service.chequeStatus(applicationFlagUpdate, file));
     }
 
     @GetMapping("/generate-mis-report")
@@ -87,7 +87,7 @@ public class User {
 
     @GetMapping("/get-list-of-assign-branches")
 
-    public ResponseEntity<AllAssignBranchResponse> getAllAssignBranch(@RequestParam(name = "emailId")String emailId){
+    public ResponseEntity<AllAssignBranchResponse> getAllAssignBranch(@RequestParam(name = "emailId") String emailId) {
         return ResponseEntity.ok(service.findAssignBranchList(emailId));
     }
 }

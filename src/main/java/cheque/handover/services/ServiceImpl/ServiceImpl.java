@@ -203,7 +203,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
 
         List<AssignBranch> assignBranchList = new ArrayList<>();
         try {
-            Optional<UserDetail> emailExist = userDetailRepo.findUser(userDetail.getEmailId());
+            Optional<UserDetail> emailExist = userDetailRepo.findUserByEmailEmp(userDetail.getEmailId(), userDetail.getEmpCode());
             if (emailExist.isEmpty()) {
                 userDetails.setPassword(passwordEncoder.encode(userDetail.getPassword()));
                 userDetails.setEmailId(userDetail.getEmailId());
@@ -217,6 +217,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                 loginDetails.setEnable(true);
                 loginDetails.setUserMaster(userDetails);
                 userDetails.setLoginDetails(loginDetails);
+
 
                 userRoleDetail.setRole(String.valueOf(userDetail.getRoleMasters().getRole()));
                 userRoleDetail.setUserMaster(userDetails);
@@ -232,7 +233,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                 commonResponse.setMsg("User saved successfully");
             } else {
                 commonResponse.setCode("1111");
-                commonResponse.setMsg("User already exists");
+                commonResponse.setMsg("User Email-Id or Employee-Id already exists.");
             }
         } catch (DataAccessException d) {
             commonResponse.setCode("1111");
@@ -304,10 +305,10 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                                     break;
                                 case 6:
                                     String loanAmount = row.getCell(6).toString();
-                                    errorMsg = excelUtilityValidation.chequeAmount(loanAmount, row.getRowNum(),"loan");
-                                    if (errorMsg.isEmpty()) {
+                                    errorMsg = excelUtilityValidation.chequeAmount(loanAmount, row.getRowNum(), "loan");
+                                    if (errorMsg.isEmpty())
                                         applicationDetails1.setLoanAmount(excelUtilityValidation.decimalFormat(loanAmount));
-                                    }
+
                                     break;
                                 case 7:
                                     applicationDetails1.setSanctionDate(Date.valueOf(dateFormatUtility.changeDateFormate(row.getCell(7).toString())));
@@ -325,11 +326,9 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                                     break;
                             }
                         }
-                        if (!errorMsg.isEmpty())
-                            break;
+                        if (!errorMsg.isEmpty()) break;
                     }
-                    if (!errorMsg.isEmpty())
-                        break;
+                    if (!errorMsg.isEmpty()) break;
                     applicationDetails1.setChequeStatus("N");
                     applicationDetails.add(applicationDetails1);
                 }
@@ -581,7 +580,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             Iterator<Row> rowIterator = sheet.iterator();
             Row headerRow = rowIterator.next();
             boolean fileFormat = excelUtilityValidation.branchAddValidation(headerRow);
-            List<BranchMaster> branchMasters=branchMasterRepo.findAll();
+            List<BranchMaster> branchMasters = branchMasterRepo.findAll();
 
             System.out.println(fileFormat);
 
@@ -610,11 +609,9 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                                     break;
                             }
                         }
-                        if (!errorMsg.isEmpty())
-                            break;
+                        if (!errorMsg.isEmpty()) break;
                     }
-                    if (!errorMsg.isEmpty())
-                        break;
+                    if (!errorMsg.isEmpty()) break;
 
                     // Set the current timestamp
                     branchMaster.setUploadedDate(Timestamp.from(Instant.now()));
@@ -640,20 +637,18 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return commonResponse;
     }
 
-    public List<MisReport> fetchReportData(String reportType, String selectedType)
-    {
-        List<MisReport> fetchedData=new ArrayList<>();
+    public List<MisReport> fetchReportData(String reportType, String selectedType) {
+        List<MisReport> fetchedData = new ArrayList<>();
         try {
 
             return jdbcTemplate.query(misReportUtility.misQuery(reportType, selectedType), new MisReportUtility.MisReportRowMapper());
-        }
-        catch (Exception e){
-            logger.error("Error while executing report query"+e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while executing report query" + e.getMessage());
             return fetchedData;
         }
     }
 
-    public void generateExcel(HttpServletResponse response,List<MisReport> applicationDetails) throws IOException {
+    public void generateExcel(HttpServletResponse response, List<MisReport> applicationDetails) throws IOException {
 
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet sheet = workbook.createSheet("MIS_Report");
@@ -734,26 +729,31 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         CommonResponse commonResponse = new CommonResponse();
         try {
             Optional<UserDetail> userDetail1 = userDetailRepo.findByEmailId(emailId);
-            UserDetail userDetails = userDetail1.get();
+            int count = userDetailRepo.checkEditedEmail(inputDetails.getEmailId());
+            if (!(emailId.equals(inputDetails.getEmailId())) && count == 1) {
+                commonResponse.setCode("1111");
+                commonResponse.setMsg("Email-Id already exist.");
+            } else {
+                UserDetail userDetails = userDetail1.get();
+                userDetails.setEmailId(inputDetails.getEmailId());
+                userDetails.setFirstName(inputDetails.getFirstName());
+                userDetails.setLastName(inputDetails.getLastName());
+                userDetails.setMobileNo(inputDetails.getMobileNo());
+                userDetails.getRoleMasters().setRole(inputDetails.getRoleMasters().getRole());
 
-            userDetails.setEmailId(inputDetails.getEmailId());
-            userDetails.setFirstName(inputDetails.getFirstName());
-            userDetails.setLastName(inputDetails.getLastName());
-            userDetails.setMobileNo(inputDetails.getMobileNo());
-            userDetails.getRoleMasters().setRole(inputDetails.getRoleMasters().getRole());
+                for (AssignBranch assignBranch : userDetails.getAssignBranches()) {
 
-            for (AssignBranch assignBranch : userDetails.getAssignBranches()) {
+                    inputDetails.getAssignBranches().removeIf(assignBranch1 -> assignBranch.getBranchCode().equals(assignBranch1.getBranchCode()));
+                }
+                inputDetails.getAssignBranches().forEach(branch -> {
+                    branch.setUserMaster(userDetails);
+                });
 
-                inputDetails.getAssignBranches().removeIf(assignBranch1 -> assignBranch.getBranchCode().equals(assignBranch1.getBranchCode()));
+                userDetails.setAssignBranches(inputDetails.getAssignBranches());
+                userDetailRepo.save(userDetails);
+                commonResponse.setCode("0000");
+                commonResponse.setMsg("Updated successfully");
             }
-            inputDetails.getAssignBranches().forEach(branch -> {
-                branch.setUserMaster(userDetails);
-            });
-
-            userDetails.setAssignBranches(inputDetails.getAssignBranches());
-            userDetailRepo.save(userDetails);
-            commonResponse.setMsg("Updated successfully.");
-            commonResponse.setCode("0000");
             return ResponseEntity.ok(commonResponse);
 
         } catch (Exception e) {
