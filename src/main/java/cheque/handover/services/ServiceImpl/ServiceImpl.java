@@ -725,31 +725,25 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         CommonResponse commonResponse = new CommonResponse();
         try {
             Optional<UserDetail> userDetail1 = userDetailRepo.findById(userId);
-            if (userDetailRepo.checkEditedEmail(inputDetails.getEmailId()) == 0) {
-                UserDetail userDetails = userDetail1.get();
-                userDetails.setEmailId(inputDetails.getEmailId());
-                userDetails.setFirstName(inputDetails.getFirstName());
-                userDetails.setLastName(inputDetails.getLastName());
-                userDetails.setMobileNo(inputDetails.getMobileNo());
-                userDetails.getRoleMasters().setRole(inputDetails.getRoleMasters().getRole());
+            UserDetail userDetails = userDetail1.get();
+            userDetails.setEmailId(inputDetails.getEmailId());
+            userDetails.setFirstName(inputDetails.getFirstName());
+            userDetails.setLastName(inputDetails.getLastName());
+            userDetails.setMobileNo(inputDetails.getMobileNo());
+            userDetails.getRoleMasters().setRole(inputDetails.getRoleMasters().getRole());
 
-                for (AssignBranch assignBranch : userDetails.getAssignBranches()) {
+            for (AssignBranch assignBranch : userDetails.getAssignBranches()) {
 
-                    inputDetails.getAssignBranches().removeIf(assignBranch1 -> assignBranch.getBranchCode().equals(assignBranch1.getBranchCode()));
-                }
-                inputDetails.getAssignBranches().forEach(branch -> {
-                    branch.setUserMaster(userDetails);
-                });
-
-                userDetails.setAssignBranches(inputDetails.getAssignBranches());
-                userDetailRepo.save(userDetails);
-                commonResponse.setCode("0000");
-                commonResponse.setMsg("Updated successfully");
-            } else {
-                commonResponse.setCode("1111");
-                commonResponse.setMsg("Email-Id already exist");
-
+                inputDetails.getAssignBranches().removeIf(assignBranch1 -> assignBranch.getBranchCode().equals(assignBranch1.getBranchCode()));
             }
+            inputDetails.getAssignBranches().forEach(branch -> {
+                branch.setUserMaster(userDetails);
+            });
+
+            userDetails.setAssignBranches(inputDetails.getAssignBranches());
+            userDetailRepo.save(userDetails);
+            commonResponse.setCode("0000");
+            commonResponse.setMsg("Updated successfully");
             return ResponseEntity.ok(commonResponse);
 
         } catch (Exception e) {
