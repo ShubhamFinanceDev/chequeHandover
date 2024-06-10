@@ -87,14 +87,14 @@ public class DdfsUtility {
             String base64 =  Base64.getEncoder().encodeToString(imageData);
 
             formData.add("token", generateDDFSKey());
-            formData.add("clientId", "SHUBHAM/REKYC");
+            formData.add("clientId", "SHUBHAM/OP");
             formData.add("file", applicationNo);
             formData.add("subPath","2024/Aadhar");
-            formData.add("docCategory", "Cheque Handover");
+            formData.add("docCategory", "IdentityProofs");
             formData.add("clientUserId", "06799");
-            formData.add("remarks", "");
+            formData.add("remarks", "aadhar");
             formData.add("maker", "06799");
-            formData.add("path", "REKYC");
+            formData.add("path", "HOBR/APF under-Constructi");
             formData.add("document", base64);
 
             HttpHeaders headers = new HttpHeaders();
