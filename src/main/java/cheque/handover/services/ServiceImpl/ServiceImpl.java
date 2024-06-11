@@ -560,7 +560,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
 
         chequeStatusRepo.save(chequeStatus);
 
-        applicationDetailsRepo.updateFlagByApplicationNo(flagUpdate.getApplicationNo());
+        applicationDetailsRepo.updateFlagByApplicationNo(flagUpdate.getApplicationNo(), flagUpdate.getChequeId());
         commonResponse.setMsg("Data save successfully");
         commonResponse.setCode("0000");
 

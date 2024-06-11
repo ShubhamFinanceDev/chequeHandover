@@ -22,10 +22,10 @@
      @Query("select a from ApplicationDetails a where a.applicationNumber =:applicationNo")
      ApplicationDetails findByApplicationNo(String applicationNo);
 
-     @Modifying
-     @Transactional
-     @Query("update ApplicationDetails ps set ps.chequeStatus = 'Y' where ps.applicationNumber = :applicationNo")
-     void updateFlagByApplicationNo(String applicationNo);
+  @Modifying
+  @Transactional
+  @Query("update ApplicationDetails ps set ps.chequeStatus = 'Y' where ps.applicationNumber = :applicationNo and ps.id =:chequeId")
+  void updateFlagByApplicationNo(String applicationNo, Long chequeId);
 
  //    List<MisReport> findByFlag();
 

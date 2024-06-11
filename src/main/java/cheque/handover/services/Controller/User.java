@@ -65,12 +65,13 @@ public class User {
     }
 
     @PostMapping("/update-application-flag")
-    public ResponseEntity<?> updateFlag(@RequestParam("file") MultipartFile file, @RequestParam("consumerType") String consumerType, @RequestParam("date") Date date, @RequestParam("applicationNo") String applicationNo, @RequestParam("emailId") String emailId) throws IOException, ExecutionException, InterruptedException {
+    public ResponseEntity<?> updateFlag(@RequestParam("file") MultipartFile file, @RequestParam("consumerType") String consumerType, @RequestParam("date") Date date, @RequestParam("applicationNo") String applicationNo, @RequestParam("emailId") String emailId, @RequestParam("chequeId") Long chequeId) throws IOException, ExecutionException, InterruptedException {
         ApplicationFlagUpdate applicationFlagUpdate = new ApplicationFlagUpdate();
         applicationFlagUpdate.setApplicationNo(applicationNo);
         applicationFlagUpdate.setConsumerType(consumerType);
         applicationFlagUpdate.setDate(date);
         applicationFlagUpdate.setUpdatedBy(emailId);
+        applicationFlagUpdate.setChequeId(chequeId);
         return ResponseEntity.ok(service.chequeStatus(applicationFlagUpdate, file));
     }
 
