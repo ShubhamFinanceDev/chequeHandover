@@ -670,7 +670,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             row.createCell(4).setCellValue(details.getConsumerType());
             row.createCell(5).setCellValue(details.getHandoverDate().toString());
             row.createCell(6).setCellValue(details.getLoanAmount());
-//            row.createCell(7).setCellValue(details.getUpdatedBy());
+            row.createCell(7).setCellValue(details.getUpdatedBy());
         }
 
         try {
