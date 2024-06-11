@@ -2,6 +2,9 @@ package cheque.handover.services.Configration;
 
 import cheque.handover.services.Controller.User;
 import cheque.handover.services.Model.CommonResponse;
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonToken;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,6 +22,7 @@ import org.springframework.web.context.request.WebRequest;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Objects;
 
 @Configuration
 @ControllerAdvice
@@ -29,7 +33,7 @@ public class GlobalException implements AuthenticationEntryPoint {
     CommonResponse commonResponse = new CommonResponse();
 
     @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<CommonResponse> handleUserNotFoundException(UsernameNotFoundException ex, WebRequest request) {
+    public ResponseEntity<CommonResponse> handleUserNotFoundException(UsernameNotFoundException ex) {
         logger.error(ex.getMessage());
         commonResponse.setCode("401");
         commonResponse.setMsg(ex.getMessage());
@@ -38,18 +42,16 @@ public class GlobalException implements AuthenticationEntryPoint {
 
     // You can add more exception handlers for different exceptions here
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<CommonResponse> handleRuntimeException(RuntimeException ex, WebRequest request) {
+    public ResponseEntity<CommonResponse> handleRuntimeException(RuntimeException ex) {
         logger.error(ex.getMessage());
-
         commonResponse.setCode("500");
         commonResponse.setMsg(ex.getMessage());
         return new ResponseEntity<>(commonResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<CommonResponse> handleGlobalException(Exception ex, WebRequest request) {
+    public ResponseEntity<CommonResponse> handleGlobalException(Exception ex) {
         logger.error(ex.getMessage());
-
         commonResponse.setCode("500");
         commonResponse.setMsg(ex.getMessage());
 
@@ -59,9 +61,14 @@ public class GlobalException implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        PrintWriter writer = response.getWriter();
-        System.out.println(authException);
-        writer.println("Access Denied !! " + authException.getMessage());
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        commonResponse.setCode(String.valueOf(HttpServletResponse.SC_UNAUTHORIZED));
+        commonResponse.setMsg("Access denied.");
+        Gson gson = new Gson();
+        PrintWriter writer=response.getWriter();
+        writer.print(gson.toJson(commonResponse));
+        writer.flush();
 
     }
 }

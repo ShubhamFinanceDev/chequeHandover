@@ -7,15 +7,15 @@ import java.sql.Date;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "cheque_status")
+@Table(name = "issued_cheque")
 @Data
 public class ChequeStatus {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
-    private Long id;
-    @Column(name = "application_number")
-    private String applicationNo;
+    @Column(name = "issued_id")
+    private Long issuedId;
+    @Column(name = "cheque_Id")
+    private Long chequeId;
     @Column(name = "consumer_type")
     private String consumerType;
 

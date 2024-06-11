@@ -1,8 +1,10 @@
 package cheque.handover.services.Repository;
 
+import cheque.handover.services.Entity.AssignBranch;
 import cheque.handover.services.Entity.BranchMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -30,9 +32,6 @@ public interface BranchMasterRepo extends JpaRepository<BranchMaster,Long> {
     List<String> findAssignedBranch(String emailId);
 
     @Query("select b.branchName from BranchMaster b where b.branchCode in :branchCode")
-    List<String> findByBranchCode(List<Long> branchCode);
-    @Query("select count(b) > 0 from BranchMaster b where b.branchCode in :branchCode")
-    boolean existsByBranchCode(String branchCode);
-
+    List<String> findByBranchCode(List<String> branchCode);
 
 }
