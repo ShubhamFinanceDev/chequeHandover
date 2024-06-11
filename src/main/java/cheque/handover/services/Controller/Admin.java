@@ -35,7 +35,7 @@ public class Admin {
                return ResponseEntity.ok(commonResponse);
         } else {
             commonResponse.setCode("1111");
-            commonResponse.setMsg("invalid email or password to short");
+            commonResponse.setMsg("invalid email format or password to short.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(commonResponse);
         }
     }
