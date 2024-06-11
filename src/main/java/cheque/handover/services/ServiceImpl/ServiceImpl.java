@@ -267,7 +267,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                     Row row = rowIterator.next();
                     ApplicationDetails applicationDetails1 = new ApplicationDetails();
 
-                    for (int i = 0; i < 10; i++) {
+                    for (int i = 0; i < 11; i++) {
                         Cell cell = row.getCell(i);
                         errorMsg = (cell == null || cell.getCellType() == CellType.BLANK) ? "file upload error due to row no " + (row.getRowNum() + 1) + " is empty" : "";
 
@@ -319,6 +319,13 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                                         applicationDetails1.setChequeAmount(excelUtilityValidation.decimalFormat(chequeAmount));
 
                                     break;
+                                case 10:
+                                    String chequeNumber = row.getCell(10).toString().replace(".0","");
+                                    errorMsg = excelUtilityValidation.chequeNumberFormat(chequeNumber,applicationDetails, row.getRowNum());
+                                    if(errorMsg.isEmpty()) applicationDetails1.setChequeNumber(Long.valueOf(chequeNumber));
+
+                                    break;
+
                             }
                         }
                         if (!errorMsg.isEmpty()) break;
@@ -575,11 +582,10 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             Iterator<Row> rowIterator = sheet.iterator();
             Row headerRow = rowIterator.next();
             boolean fileFormat = excelUtilityValidation.branchAddValidation(headerRow);
-            List<BranchMaster> branchMasters = branchMasterRepo.findAll();
-
             System.out.println(fileFormat);
 
             if (fileFormat) {
+                List<BranchMaster> branchMasters = branchMasterRepo.findAll();
                 while (rowIterator.hasNext()) {
                     count++;
                     Row row = rowIterator.next();

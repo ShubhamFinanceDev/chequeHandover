@@ -1,6 +1,7 @@
 package cheque.handover.services.Entity;
 
 import jakarta.persistence.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.Data;
 
 import java.sql.Date;
@@ -35,4 +36,7 @@ public class ApplicationDetails {
     private double chequeAmount;
     @Column(name = "cheque_status")
     private String chequeStatus;
+    @Column(name = "cheque_number")
+    private Long chequeNumber;
+
 }
