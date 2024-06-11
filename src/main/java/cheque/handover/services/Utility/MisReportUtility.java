@@ -17,32 +17,28 @@ public class MisReportUtility {
 
         String baseQuery = "SELECT em.applicant_name, em.loan_amount, em.cheque_amount, em.branch_name, \n" +
                 "em.application_number, cs.consumer_type, cs.handover_date, cs.updated_by \n" +
-                "FROM excel_master em \n" +
-                "JOIN cheque_status cs ON em.application_number = cs.application_number \n" +
+                "FROM import_data em \n" +
+                "JOIN issued_cheque cs ON em.issued_id = cs.issued_id \n" +
                 "WHERE em.cheque_status = 'Y' ";
-
-        String condition = "";
 
         switch (reportType.toLowerCase()) {
             case "user-wise":
-                condition = "AND cs.updated_by = '" + selectedType + "' ";
+                baseQuery =baseQuery+"AND cs.updated_by = '" + selectedType + "' ";
                 break;
 
             case "branch-wise":
-                condition = "AND em.branch_name = '" + selectedType + "' ";
+                baseQuery =baseQuery +"AND em.branch_name = '" + selectedType + "' ";
                 break;
 
             case "daily-report":
-                condition = "AND DATE(cs.updated_date) = CURDATE()";
+                baseQuery =baseQuery+ "AND DATE(cs.updated_date) = CURDATE()";
                 break;
 
             default:
                 throw new IllegalArgumentException("Invalid report type: " + reportType);
         }
 
-        String query = baseQuery + condition;
-
-        return query;
+        return baseQuery;
     }
 
     public static class MisReportRowMapper implements RowMapper<MisReport> {

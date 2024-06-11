@@ -25,10 +25,8 @@ public interface ApplicationDetailsRepo extends JpaRepository<ApplicationDetails
 
     @Modifying
     @Transactional
-    @Query("update ApplicationDetails ps set ps.chequeStatus = 'Y' where ps.applicationNumber = :applicationNo")
-    void updateFlagByApplicationNo(String applicationNo);
-
-    //    List<MisReport> findByFlag();
+    @Query("update ApplicationDetails ps set ps.chequeStatus = 'Y' where ps.applicationNumber = :applicationNo and ps.id=:chequeId")
+    void updateFlagByApplicationNo(String applicationNo, Long chequeId);
 
     @Procedure(name = "CHEQUE_STATUS_PROCEDURE")
     void CHEQUE_STATUS_PROCEDURE();

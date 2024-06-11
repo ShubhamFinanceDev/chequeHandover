@@ -8,11 +8,11 @@ import java.sql.Date;
 
 @Entity
 @Data
-@Table(name = "excel_master")
+@Table(name = "import_data")
 public class ApplicationDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
+    @Column(name = "cheque_Id")
     private Long id;
     @Column(name = "applicant_name")
     private String applicantName;

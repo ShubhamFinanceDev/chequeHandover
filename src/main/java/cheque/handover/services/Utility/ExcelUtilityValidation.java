@@ -72,10 +72,10 @@ public class ExcelUtilityValidation {
         return errorMsg;
     }
 
-    public String checkSheetDuplicateBranchCod(List<String> branchCodesList, String branchCode, int rowNum, List<BranchMaster> branchMasters) {
+    public String checkSheetDuplicateBranchCod(List<BranchMaster> branchCodesList, String branchCode, int rowNum, List<BranchMaster> branchMasters) {
         String errorMsg = "";
-        for (String sheetBranchCode : branchCodesList) {
-            errorMsg = (sheetBranchCode.equalsIgnoreCase(branchCode)) ? "Duplicate branch code '" + branchCode + "' found in the file at row no " + (rowNum + 1) : "";
+        for (BranchMaster sheetBranchCode : branchCodesList) {
+            errorMsg = (sheetBranchCode.getBranchCode().equalsIgnoreCase(branchCode)) ? "Duplicate branch code '" + branchCode + "' found in the file at row no " + (rowNum + 1) : "";
             if (!errorMsg.isEmpty()) break;
         }
         if (errorMsg.isEmpty()) {

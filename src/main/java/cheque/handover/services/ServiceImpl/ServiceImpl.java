@@ -540,7 +540,8 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             commonResponse.setMsg("SUCCESS.");
             return commonResponse;
         } catch (Exception e) {
-            commonResponse.setMsg("Technical issue :" + e);
+            logger.error("Error while calling cheque status procedure.{}",e.getMessage());
+            commonResponse.setMsg("Technical issue :");
             commonResponse.setCode("1111");
             return commonResponse;
         }
@@ -552,19 +553,23 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         ChequeStatus chequeStatus = new ChequeStatus();
 
         CompletableFuture<Boolean> response = ddfsUtility.callDDFSApi(file, flagUpdate.getApplicationNo());
-        System.out.println("DDfs response" + response);
-        chequeStatus.setApplicationNo(flagUpdate.getApplicationNo());
-        chequeStatus.setDdfsFlag("Y");
-        chequeStatus.setConsumerType(flagUpdate.getConsumerType());
-        chequeStatus.setHandoverDate(flagUpdate.getDate());
-        chequeStatus.setUpdatedBy(flagUpdate.getUpdatedBy());
-        chequeStatus.setUpdatedDate(Timestamp.valueOf(LocalDateTime.now()));
-
-        chequeStatusRepo.save(chequeStatus);
-
-        applicationDetailsRepo.updateFlagByApplicationNo(flagUpdate.getApplicationNo());
-        commonResponse.setMsg("Data save successfully");
-        commonResponse.setCode("0000");
+            System.out.println("DDfs response" + response);
+            chequeStatus.setChequeId(flagUpdate.getChequeId());
+            chequeStatus.setDdfsFlag("Y");
+            chequeStatus.setConsumerType(flagUpdate.getConsumerType());
+            chequeStatus.setHandoverDate(flagUpdate.getDate());
+            chequeStatus.setUpdatedBy(flagUpdate.getUpdatedBy());
+            chequeStatus.setUpdatedDate(Timestamp.valueOf(LocalDateTime.now()));
+        if(response.get().equals(true)) {
+            applicationDetailsRepo.updateFlagByApplicationNo(flagUpdate.getApplicationNo(), flagUpdate.getChequeId());
+            chequeStatusRepo.save(chequeStatus);
+            commonResponse.setMsg("Data save successfully");
+            commonResponse.setCode("0000");
+        }
+        else {
+            commonResponse.setMsg("Technical issue or Try again.");
+            commonResponse.setCode("1111");
+        }
 
         return commonResponse;
     }
@@ -572,7 +577,6 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
     public CommonResponse saveBranch(MultipartFile file, String emailId) {
         CommonResponse commonResponse = new CommonResponse();
         List<BranchMaster> branchMasterList = new ArrayList<>();
-        List<String> branchCodesList = new ArrayList<>();
         int count = 0;
         String errorMsg = "";
 
@@ -602,8 +606,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                                     break;
                                 case 1:
                                     String branchCode = row.getCell(1).toString().replace(".0", "");
-                                    errorMsg = excelUtilityValidation.checkSheetDuplicateBranchCod(branchCodesList, branchCode, row.getRowNum(), branchMasters);
-                                    branchCodesList.add(branchCode);
+                                    errorMsg = excelUtilityValidation.checkSheetDuplicateBranchCod(branchMasterList, branchCode, row.getRowNum(),branchMasters);
                                     branchMaster.setBranchCode(branchCode);
                                     break;
                                 case 2:
