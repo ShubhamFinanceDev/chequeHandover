@@ -37,7 +37,6 @@ public class MisReportUtility {
             default:
                 throw new IllegalArgumentException("Invalid report type: " + reportType);
         }
-        System.out.println(baseQuery);
         return baseQuery;
     }
 
