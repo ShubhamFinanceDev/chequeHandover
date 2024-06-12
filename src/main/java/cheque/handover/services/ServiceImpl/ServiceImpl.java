@@ -272,7 +272,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                     Row row = rowIterator.next();
                     ApplicationDetails applicationDetails1 = new ApplicationDetails();
 
-                    for (int i = 0; i < 10; i++) {
+                    for (int i = 0; i < 11; i++) {
                         Cell cell = row.getCell(i);
                         errorMsg = (cell == null || cell.getCellType() == CellType.BLANK) ? "file upload error due to row no " + (row.getRowNum() + 1) + " is empty" : "";
 
@@ -324,6 +324,13 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                                         applicationDetails1.setChequeAmount(excelUtilityValidation.decimalFormat(chequeAmount));
 
                                     break;
+                                case 10:
+                                    String chequeNumber = row.getCell(10).toString().replace(".0","");
+                                    errorMsg = excelUtilityValidation.chequeNumberFormat(chequeNumber,applicationDetails, row.getRowNum());
+                                    if(errorMsg.isEmpty()) applicationDetails1.setChequeNumber(Long.valueOf(chequeNumber));
+
+                                    break;
+
                             }
                         }
                         if (!errorMsg.isEmpty()) break;
@@ -538,7 +545,8 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             commonResponse.setMsg("SUCCESS.");
             return commonResponse;
         } catch (Exception e) {
-            commonResponse.setMsg("Technical issue :" + e);
+            logger.error("Error while calling cheque status procedure.{}",e.getMessage());
+            commonResponse.setMsg("Technical issue :");
             commonResponse.setCode("1111");
             return commonResponse;
         }
@@ -550,19 +558,24 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         ChequeStatus chequeStatus = new ChequeStatus();
 
         CompletableFuture<Boolean> response = ddfsUtility.callDDFSApi(file, flagUpdate.getApplicationNo());
-        System.out.println("DDfs response" + response);
-        chequeStatus.setApplicationNo(flagUpdate.getApplicationNo());
-        chequeStatus.setDdfsFlag("Y");
-        chequeStatus.setConsumerType(flagUpdate.getConsumerType());
-        chequeStatus.setHandoverDate(flagUpdate.getDate());
-        chequeStatus.setUpdatedBy(flagUpdate.getUpdatedBy());
-        chequeStatus.setUpdatedDate(Timestamp.valueOf(LocalDateTime.now()));
+            System.out.println("DDfs response" + response);
+            chequeStatus.setChequeId(flagUpdate.getChequeId());
+            chequeStatus.setDdfsFlag("Y");
+            chequeStatus.setConsumerType(flagUpdate.getConsumerType());
+            chequeStatus.setHandoverDate(flagUpdate.getDate());
+            chequeStatus.setUpdatedBy(flagUpdate.getUpdatedBy());
+            chequeStatus.setUpdatedDate(Timestamp.valueOf(LocalDateTime.now()));
 
-        chequeStatusRepo.save(chequeStatus);
-
-        applicationDetailsRepo.updateFlagByApplicationNo(flagUpdate.getApplicationNo(), flagUpdate.getChequeId());
-        commonResponse.setMsg("Data save successfully");
-        commonResponse.setCode("0000");
+        if(response.get().equals(true)) {
+            applicationDetailsRepo.updateFlagByApplicationNo(flagUpdate.getApplicationNo(), flagUpdate.getChequeId());
+            chequeStatusRepo.save(chequeStatus);
+            commonResponse.setMsg("Data save successfully");
+            commonResponse.setCode("0000");
+        }
+        else {
+            commonResponse.setMsg("Technical issue or Try again.");
+            commonResponse.setCode("1111");
+        }
 
         return commonResponse;
     }
@@ -570,7 +583,6 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
     public CommonResponse saveBranch(MultipartFile file, String emailId) {
         CommonResponse commonResponse = new CommonResponse();
         List<BranchMaster> branchMasterList = new ArrayList<>();
-        List<String> branchCodesList = new ArrayList<>();
         int count = 0;
         String errorMsg = "";
 
@@ -580,11 +592,10 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             Iterator<Row> rowIterator = sheet.iterator();
             Row headerRow = rowIterator.next();
             boolean fileFormat = excelUtilityValidation.branchAddValidation(headerRow);
-            List<BranchMaster> branchMasters = branchMasterRepo.findAll();
-
             System.out.println(fileFormat);
 
             if (fileFormat) {
+                List<BranchMaster> branchMasters = branchMasterRepo.findAll();
                 while (rowIterator.hasNext()) {
                     count++;
                     Row row = rowIterator.next();
