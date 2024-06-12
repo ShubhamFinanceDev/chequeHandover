@@ -16,9 +16,9 @@ public class MisReportUtility {
 
 
         String baseQuery = "SELECT em.applicant_name, em.loan_amount, em.cheque_amount, em.branch_name, \n" +
-                "em.application_number, cs.consumer_type, cs.handover_date, cs.updated_by \n" +
+                "       em.application_number, cs.consumer_type, cs.handover_date, cs.updated_by \n" +
                 "FROM import_data em \n" +
-                "JOIN issued_cheque cs ON em.issued_id = cs.issued_id \n" +
+                "JOIN issued_cheque cs ON em.cheque_id = cs.cheque_id \n" +
                 "WHERE em.cheque_status = 'Y' ";
 
         switch (reportType.toLowerCase()) {
@@ -37,7 +37,6 @@ public class MisReportUtility {
             default:
                 throw new IllegalArgumentException("Invalid report type: " + reportType);
         }
-
         return baseQuery;
     }
 
