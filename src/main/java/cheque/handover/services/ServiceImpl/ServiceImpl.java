@@ -376,8 +376,8 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                     otpManage.setExpTime(LocalDateTime.now());
                     otpRepository.save(otpManage);
 
-                    resetPasswordResponse.setOtpId(otpManage.getOtpId());
-                    resetPasswordResponse.setOtpCode(String.valueOf(otpCode));
+//                    resetPasswordResponse.setOtpId(otpManage.getOtpId());
+//                    resetPasswordResponse.setOtpCode(String.valueOf(otpCode));
                     resetPasswordResponse.setEmailId(otpManage.getEmailId());
 
                     commonResponse.setCode("0000");
@@ -413,7 +413,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             OtpManage otpManage = otpManages.get();
             Duration duration = Duration.between(otpManage.getExpTime(), LocalDateTime.now());
             long betweenTime = duration.toMinutes();
-            if (betweenTime <= 1) {
+            if (betweenTime <= 8) {
                 commonResponse.setMsg(" Otp match Success");
                 commonResponse.setCode("0000");
             } else {
