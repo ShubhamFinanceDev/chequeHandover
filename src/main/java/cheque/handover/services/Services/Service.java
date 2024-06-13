@@ -50,5 +50,5 @@ public interface Service {
 
     ResponseEntity<CommonResponse> userUpdate(Long userId,EditUserDetails inputUpdate);
 
-    boolean checkValidation(String password, String empCode, CommonResponse commonResponse, String emailId);
+    boolean checkPattern(String password, String empCode, CommonResponse commonResponse, String emailId);
 }

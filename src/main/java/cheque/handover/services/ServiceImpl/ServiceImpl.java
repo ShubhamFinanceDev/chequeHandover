@@ -242,19 +242,6 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return commonResponse;
     }
 
-    public boolean checkValidation(String password, String empCode, CommonResponse commonResponse, String emailId){
-
-        if (!password.matches(".{8,}") || !emailId.contains("@shubham")) {
-            commonResponse.setCode("1111");
-            commonResponse.setMsg("invalid email format or password to short.");
-            return false;
-        }else if (!empCode.matches("\\d{5}")){
-            commonResponse.setCode("1111");
-            commonResponse.setMsg("Invalid employee code format. It must be exactly 5 numeric digits.");
-            return false;
-        }
-        return true;
-    }
     @Override
     public CommonResponse applicationDetailsUpload(MultipartFile file) {
 
@@ -558,7 +545,6 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             chequeStatus.setHandoverDate(flagUpdate.getDate());
             chequeStatus.setUpdatedBy(flagUpdate.getUpdatedBy());
             chequeStatus.setUpdatedDate(Timestamp.valueOf(LocalDateTime.now()));
-
         if(response.get().equals(true)) {
             applicationDetailsRepo.updateFlagByApplicationNo(flagUpdate.getApplicationNo(), flagUpdate.getChequeId());
             chequeStatusRepo.save(chequeStatus);
@@ -759,5 +745,19 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             commonResponse.setMsg("User not exist.");
             return ResponseEntity.ok(commonResponse);
         }
+    }
+
+    @Override
+    public boolean checkPattern(String password, String empCode, CommonResponse commonResponse, String emailId) {
+        if (!password.matches(".{8,}") || !emailId.contains("@shubham")) {
+            commonResponse.setCode("1111");
+            commonResponse.setMsg("invalid email format or password to short.");
+            return false;
+        }else if (!empCode.matches("\\d{5}")){
+            commonResponse.setCode("1111");
+            commonResponse.setMsg("Invalid employee code format. It must be exactly 5 numeric digits.");
+            return false;
+        }
+        return true;
     }
 }

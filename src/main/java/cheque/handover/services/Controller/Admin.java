@@ -27,8 +27,7 @@ public class Admin {
         CommonResponse commonResponse = new CommonResponse();
         String emailId = userDetail.getEmailId();
 
-        boolean isValid = service.checkValidation(userDetail.getPassword(),userDetail.getEmpCode(),commonResponse,emailId);
-        if (isValid) {
+        if(service.checkPattern(userDetail.getPassword(),userDetail.getEmpCode(),commonResponse,emailId)){
             commonResponse = service.saveUser(userDetail);
             return ResponseEntity.ok(commonResponse);
         }else {
