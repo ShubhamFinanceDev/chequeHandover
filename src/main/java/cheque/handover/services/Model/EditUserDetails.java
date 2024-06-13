@@ -14,6 +14,7 @@ public class EditUserDetails {
     private String firstName;
     private String lastName;
     private String mobileNo;
+    private String emailId;
     private List<AssignBranch> assignBranches;
-    private RoleMaster roleMaster;
+    private RoleMaster roleMasters;
 }

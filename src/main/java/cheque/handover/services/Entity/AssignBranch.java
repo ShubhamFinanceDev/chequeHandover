@@ -15,7 +15,7 @@ public class AssignBranch {
     @Column(name = "assign_branch_id")
     private Long assignBranchId;
     @Column(name = "branch_code")
-    private Long branchCode;
+    private String branchCode;
 
     @JsonIgnore
     @ManyToOne
