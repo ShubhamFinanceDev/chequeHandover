@@ -693,15 +693,18 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
 
     public AllAssignBranchResponse findAssignBranchList(String emailId) {
         AllAssignBranchResponse assignBranchResponse = new AllAssignBranchResponse();
+        CommonResponse commonResponse=new CommonResponse();
+
         List<String> userAssignBranch = userUtility.findBranchesByUser(emailId);
         if (!userAssignBranch.isEmpty()) {
-            assignBranchResponse.setCode("0000");
-            assignBranchResponse.setMsg("Data found successfully");
+            commonResponse.setCode("0000");
+            commonResponse.setMsg("Data found successfully");
             assignBranchResponse.setAssignBranchList(userAssignBranch);
         } else {
-            assignBranchResponse.setCode("1111");
-            assignBranchResponse.setMsg("No branch assign to you");
+            commonResponse.setCode("1111");
+            commonResponse.setMsg("No branch assign to you");
         }
+        assignBranchResponse.setCommonResponse(commonResponse);
         return assignBranchResponse;
     }
 
