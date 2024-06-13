@@ -382,7 +382,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                     commonResponse.setCode("0000");
                     commonResponse.setMsg("otp generated success");
 
-                    otpUtility.sendOtpOnMail(request.getEmailId(), String.valueOf(otpCode));
+//                    otpUtility.sendOtpOnMail(request.getEmailId(), String.valueOf(otpCode));
 
                     resetPasswordResponse.setCommonResponse(commonResponse);
                     return ResponseEntity.ok(resetPasswordResponse);
