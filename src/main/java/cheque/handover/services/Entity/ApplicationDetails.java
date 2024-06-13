@@ -13,7 +13,7 @@ public class ApplicationDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "cheque_Id")
-    private Long id;
+    private Long chequeId;
     @Column(name = "applicant_name")
     private String applicantName;
     @Column(name = "branch_name")
