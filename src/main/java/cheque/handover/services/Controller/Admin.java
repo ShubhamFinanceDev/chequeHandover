@@ -5,7 +5,6 @@ import cheque.handover.services.Model.CommonResponse;
 import cheque.handover.services.Model.EditUserDetails;
 import cheque.handover.services.Model.RestPasswordRequest;
 import cheque.handover.services.Services.Service;
-import cheque.handover.services.Utility.PasswordPattern;
 import org.apache.commons.collections4.map.HashedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class Admin {
     @Autowired
     private Service service;
-    @Autowired
-    private PasswordPattern passwordPattern;
     private final Logger logger = LoggerFactory.getLogger(Admin.class);
 
     @PostMapping("/create-user")
@@ -30,20 +27,13 @@ public class Admin {
         CommonResponse commonResponse = new CommonResponse();
         String emailId = userDetail.getEmailId();
 
-        if (userDetail.getEmpCode() == null || !userDetail.getEmpCode().matches("\\d{5}")) {
-            commonResponse.setCode("1111");
-            commonResponse.setMsg("Invalid employee code format. It must be exactly 5 numeric digits.");
-            return ResponseEntity.badRequest().body(commonResponse);
+        boolean isValid = service.checkValidation(userDetail.getPassword(),userDetail.getEmpCode(),commonResponse,emailId);
+        if (isValid) {
+            commonResponse = service.saveUser(userDetail);
+            return ResponseEntity.ok(commonResponse);
+        }else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(commonResponse);
         }
-
-            if (!emailId.isEmpty() && emailId.contains("@shubham") && !userDetail.getPassword().isEmpty() && passwordPattern.patternCheck(userDetail.getPassword())) {
-                commonResponse = service.saveUser(userDetail);
-                return ResponseEntity.ok(commonResponse);
-            } else {
-                commonResponse.setCode("1111");
-                commonResponse.setMsg("invalid email format or password to short.");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(commonResponse);
-            }
     }
 
     @PostMapping("/import-data")
