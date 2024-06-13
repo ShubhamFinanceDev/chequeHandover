@@ -32,7 +32,7 @@ public class ApplicationDetails {
     @Column(name = "disbursal_date")
     private Date disbursalDate;
     @Column(name = "cheque_amount")
-    private Long chequeAmount;
+    private Integer chequeAmount;
     @Column(name = "cheque_status")
     private String chequeStatus;
 }

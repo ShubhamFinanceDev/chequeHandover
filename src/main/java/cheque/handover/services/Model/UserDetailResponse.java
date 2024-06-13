@@ -14,11 +14,12 @@ public class UserDetailResponse {
     private String lastName;
     private String emailId;
     private String mobileNo;
+    private String encodedMobileNo;
     private String createdBy;
     private boolean enabled;
     private String createDate;
     private Timestamp lastLogin;
-
+    private List<Long> branchesCode;
     private List<String> assignBranches;
     private String roleMaster;
 
