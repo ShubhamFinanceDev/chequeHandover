@@ -30,15 +30,20 @@ public class Admin {
         CommonResponse commonResponse = new CommonResponse();
         String emailId = userDetail.getEmailId();
 
-        if (!emailId.isEmpty() && emailId.contains("@shubham") && !userDetail.getPassword().isEmpty() && passwordPattern.patternCheck(userDetail.getPassword())) {
-               commonResponse = service.saveUser(userDetail);
-               return ResponseEntity.ok(commonResponse);
-        } else {
+        if (userDetail.getEmpCode() == null || !userDetail.getEmpCode().matches("\\d{5}")) {
             commonResponse.setCode("1111");
-            commonResponse.setMsg("invalid email format or password to short.");
-
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(commonResponse);
+            commonResponse.setMsg("Invalid employee code format. It must be exactly 5 numeric digits.");
+            return ResponseEntity.badRequest().body(commonResponse);
         }
+
+            if (!emailId.isEmpty() && emailId.contains("@shubham") && !userDetail.getPassword().isEmpty() && passwordPattern.patternCheck(userDetail.getPassword())) {
+                commonResponse = service.saveUser(userDetail);
+                return ResponseEntity.ok(commonResponse);
+            } else {
+                commonResponse.setCode("1111");
+                commonResponse.setMsg("invalid email format or password to short.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(commonResponse);
+            }
     }
 
     @PostMapping("/import-data")

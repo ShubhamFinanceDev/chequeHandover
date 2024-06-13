@@ -9,6 +9,6 @@ import java.util.List;
 public class FetchExcelData {
     private CommonResponse commonResponse;
     private boolean nextPage;
-    private Long totalCount;
+    private long totalCount;
     private List<ApplicationDetails> applicationDetails;
 }
