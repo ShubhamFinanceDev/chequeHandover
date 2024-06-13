@@ -12,7 +12,7 @@ import java.sql.SQLException;
 @Service
 public class MisReportUtility {
 
-    public String misQuery(String emailId, String reportType, String branchName) {
+    public String misQuery(String reportType, String selectedType) {
 
 
         String baseQuery = "SELECT em.applicant_name, em.loan_amount, em.cheque_amount, em.branch_name, \n" +
@@ -25,11 +25,11 @@ public class MisReportUtility {
 
         switch (reportType.toLowerCase()) {
             case "userwise":
-                condition = "AND cs.updated_by = '" + emailId + "' ";
+                condition = "AND cs.updated_by = '" + selectedType + "' ";
                 break;
 
             case "branchwise":
-                condition = "AND em.branch_name = '" + branchName + "' ";
+                condition = "AND em.branch_name = '" + selectedType + "' ";
                 break;
 
             case "daily-report":
@@ -67,7 +67,9 @@ public class MisReportUtility {
 
                     rs.getDate("handover_date"),
 
-                    rs.getLong("loan_amount")
+                    rs.getLong("loan_amount"),
+
+                    rs.getString("updated_by")
 
             );
 

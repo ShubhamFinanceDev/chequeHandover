@@ -26,7 +26,7 @@ public class User {
     @Autowired
     private Service service;
 
-    private Logger logger = LoggerFactory.getLogger(User.class);
+    private final Logger logger = LoggerFactory.getLogger(User.class);
 
     @GetMapping("/get-user-details")
     public ResponseEntity<?> userData(@RequestParam(name = "name",required = false) String name) {
@@ -52,9 +52,11 @@ public class User {
     }
 
     @GetMapping("/fetch-excel-data")
-    public ResponseEntity<?> excelDataByUser(@RequestParam(name = "emailId")String emailId,@RequestParam(name = "applicationNo",required = false)String applicationNo,@RequestParam(name = "pageNo") int pageNo,@RequestParam(name = "branchName",required = false)String branchName){
-        if ((branchName != null && !branchName.isEmpty()) || (applicationNo != null && !applicationNo.isEmpty())) {
-            return ResponseEntity.ok(service.fetchExcelDataByApplicationNo(applicationNo, branchName, pageNo, emailId));
+    public ResponseEntity<?> excelDataByUser(@RequestParam(name = "emailId")String emailId,@RequestParam(name = "applicationNo",required = false)String applicationNo,@RequestParam(name = "pageNo") int pageNo,@RequestParam(name = "branchName",required = false)String branchName,@RequestParam(name = "status",required = false)String status){
+        if ((branchName != null && !branchName.isEmpty()) ||
+                (applicationNo != null && !applicationNo.isEmpty()) ||
+                (status != null && !status.isEmpty())) {
+            return ResponseEntity.ok(service.fetchExcelDataByApplicationNo(applicationNo, branchName, pageNo, emailId, status));
         } else {
             return ResponseEntity.ok(service.fetchExcelData(emailId, pageNo));
         }
@@ -69,14 +71,15 @@ public class User {
         applicationFlagUpdate.setUpdatedBy(emailId);
         return ResponseEntity.ok(service.chequeStatus(applicationFlagUpdate,file));
     }
+
     @GetMapping("/generate-mis-report")
-    public String generateMis(HttpServletResponse response, @RequestParam String emailId, @RequestParam String reportType, @RequestParam(required = false) String branchName ) throws IOException {
-        System.out.println(emailId);
-        System.out.println(reportType);
-        service.generateExcel(response, emailId, reportType, branchName);
+    public String generateMis(HttpServletResponse response, @RequestParam String emailId, @RequestParam String reportType, @RequestParam(required = false) String selectedType) throws IOException {
+        service.generateExcel(response, emailId, reportType, selectedType);
         return "Success";
     }
+
     @GetMapping("/get-list-of-assign-branches")
+
     public ResponseEntity<AllAssignBranchResponse> getAllAssignBranch(@RequestParam(name = "emailId")String emailId){
         return ResponseEntity.ok(service.findAssignBranchList(emailId));
     }

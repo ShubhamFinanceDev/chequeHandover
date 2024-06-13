@@ -9,7 +9,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,15 +37,16 @@ public class UserDetail implements UserDetails {
     private String password;
     @Column(name = "created_by")
     private String createdBy;
-    @Column(name = "enable")
-    private boolean enabled;
     @Column(name = "creation_date")
-    private String createDate;
+    private Timestamp createDate;
     @PrePersist
     private void onCreate() {
-        LocalDate currentDate = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        createDate = currentDate.format(formatter);
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+        LocalDateTime localDateTime = timestamp.toLocalDateTime();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        createDate = Timestamp.valueOf(localDateTime.format(formatter));
     }
 
     @OneToOne(mappedBy = "userMaster", cascade = CascadeType.ALL)
@@ -86,6 +89,6 @@ public class UserDetail implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return this.enabled;
+        return this.loginDetails.isEnable();
     }
 }
