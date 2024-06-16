@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -118,7 +119,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             UserDetailResponse userDetails = new UserDetailResponse();
 
             userDetails.setUserId(userData.getUserId());
-            userDetails.setFirstname(userData.getFirstname());
+            userDetails.setFirstName(userData.getFirstName());
             userDetails.setLastName(userData.getLastName());
             userDetails.setEmailId(userData.getEmailId());
             userDetails.setMobileNo("******" + userData.getMobileNo().substring(userData.getMobileNo().length() - 4));
@@ -126,7 +127,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             userDetails.setCreatedBy(userData.getCreatedBy());
             userDetails.setEnabled(userData.isEnabled());
             userDetails.setCreateDate(String.valueOf(userData.getCreateDate()));
-            List<Long> assignBranches = new ArrayList<>();
+            List<String> assignBranches = new ArrayList<>();
             if (!userData.getAssignBranches().isEmpty()) {
                 userData.getAssignBranches().forEach(branch -> {
 
@@ -139,6 +140,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             if (userData.getLoginDetails() != null) {
                 userDetails.setLastLogin(userData.getLoginDetails().getLastLogin());
             }
+            userDetails.setEmpCode(userData.getEmpCode());
             userDetailResponseList.add(userDetails);
         }
 
@@ -200,15 +202,16 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
 
         List<AssignBranch> assignBranchList = new ArrayList<>();
         try {
-            Optional<UserDetail> emailExist = userDetailRepo.findUser(userDetail.getEmailId());
+            Optional<UserDetail> emailExist = userDetailRepo.findUserByEmailEmp(userDetail.getEmailId(), userDetail.getEmpCode());
             if (emailExist.isEmpty()) {
                 userDetails.setPassword(passwordEncoder.encode(userDetail.getPassword()));
                 userDetails.setEmailId(userDetail.getEmailId());
-                userDetails.setFirstname(userDetail.getFirstname());
+                userDetails.setFirstName(userDetail.getFirstName());
                 userDetails.setLastName(userDetail.getLastName());
                 userDetails.setMobileNo(userDetail.getMobileNo());
                 loginDetails.setEmailId(userDetail.getEmailId());
                 userDetails.setCreatedBy(userDetail.getCreatedBy());
+                userDetails.setEmpCode(userDetail.getEmpCode());
                 logger.info("createdBy : " + userDetails.getCreatedBy());
                 loginDetails.setEnable(true);
                 loginDetails.setUserMaster(userDetails);
@@ -229,7 +232,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                 commonResponse.setMsg("User saved successfully");
             } else {
                 commonResponse.setCode("1111");
-                commonResponse.setMsg("User already exists");
+                commonResponse.setMsg("User Email-Id or Employee-Id already exists.");
             }
         } catch (Exception e) {
             commonResponse.setCode("1111");
@@ -264,7 +267,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                     Row row = rowIterator.next();
                     ApplicationDetails applicationDetails1 = new ApplicationDetails();
 
-                    for (int i = 0; i < 10; i++) {
+                    for (int i = 0; i < 11; i++) {
                         Cell cell = row.getCell(i);
                         errorMsg = (cell == null || cell.getCellType() == CellType.BLANK) ? "file upload error due to row no " + (row.getRowNum() + 1) + " is empty" : "";
 
@@ -273,63 +276,61 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                             switch (i) {
                                 case 0:
                                     applicationDetails1.setApplicantName(row.getCell(0).toString());
-                                    ;
+
                                     break;
                                 case 1:
                                     applicationDetails1.setBranchName(row.getCell(1).toString());
-                                    ;
+
                                     break;
                                 case 2:
                                     applicationDetails1.setRegion(row.getCell(2).toString());
-                                    ;
+
                                     break;
                                 case 3:
                                     applicationDetails1.setHubName(row.getCell(3).toString());
-                                    ;
+
                                     break;
                                 case 4:
                                     applicationDetails1.setApplicationNumber(row.getCell(4).toString());
-                                    ;
+
                                     break;
                                 case 5:
                                     applicationDetails1.setProductName(row.getCell(5).toString());
-                                    ;
+
                                     break;
                                 case 6:
-                                    applicationDetails1.setLoanAmount(Long.valueOf(row.getCell(6).toString().replace(".0", "")));
-                                    ;
+                                    String loanAmount = row.getCell(6).toString();
+                                    errorMsg = excelUtilityValidation.chequeAmount(loanAmount, row.getRowNum(), "loan");
+                                    if (errorMsg.isEmpty())
+                                        applicationDetails1.setLoanAmount(excelUtilityValidation.decimalFormat(loanAmount));
+
                                     break;
                                 case 7:
                                     applicationDetails1.setSanctionDate(Date.valueOf(dateFormatUtility.changeDateFormate(row.getCell(7).toString())));
-                                    ;
                                     break;
                                 case 8:
                                     applicationDetails1.setDisbursalDate(Date.valueOf(dateFormatUtility.changeDateFormate(row.getCell(8).toString())));
-                                    ;
+
                                     break;
                                 case 9:
-                                    try {
-                                        Integer chequeAmount = Integer.parseInt(row.getCell(9).toString().replace(".0",""));
-                                        System.out.println("Cheque amount"+chequeAmount);
-                                        if(chequeAmount<0){
-                                            errorMsg="Cheque-Amount is not in the correct format.";
-                                        }else {
-                                            applicationDetails1.setChequeAmount(chequeAmount);
-                                        }
-                                    }
-                                    catch (Exception e){
-                                        System.out.println(e);
-                                        logger.info("Cheque-Amount is not in the correct format.");
-                                        errorMsg="Cheque-Amount is not in the correct format.";
-                                    }
+                                    String chequeAmount = row.getCell(9).toString();
+                                    errorMsg = excelUtilityValidation.chequeAmount(chequeAmount, row.getRowNum(), "Cheque");
+                                    if (errorMsg.isEmpty())
+                                        applicationDetails1.setChequeAmount(excelUtilityValidation.decimalFormat(chequeAmount));
+
                                     break;
+                                case 10:
+                                    String chequeNumber = row.getCell(10).toString().replace(".0","");
+                                    errorMsg = excelUtilityValidation.chequeNumberFormat(chequeNumber,applicationDetails, row.getRowNum());
+                                    if(errorMsg.isEmpty()) applicationDetails1.setChequeNumber(Long.valueOf(chequeNumber));
+
+                                    break;
+
                             }
                         }
-                        if (!errorMsg.isEmpty())
-                            break;
+                        if (!errorMsg.isEmpty()) break;
                     }
-                    if (!errorMsg.isEmpty())
-                        break;
+                    if (!errorMsg.isEmpty()) break;
                     applicationDetails1.setChequeStatus("N");
                     applicationDetails.add(applicationDetails1);
                 }
@@ -375,8 +376,8 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                     otpManage.setExpTime(LocalDateTime.now());
                     otpRepository.save(otpManage);
 
-                    resetPasswordResponse.setOtpId(otpManage.getOtpId());
-                    resetPasswordResponse.setOtpCode(String.valueOf(otpCode));
+//                    resetPasswordResponse.setOtpId(otpManage.getOtpId());
+//                    resetPasswordResponse.setOtpCode(String.valueOf(otpCode));
                     resetPasswordResponse.setEmailId(otpManage.getEmailId());
 
                     commonResponse.setCode("0000");
@@ -412,7 +413,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             OtpManage otpManage = otpManages.get();
             Duration duration = Duration.between(otpManage.getExpTime(), LocalDateTime.now());
             long betweenTime = duration.toMinutes();
-            if (betweenTime <= 1) {
+            if (betweenTime <= 8) {
                 commonResponse.setMsg(" Otp match Success");
                 commonResponse.setCode("0000");
             } else {
@@ -539,7 +540,8 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             commonResponse.setMsg("SUCCESS.");
             return commonResponse;
         } catch (Exception e) {
-            commonResponse.setMsg("Technical issue :" + e);
+            logger.error("Error while calling cheque status procedure.{}",e.getMessage());
+            commonResponse.setMsg("Technical issue :");
             commonResponse.setCode("1111");
             return commonResponse;
         }
@@ -551,19 +553,23 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         ChequeStatus chequeStatus = new ChequeStatus();
 
         CompletableFuture<Boolean> response = ddfsUtility.callDDFSApi(file, flagUpdate.getApplicationNo());
-        System.out.println("DDfs response" + response);
-        chequeStatus.setApplicationNo(flagUpdate.getApplicationNo());
-        chequeStatus.setDdfsFlag("Y");
-        chequeStatus.setConsumerType(flagUpdate.getConsumerType());
-        chequeStatus.setHandoverDate(flagUpdate.getDate());
-        chequeStatus.setUpdatedBy(flagUpdate.getUpdatedBy());
-        chequeStatus.setUpdatedDate(Date.valueOf(LocalDate.now()));
-
-        chequeStatusRepo.save(chequeStatus);
-
-        applicationDetailsRepo.updateFlagByApplicationNo(flagUpdate.getApplicationNo());
-        commonResponse.setMsg("Data save successfully");
-        commonResponse.setCode("0000");
+            System.out.println("DDfs response" + response);
+            chequeStatus.setChequeId(flagUpdate.getChequeId());
+            chequeStatus.setDdfsFlag("Y");
+            chequeStatus.setConsumerType(flagUpdate.getConsumerType());
+            chequeStatus.setHandoverDate(flagUpdate.getDate());
+            chequeStatus.setUpdatedBy(flagUpdate.getUpdatedBy());
+            chequeStatus.setUpdatedDate(Timestamp.valueOf(LocalDateTime.now()));
+        if(response.get().equals(true)) {
+            applicationDetailsRepo.updateFlagByApplicationNo(flagUpdate.getApplicationNo(), flagUpdate.getChequeId());
+            chequeStatusRepo.save(chequeStatus);
+            commonResponse.setMsg("Data save successfully");
+            commonResponse.setCode("0000");
+        }
+        else {
+            commonResponse.setMsg("Technical issue or Try again.");
+            commonResponse.setCode("1111");
+        }
 
         return commonResponse;
     }
@@ -580,10 +586,10 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             Iterator<Row> rowIterator = sheet.iterator();
             Row headerRow = rowIterator.next();
             boolean fileFormat = excelUtilityValidation.branchAddValidation(headerRow);
-
             System.out.println(fileFormat);
 
             if (fileFormat) {
+                List<BranchMaster> branchMasters = branchMasterRepo.findAll();
                 while (rowIterator.hasNext()) {
                     count++;
                     Row row = rowIterator.next();
@@ -599,22 +605,18 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                                     branchMaster.setBranchName(row.getCell(0).toString());
                                     break;
                                 case 1:
-                                    branchMaster.setBranchCode(row.getCell(1).toString().replace(".0", ""));
-                                    if (branchMasterRepo.existsByBranchCode(branchMaster.getBranchCode())) {
-                                        errorMsg = "Branch code '" + branchMaster.getBranchCode() + "' already exists.";
-                                        break;
-                                    }
+                                    String branchCode = row.getCell(1).toString().replace(".0", "");
+                                    errorMsg = excelUtilityValidation.checkSheetDuplicateBranchCod(branchMasterList, branchCode, row.getRowNum(),branchMasters);
+                                    branchMaster.setBranchCode(branchCode);
                                     break;
                                 case 2:
                                     branchMaster.setState(row.getCell(2).toString());
                                     break;
                             }
                         }
-                        if (!errorMsg.isEmpty())
-                            break;
+                        if (!errorMsg.isEmpty()) break;
                     }
-                    if (!errorMsg.isEmpty())
-                        break;
+                    if (!errorMsg.isEmpty()) break;
 
                     // Set the current timestamp
                     branchMaster.setUploadedDate(Timestamp.from(Instant.now()));
@@ -640,11 +642,18 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return commonResponse;
     }
 
-    public HttpServletResponse generateExcel(HttpServletResponse response, String emailId, String reportType, String selectedType) throws IOException {
+    public List<MisReport> fetchReportData(String reportType, String selectedType) {
+        List<MisReport> fetchedData = new ArrayList<>();
+        try {
 
-        List<MisReport> applicationDetails = new ArrayList<>();
+            return jdbcTemplate.query(misReportUtility.misQuery(reportType, selectedType), new MisReportUtility.MisReportRowMapper());
+        } catch (Exception e) {
+            logger.error("Error while executing report query" + e.getMessage());
+            return fetchedData;
+        }
+    }
 
-        applicationDetails = jdbcTemplate.query(misReportUtility.misQuery(reportType, selectedType), new MisReportUtility.MisReportRowMapper());
+    public void generateExcel(HttpServletResponse response, List<MisReport> applicationDetails) throws IOException {
 
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet sheet = workbook.createSheet("MIS_Report");
@@ -666,7 +675,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             row.createCell(4).setCellValue(details.getConsumerType());
             row.createCell(5).setCellValue(details.getHandoverDate().toString());
             row.createCell(6).setCellValue(details.getLoanAmount());
-//            row.createCell(7).setCellValue(details.getUpdatedBy());
+            row.createCell(7).setCellValue(details.getUpdatedBy());
         }
 
         try {
@@ -679,20 +688,23 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
-        return response;
+//        return response;
     }
 
     public AllAssignBranchResponse findAssignBranchList(String emailId) {
         AllAssignBranchResponse assignBranchResponse = new AllAssignBranchResponse();
+        CommonResponse commonResponse=new CommonResponse();
+
         List<String> userAssignBranch = userUtility.findBranchesByUser(emailId);
         if (!userAssignBranch.isEmpty()) {
-            assignBranchResponse.setCode("0000");
-            assignBranchResponse.setMsg("Data found successfully");
+            commonResponse.setCode("0000");
+            commonResponse.setMsg("Data found successfully");
             assignBranchResponse.setAssignBranchList(userAssignBranch);
         } else {
-            assignBranchResponse.setCode("1111");
-            assignBranchResponse.setMsg("No branch assign to you");
+            commonResponse.setCode("1111");
+            commonResponse.setMsg("No branch assign to you");
         }
+        assignBranchResponse.setCommonResponse(commonResponse);
         return assignBranchResponse;
     }
 
@@ -720,18 +732,17 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return commonResponse;
     }
 
-    public ResponseEntity<CommonResponse> userUpdate(String emailId, EditUserDetails inputDetails) {
+    public ResponseEntity<CommonResponse> userUpdate(Long userId, EditUserDetails inputDetails) {
 
         CommonResponse commonResponse = new CommonResponse();
         try {
-            Optional<UserDetail> userDetail1 = userDetailRepo.findByEmailId(emailId);
+            Optional<UserDetail> userDetail1 = userDetailRepo.findById(userId);
             UserDetail userDetails = userDetail1.get();
-
-            userDetails.setEmailId(emailId);
-            userDetails.setFirstname(inputDetails.getFirstName());
+            userDetails.setEmailId(inputDetails.getEmailId());
+            userDetails.setFirstName(inputDetails.getFirstName());
             userDetails.setLastName(inputDetails.getLastName());
             userDetails.setMobileNo(inputDetails.getMobileNo());
-            userDetails.setRoleMasters(inputDetails.getRoleMaster());
+            userDetails.getRoleMasters().setRole(inputDetails.getRoleMasters().getRole());
 
             for (AssignBranch assignBranch : userDetails.getAssignBranches()) {
 
@@ -743,8 +754,8 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
 
             userDetails.setAssignBranches(inputDetails.getAssignBranches());
             userDetailRepo.save(userDetails);
-            commonResponse.setMsg("Updated successfully.");
             commonResponse.setCode("0000");
+            commonResponse.setMsg("Updated successfully");
             return ResponseEntity.ok(commonResponse);
 
         } catch (Exception e) {

@@ -8,6 +8,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ChequeStatusRepo extends JpaRepository<ChequeStatus,Long> {
 
-    @Query("select a from ChequeStatus a where a.applicationNo =:applicationNo")
-    ChequeStatus findByApplicationNo(String applicationNo);
 }

@@ -5,7 +5,10 @@ import cheque.handover.services.Model.CommonResponse;
 import cheque.handover.services.Model.EditUserDetails;
 import cheque.handover.services.Model.RestPasswordRequest;
 import cheque.handover.services.Services.Service;
+import cheque.handover.services.Utility.PasswordPattern;
 import org.apache.commons.collections4.map.HashedMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,18 +21,21 @@ import org.springframework.web.multipart.MultipartFile;
 public class Admin {
     @Autowired
     private Service service;
+    @Autowired
+    private PasswordPattern passwordPattern;
+    private final Logger logger = LoggerFactory.getLogger(Admin.class);
 
     @PostMapping("/create-user")
     public ResponseEntity<CommonResponse> userDetail(@RequestBody UserDetail userDetail) {
         CommonResponse commonResponse = new CommonResponse();
         String emailId = userDetail.getEmailId();
 
-        if (!emailId.isEmpty() && emailId.contains("@shubham") && !userDetail.getPassword().isEmpty()) {
-            commonResponse = service.saveUser(userDetail);
-            return ResponseEntity.ok(commonResponse);
+        if (!emailId.isEmpty() && emailId.contains("@shubham") && !userDetail.getPassword().isEmpty() && passwordPattern.patternCheck(userDetail.getPassword())) {
+               commonResponse = service.saveUser(userDetail);
+               return ResponseEntity.ok(commonResponse);
         } else {
             commonResponse.setCode("1111");
-            commonResponse.setMsg("invalid user-email");
+            commonResponse.setMsg("invalid email format or password to short.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(commonResponse);
         }
     }
@@ -68,9 +74,17 @@ public class Admin {
         return ResponseEntity.ok(service.statusEnableOrDisable(emailId,updatedBy));
     }
 
-    @PutMapping("/update-user/{emailId}")
-    public ResponseEntity<?> editUserDetails(@PathVariable String emailId, @RequestBody EditUserDetails inputUpdate) {
-        return ResponseEntity.ok(service.userUpdate(emailId,inputUpdate));
+    @PutMapping("/update-user/{userId}")
+    public ResponseEntity<?> editUserDetails(@PathVariable Long userId, @RequestBody EditUserDetails inputUpdate) {
+        CommonResponse commonResponse=new CommonResponse();
+        if(!inputUpdate.getEmailId().contains("@shubham.co")) {
+            commonResponse.setMsg("Invalid user-email.");
+            commonResponse.setCode("1111");
+
+            return ResponseEntity.ok(commonResponse);
+        }
+
+        return ResponseEntity.ok(service.userUpdate(userId,inputUpdate).getBody());
     }
 
 }

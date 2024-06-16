@@ -32,8 +32,6 @@ public class DdfsUtility {
     @Value("${ddfs.path}")
     private String path;
 
-    @Value("${ddfs.subpath}")
-    private String subPath;
     RestTemplate restTemplate = new RestTemplate();
 
     public String generateDDFSKey() throws Exception {
@@ -87,14 +85,14 @@ public class DdfsUtility {
             String base64 =  Base64.getEncoder().encodeToString(imageData);
 
             formData.add("token", generateDDFSKey());
-            formData.add("clientId", "SHUBHAM/OP");
+            formData.add("clientId", "SHUBHAM/REKYC");
             formData.add("file", applicationNo);
-            formData.add("subPath","2024/Aadhar");
-            formData.add("docCategory", "IdentityProofs");
+            formData.add("subPath","2024/APR");
+            formData.add("docCategory", "Cheque Handover");
             formData.add("clientUserId", "06799");
-            formData.add("remarks", "aadhar");
+            formData.add("remarks", "");
             formData.add("maker", "06799");
-            formData.add("path", "HOBR/APF under-Constructi");
+            formData.add("path", path);
             formData.add("document", base64);
 
             HttpHeaders headers = new HttpHeaders();

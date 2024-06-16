@@ -27,7 +27,7 @@ public class UserUtility {
     return branchMasterRepo.findAssignedBranch(emailId);
     }
 
-    public List<String> listOfBranch(List<Long> branchCode){
+    public List<String> listOfBranch(List<String> branchCode){
         List<String> branchName = new ArrayList<>();
         try
         {

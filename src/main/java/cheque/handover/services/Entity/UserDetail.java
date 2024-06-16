@@ -26,7 +26,7 @@ public class UserDetail implements UserDetails {
     @Column(name = "user_id")
     private Long userId;
     @Column(name = "first_name")
-    private String firstname;
+    private String firstName;
     @Column(name = "last_name")
     private String lastName;
     @Column(name = "email_id")
@@ -39,6 +39,8 @@ public class UserDetail implements UserDetails {
     private String createdBy;
     @Column(name = "creation_date")
     private Timestamp createDate;
+    @Column(name = "employee_code")
+    private String empCode;
     @PrePersist
     private void onCreate() {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
