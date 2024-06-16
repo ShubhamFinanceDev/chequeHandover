@@ -32,8 +32,6 @@ public class DdfsUtility {
     @Value("${ddfs.path}")
     private String path;
 
-    @Value("${ddfs.subpath}")
-    private String subPath;
     RestTemplate restTemplate = new RestTemplate();
 
     public String generateDDFSKey() throws Exception {
@@ -94,7 +92,7 @@ public class DdfsUtility {
             formData.add("clientUserId", "06799");
             formData.add("remarks", "");
             formData.add("maker", "06799");
-            formData.add("path", "REKYC Document");
+            formData.add("path", path);
             formData.add("document", base64);
 
             HttpHeaders headers = new HttpHeaders();
