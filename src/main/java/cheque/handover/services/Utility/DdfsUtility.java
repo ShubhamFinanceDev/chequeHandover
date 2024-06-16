@@ -89,7 +89,7 @@ public class DdfsUtility {
             formData.add("token", generateDDFSKey());
             formData.add("clientId", "SHUBHAM/REKYC");
             formData.add("file", applicationNo);
-            formData.add("subPath","2024/Aadhar");
+            formData.add("subPath","2024/APR");
             formData.add("docCategory", "Cheque Handover");
             formData.add("clientUserId", "06799");
             formData.add("remarks", "");
