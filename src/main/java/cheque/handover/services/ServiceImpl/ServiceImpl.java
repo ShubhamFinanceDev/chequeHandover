@@ -377,7 +377,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                     otpRepository.save(otpManage);
 
 //                    resetPasswordResponse.setOtpId(otpManage.getOtpId());
-//                    resetPasswordResponse.setOtpCode(String.valueOf(otpCode));
+                    resetPasswordResponse.setOtpCode(String.valueOf(otpCode));
                     resetPasswordResponse.setEmailId(otpManage.getEmailId());
 
                     commonResponse.setCode("0000");
