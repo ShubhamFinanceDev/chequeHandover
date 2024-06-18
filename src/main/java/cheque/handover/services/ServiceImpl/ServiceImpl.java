@@ -242,7 +242,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
     }
 
     @Override
-    public CommonResponse applicationDetailsUpload(MultipartFile file) {
+    public CommonResponse applicationDetailsUpload(MultipartFile file, String emailId) {
 
         CommonResponse commonResponse = new CommonResponse();
         List<ApplicationDetails> applicationDetails = new ArrayList<>();
@@ -332,6 +332,8 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                     }
                     if (!errorMsg.isEmpty()) break;
                     applicationDetails1.setChequeStatus("N");
+                    applicationDetails1.setUploadBy(emailId);
+                    applicationDetails1.setUploadDate(Timestamp.from(Instant.now()));
                     applicationDetails.add(applicationDetails1);
                 }
 
