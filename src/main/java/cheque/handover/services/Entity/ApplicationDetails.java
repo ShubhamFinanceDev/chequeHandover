@@ -5,6 +5,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.Data;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 
 @Entity
 @Data
@@ -13,7 +14,7 @@ public class ApplicationDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "cheque_Id")
-    private Long chequeId;
+    private Long id;
     @Column(name = "applicant_name")
     private String applicantName;
     @Column(name = "branch_name")
@@ -27,16 +28,21 @@ public class ApplicationDetails {
     @Column(name = "product_name")
     private String productName;
     @Column(name = "loan_amount")
-    private Double loanAmount;
+    private double loanAmount;
     @Column(name = "sanction_date")
     private Date sanctionDate;
     @Column(name = "disbursal_date")
     private Date disbursalDate;
     @Column(name = "cheque_amount")
-    private Double chequeAmount;
+    private double chequeAmount;
     @Column(name = "cheque_status")
     private String chequeStatus;
     @Column(name = "cheque_number")
     private Long chequeNumber;
+    @Column(name="uploaded_by")
+    private String uploadBy;
+    @Column(name = "upload_date")
+    private Timestamp uploadDate;
+
 
 }

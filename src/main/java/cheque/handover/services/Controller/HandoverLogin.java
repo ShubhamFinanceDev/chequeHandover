@@ -104,8 +104,8 @@ public class HandoverLogin {
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<?> restUserPassword(@RequestBody ResetNewPassword rest){
-        return ResponseEntity.ok(service.updatePassword(rest.getConfirmNewPassword(), rest.getNewPassword(), rest.getEmailId()));
+    public ResponseEntity<?> restUserPassword(@RequestBody ResetNewPassword reset){
+        return ResponseEntity.ok(service.updatePassword(reset.getConfirmNewPassword(), reset.getNewPassword(), reset.getEmailId()));
     }
 
 }

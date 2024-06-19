@@ -14,8 +14,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,6 +26,7 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -241,7 +242,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
     }
 
     @Override
-    public CommonResponse applicationDetailsUpload(MultipartFile file) {
+    public CommonResponse applicationDetailsUpload(MultipartFile file, String emailId) {
 
         CommonResponse commonResponse = new CommonResponse();
         List<ApplicationDetails> applicationDetails = new ArrayList<>();
@@ -331,6 +332,8 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                     }
                     if (!errorMsg.isEmpty()) break;
                     applicationDetails1.setChequeStatus("N");
+                    applicationDetails1.setUploadBy(emailId);
+                    applicationDetails1.setUploadDate(Timestamp.from(Instant.now()));
                     applicationDetails.add(applicationDetails1);
                 }
 
@@ -375,7 +378,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                     otpManage.setExpTime(LocalDateTime.now());
                     otpRepository.save(otpManage);
 
-                    resetPasswordResponse.setOtpId(otpManage.getOtpId());
+//                    resetPasswordResponse.setOtpId(otpManage.getOtpId());
                     resetPasswordResponse.setOtpCode(String.valueOf(otpCode));
                     resetPasswordResponse.setEmailId(otpManage.getEmailId());
 
@@ -412,7 +415,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             OtpManage otpManage = otpManages.get();
             Duration duration = Duration.between(otpManage.getExpTime(), LocalDateTime.now());
             long betweenTime = duration.toMinutes();
-            if (betweenTime <= 1) {
+            if (betweenTime <= 8) {
                 commonResponse.setMsg(" Otp match Success");
                 commonResponse.setCode("0000");
             } else {
@@ -484,11 +487,26 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         List<String> assignBranches = userUtility.findBranchesByUser(emailId);
         try {
             for (String branch : assignBranches) {
-                if (branch.equals(branchName) || branchName != null && !branchName.isEmpty() || applicationNo != null && !applicationNo.isEmpty() || status != null && !status.isEmpty()) {
-                    applicationDetails = jdbcTemplate.query(userUtility.findDetailByBranchAndApplication(branchName, applicationNo, status,pageable), new BeanPropertyRowMapper<>(ApplicationDetails.class));
-                    totalCount=applicationDetails.size();
-//
-//
+                if (branch.equals(branchName)) ;
+                {
+                    if ((applicationNo != null && !applicationNo.isEmpty()) && (branchName != null && !branchName.isEmpty())) {
+                        applicationDetails = applicationDetailsRepo.findDetailByBranchAndApplication(branchName, applicationNo, pageable);
+                        totalCount = applicationDetailsRepo.findDetailByBranchAndApplicationCount(branchName, applicationNo);
+                    } else if (((branchName != null && !branchName.isEmpty() && (status != null && !status.isEmpty())))) {
+                        applicationDetails = applicationDetailsRepo.findDetailsBybranchnameAndStatus(branchName, status);
+                        totalCount = applicationDetailsRepo.findDetailsByBranchStatusCount(branchName, status);
+                    } else if (applicationNo != null && !applicationNo.isEmpty() && pageable != null) {
+                        {
+                            applicationDetails = applicationDetailsRepo.findDetailByPagingAndApplication(applicationNo, pageable);
+                            totalCount = applicationDetailsRepo.findDetailByPageAndApplicationCount(applicationNo);
+
+                        }
+                    } else {
+                        applicationDetails = (applicationNo != null && !applicationNo.isEmpty()) ? applicationDetailsRepo.findDetailByApplication(applicationNo, assignBranches, pageable) : applicationDetailsRepo.findDetailByBranch(branchName, pageable);
+                        totalCount = (applicationNo != null && !applicationNo.isEmpty()) ? applicationDetailsRepo.findDetailByApplicationCount(applicationNo, assignBranches) : applicationDetailsRepo.findDetailByBranchCount(branchName);
+                        System.out.println("total" + totalCount);
+                    }
+                    break;
                 }
             }
         } catch (Exception e) {
@@ -626,12 +644,11 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return commonResponse;
     }
 
-    @Override
-    public List<MisReport> fetchReportData(String reportType, String selectedType, Date fromDate, Date toDate, Date selectedDate) {
+    public List<MisReport> fetchReportData(String reportType, String selectedType) {
         List<MisReport> fetchedData = new ArrayList<>();
         try {
 
-            return jdbcTemplate.query(misReportUtility.misQuery(reportType, selectedType, fromDate, toDate ,selectedDate), new MisReportUtility.MisReportRowMapper());
+            return jdbcTemplate.query(misReportUtility.misQuery(reportType, selectedType), new MisReportUtility.MisReportRowMapper());
         } catch (Exception e) {
             logger.error("Error while executing report query" + e.getMessage());
             return fetchedData;
@@ -678,15 +695,18 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
 
     public AllAssignBranchResponse findAssignBranchList(String emailId) {
         AllAssignBranchResponse assignBranchResponse = new AllAssignBranchResponse();
+        CommonResponse commonResponse=new CommonResponse();
+
         List<String> userAssignBranch = userUtility.findBranchesByUser(emailId);
         if (!userAssignBranch.isEmpty()) {
-            assignBranchResponse.setCode("0000");
-            assignBranchResponse.setMsg("Data found successfully");
+            commonResponse.setCode("0000");
+            commonResponse.setMsg("Data found successfully");
             assignBranchResponse.setAssignBranchList(userAssignBranch);
         } else {
-            assignBranchResponse.setCode("1111");
-            assignBranchResponse.setMsg("No branch assign to you");
+            commonResponse.setCode("1111");
+            commonResponse.setMsg("No branch assign to you");
         }
+        assignBranchResponse.setCommonResponse(commonResponse);
         return assignBranchResponse;
     }
 
