@@ -7,12 +7,13 @@ import org.springframework.stereotype.Service;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 
 @Data
 @Service
 public class MisReportUtility {
 
-    public String misQuery(String reportType, String selectedType) {
+    public String misQuery(String reportType, String selectedType, Date fromDate,Date toDate,Date selectedDate) {
 
 
         String baseQuery = "SELECT em.applicant_name, em.loan_amount, em.cheque_amount, em.branch_name, \n" +
@@ -23,7 +24,7 @@ public class MisReportUtility {
 
         switch (reportType.toLowerCase()) {
             case "user-wise":
-                baseQuery =baseQuery+"AND cs.updated_by = '" + selectedType + "' ";
+                baseQuery +=selectedType!="" ? " AND cs.updated_by = '" + selectedType + "' ":"";
                 break;
 
             case "branch-wise":
@@ -34,6 +35,14 @@ public class MisReportUtility {
                 baseQuery =baseQuery+ "AND DATE(cs.updated_date) = CURDATE()";
                 break;
 
+            case "fromdate-todate":
+                baseQuery += "AND cs.updated_date BETWEEN '" + fromDate + "' AND '" + toDate + "'";
+                System.out.println(baseQuery);
+                break;
+            case "selected-date":
+                baseQuery += "AND cs.updated_date  ='" +  selectedDate + "'";
+                System.out.println(baseQuery);
+                break;
             default:
                 throw new IllegalArgumentException("Invalid report type: " + reportType);
         }
