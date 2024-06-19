@@ -5,6 +5,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.Data;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 
 @Entity
 @Data
@@ -38,5 +39,10 @@ public class ApplicationDetails {
     private String chequeStatus;
     @Column(name = "cheque_number")
     private Long chequeNumber;
+    @Column(name="uploaded_by")
+    private String uploadBy;
+    @Column(name = "upload_date")
+    private Timestamp uploadDate;
+
 
 }

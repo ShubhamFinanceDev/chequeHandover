@@ -25,7 +25,7 @@ public interface Service {
     void saveServiceResult(BranchesResponse branchesResponse, CommonResponse commonResponse, List<BranchMaster> branchByName);
 
     CommonResponse saveUser(UserDetail userDetail );
-    CommonResponse applicationDetailsUpload(MultipartFile file);
+    CommonResponse applicationDetailsUpload(MultipartFile file, String emailId);
 
     ResponseEntity<?> resetPassword(RestPasswordRequest request);
 

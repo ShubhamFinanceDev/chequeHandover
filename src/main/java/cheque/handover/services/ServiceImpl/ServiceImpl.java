@@ -243,7 +243,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
     }
 
     @Override
-    public CommonResponse applicationDetailsUpload(MultipartFile file) {
+    public CommonResponse applicationDetailsUpload(MultipartFile file, String emailId) {
 
         CommonResponse commonResponse = new CommonResponse();
         List<ApplicationDetails> applicationDetails = new ArrayList<>();
@@ -333,6 +333,8 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                     }
                     if (!errorMsg.isEmpty()) break;
                     applicationDetails1.setChequeStatus("N");
+                    applicationDetails1.setUploadBy(emailId);
+                    applicationDetails1.setUploadDate(Timestamp.from(Instant.now()));
                     applicationDetails.add(applicationDetails1);
                 }
 
@@ -377,8 +379,8 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                     otpManage.setExpTime(LocalDateTime.now());
                     otpRepository.save(otpManage);
 
-                    resetPasswordResponse.setOtpId(otpManage.getOtpId());
-                    resetPasswordResponse.setOtpCode(String.valueOf(otpCode));
+//                    resetPasswordResponse.setOtpId(otpManage.getOtpId());
+//                    resetPasswordResponse.setOtpCode(String.valueOf(otpCode));
                     resetPasswordResponse.setEmailId(otpManage.getEmailId());
 
                     commonResponse.setCode("0000");
@@ -414,7 +416,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             OtpManage otpManage = otpManages.get();
             Duration duration = Duration.between(otpManage.getExpTime(), LocalDateTime.now());
             long betweenTime = duration.toMinutes();
-            if (betweenTime <= 1) {
+            if (betweenTime <= 8) {
                 commonResponse.setMsg(" Otp match Success");
                 commonResponse.setCode("0000");
             } else {
@@ -678,15 +680,18 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
 
     public AllAssignBranchResponse findAssignBranchList(String emailId) {
         AllAssignBranchResponse assignBranchResponse = new AllAssignBranchResponse();
+        CommonResponse commonResponse=new CommonResponse();
+
         List<String> userAssignBranch = userUtility.findBranchesByUser(emailId);
         if (!userAssignBranch.isEmpty()) {
-            assignBranchResponse.setCode("0000");
-            assignBranchResponse.setMsg("Data found successfully");
+            commonResponse.setCode("0000");
+            commonResponse.setMsg("Data found successfully");
             assignBranchResponse.setAssignBranchList(userAssignBranch);
         } else {
-            assignBranchResponse.setCode("1111");
-            assignBranchResponse.setMsg("No branch assign to you");
+            commonResponse.setCode("1111");
+            commonResponse.setMsg("No branch assign to you");
         }
+        assignBranchResponse.setCommonResponse(commonResponse);
         return assignBranchResponse;
     }
 
