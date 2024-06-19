@@ -25,7 +25,7 @@ public interface Service {
     void saveServiceResult(BranchesResponse branchesResponse, CommonResponse commonResponse, List<BranchMaster> branchByName);
 
     CommonResponse saveUser(UserDetail userDetail );
-    CommonResponse applicationDetailsUpload(MultipartFile file);
+    CommonResponse applicationDetailsUpload(MultipartFile file, String emailId);
 
     ResponseEntity<?> resetPassword(RestPasswordRequest request);
 
@@ -41,12 +41,14 @@ public interface Service {
     CommonResponse chequeStatus(ApplicationFlagUpdate flagUpdate, MultipartFile file) throws IOException, ExecutionException, InterruptedException;
 
     CommonResponse saveBranch(MultipartFile file, String emailId);
-
-    HttpServletResponse generateExcel(HttpServletResponse response, String emailId, String reportType, String selectedType) throws IOException;
+    List<MisReport> fetchReportData(String reportType, String selectedType);
+    void generateExcel(HttpServletResponse response, List<MisReport> applicationDetails) throws IOException;
 
     AllAssignBranchResponse findAssignBranchList(String emailId);
 
     CommonResponse statusEnableOrDisable(String emailId, String updatedBy);
 
-    ResponseEntity<CommonResponse> userUpdate(String emailId,EditUserDetails inputUpdate);
+    ResponseEntity<CommonResponse> userUpdate(Long userId,EditUserDetails inputUpdate);
+
+    boolean checkPattern(String password, String empCode, CommonResponse commonResponse, String emailId);
 }

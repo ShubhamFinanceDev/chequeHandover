@@ -10,4 +10,5 @@ public class ApplicationFlagUpdate {
     private Date date;
     private String applicationNo;
     private String updatedBy;
+    private Long chequeId;
 }
