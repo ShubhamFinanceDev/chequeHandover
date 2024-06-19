@@ -30,7 +30,7 @@ public interface UserDetailRepo extends JpaRepository<UserDetail,Long> {
     int checkEditedEmail(String emailId);
 
     @Query("select concat(u.firstName, ' ', u.lastName) from UserDetail u where u.emailId = :createdBy")
-    List<String> findFullNameByEmailId(@Param("createdBy") String createdBy);
+    String findFullNameByEmailId(@Param("createdBy") String createdBy);
 
 //    @Modifying
 //    @Transactional
