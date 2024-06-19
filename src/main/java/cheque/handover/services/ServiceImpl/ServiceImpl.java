@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -124,7 +125,10 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             userDetails.setEmailId(userData.getEmailId());
             userDetails.setMobileNo("******" + userData.getMobileNo().substring(userData.getMobileNo().length() - 4));
             userDetails.setEncodedMobileNo(Base64.getEncoder().encodeToString(userData.getMobileNo().getBytes()));
-            userDetails.setCreatedBy(userData.getCreatedBy());
+            String fullNames = userDetailRepo.findFullNameByEmailId(userData.getCreatedBy());
+            if (!fullNames.isEmpty()) {
+                userDetails.setCreatedBy(fullNames);
+            }
             userDetails.setEnabled(userData.isEnabled());
             userDetails.setCreateDate(String.valueOf(userData.getCreateDate()));
             List<String> assignBranches = new ArrayList<>();
@@ -379,7 +383,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                     otpRepository.save(otpManage);
 
 //                    resetPasswordResponse.setOtpId(otpManage.getOtpId());
-//                    resetPasswordResponse.setOtpCode(String.valueOf(otpCode));
+                    resetPasswordResponse.setOtpCode(String.valueOf(otpCode));
                     resetPasswordResponse.setEmailId(otpManage.getEmailId());
 
                     commonResponse.setCode("0000");
@@ -487,26 +491,10 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         List<String> assignBranches = userUtility.findBranchesByUser(emailId);
         try {
             for (String branch : assignBranches) {
-                if (branch.equals(branchName)) ;
+                if (branch.equals(branchName) || branchName != null && !branchName.isEmpty() || applicationNo != null && !applicationNo.isEmpty() || status != null && !status.isEmpty())
                 {
-                    if ((applicationNo != null && !applicationNo.isEmpty()) && (branchName != null && !branchName.isEmpty())) {
-                        applicationDetails = applicationDetailsRepo.findDetailByBranchAndApplication(branchName, applicationNo, pageable);
-                        totalCount = applicationDetailsRepo.findDetailByBranchAndApplicationCount(branchName, applicationNo);
-                    } else if (((branchName != null && !branchName.isEmpty() && (status != null && !status.isEmpty())))) {
-                        applicationDetails = applicationDetailsRepo.findDetailsBybranchnameAndStatus(branchName, status);
-                        totalCount = applicationDetailsRepo.findDetailsByBranchStatusCount(branchName, status);
-                    } else if (applicationNo != null && !applicationNo.isEmpty() && pageable != null) {
-                        {
-                            applicationDetails = applicationDetailsRepo.findDetailByPagingAndApplication(applicationNo, pageable);
-                            totalCount = applicationDetailsRepo.findDetailByPageAndApplicationCount(applicationNo);
-
-                        }
-                    } else {
-                        applicationDetails = (applicationNo != null && !applicationNo.isEmpty()) ? applicationDetailsRepo.findDetailByApplication(applicationNo, assignBranches, pageable) : applicationDetailsRepo.findDetailByBranch(branchName, pageable);
-                        totalCount = (applicationNo != null && !applicationNo.isEmpty()) ? applicationDetailsRepo.findDetailByApplicationCount(applicationNo, assignBranches) : applicationDetailsRepo.findDetailByBranchCount(branchName);
-                        System.out.println("total" + totalCount);
-                    }
-                    break;
+                    applicationDetails = jdbcTemplate.query(userUtility.findByGivenCriteria(applicationNo,branchName,status,pageable), new BeanPropertyRowMapper<>(ApplicationDetails.class));
+                    totalCount = applicationDetails.size();
                 }
             }
         } catch (Exception e) {
@@ -765,5 +753,19 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             commonResponse.setMsg("User not exist.");
             return ResponseEntity.ok(commonResponse);
         }
+    }
+
+    @Override
+    public boolean checkPattern(String password, String empCode, CommonResponse commonResponse, String emailId) {
+        if (!password.matches(".{8,}") || !emailId.contains("@shubham")) {
+            commonResponse.setCode("1111");
+            commonResponse.setMsg("invalid email format or password to short.");
+            return false;
+        }else if (!empCode.matches("\\d{5}")){
+            commonResponse.setCode("1111");
+            commonResponse.setMsg("Invalid employee code format. It must be exactly 5 numeric digits.");
+            return false;
+        }
+        return true;
     }
 }

@@ -4,6 +4,7 @@ import cheque.handover.services.Entity.UserDetail;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,9 @@ public interface UserDetailRepo extends JpaRepository<UserDetail,Long> {
      Optional<UserDetail> findByEmailId(String emailId);
     @Query("select count(e) from UserDetail e where e.emailId=:emailId")
     int checkEditedEmail(String emailId);
+
+    @Query("select concat(u.firstName, ' ', u.lastName) from UserDetail u where u.emailId = :createdBy")
+    String findFullNameByEmailId(@Param("createdBy") String createdBy);
 
 //    @Modifying
 //    @Transactional

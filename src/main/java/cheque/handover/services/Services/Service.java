@@ -49,4 +49,6 @@ public interface Service {
     CommonResponse statusEnableOrDisable(String emailId, String updatedBy);
 
     ResponseEntity<CommonResponse> userUpdate(Long userId,EditUserDetails inputUpdate);
+
+    boolean checkPattern(String password, String empCode, CommonResponse commonResponse, String emailId);
 }
