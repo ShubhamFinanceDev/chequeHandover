@@ -8,7 +8,7 @@ public class ResetPasswordResponse
 {
     private CommonResponse commonResponse;
 
-    private Long otpId;
+//    private Long otpId;
     private String otpCode;
     private String emailId;
 }
