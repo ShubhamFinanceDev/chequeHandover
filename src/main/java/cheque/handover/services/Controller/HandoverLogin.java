@@ -24,7 +24,7 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/handover-service")
-@CrossOrigin("*")
+@CrossOrigin
 public class HandoverLogin {
 
     @Autowired
