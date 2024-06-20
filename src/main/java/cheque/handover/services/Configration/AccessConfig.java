@@ -34,7 +34,7 @@ public class AccessConfig {
                 registry.addMapping("/**")
                         .allowedOrigins(accessCorsOrigin)
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
-                        .allowedHeaders(accessCorsOrigin)
+                        .allowedHeaders("*")
                         .allowCredentials(allowCredentials);
             }
         };
