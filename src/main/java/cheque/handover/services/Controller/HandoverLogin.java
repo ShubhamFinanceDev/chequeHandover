@@ -109,6 +109,8 @@ public class HandoverLogin {
         if (reset.getConfirmNewPassword().matches(".{8,}") && reset.getNewPassword().matches(".{8,}")) {
             return ResponseEntity.ok(service.updatePassword(reset.getConfirmNewPassword(), reset.getNewPassword(), reset.getEmailId()));
         }else {
+
+
             commonResponse.setCode("1111");
             commonResponse.setMsg("your password is to short.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(commonResponse);
