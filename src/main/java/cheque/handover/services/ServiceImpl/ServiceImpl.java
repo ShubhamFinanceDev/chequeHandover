@@ -630,7 +630,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return commonResponse;
     }
 
-    public List<MisReport> fetchReportData(String reportType, String selectedType,Date fromDate,Date toDate,Date selectedDate) {
+    public List<MisReport> fetchReportData(String reportType, String selectedType, Date fromDate, Date toDate,Date selectedDate) {
         List<MisReport> fetchedData = new ArrayList<>();
         try {
 
