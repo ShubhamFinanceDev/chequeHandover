@@ -15,11 +15,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@Component
 @Configuration
 public class AccessConfig {
     @Value("${access_cors_origin}")
     private String accessCorsOrigin;
+    @Value("${allow_credentials}")
+    private Boolean allowCredentials;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -31,10 +32,10 @@ public class AccessConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins(accessCorsOrigin);
-//                        .allowedMethods("GET", "POST", "PUT", "DELETE")
-//                        .allowedHeaders("*")
-//                        .allowCredentials(true);
+                        .allowedOrigins(accessCorsOrigin)
+                        .allowedMethods("GET", "POST", "PUT", "DELETE")
+                        .allowedHeaders(accessCorsOrigin)
+                        .allowCredentials(allowCredentials);
             }
         };
     }
