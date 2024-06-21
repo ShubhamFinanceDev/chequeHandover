@@ -13,7 +13,7 @@ import java.sql.Date;
 @Service
 public class MisReportUtility {
 
-    public String misQuery(String reportType, String selectedType, Date fromDate, Date toDate, Date selectedDate) {
+    public String misQuery(String reportType, String selectedType, String fromDate, String toDate, String selectedDate) {
 
 
         String baseQuery = "SELECT em.applicant_name, em.loan_amount, em.cheque_amount, em.branch_name, \n" +
