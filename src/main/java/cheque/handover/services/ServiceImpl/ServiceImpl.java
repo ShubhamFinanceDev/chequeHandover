@@ -634,7 +634,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         List<MisReport> fetchedData = new ArrayList<>();
         try {
 
-            return jdbcTemplate.query(misReportUtility.misQuery(reportType, selectedType,fromDate,toDate,selectedDate), new MisReportUtility.MisReportRowMapper());
+            return jdbcTemplate.query(misReportUtility.misQuery(reportType, selectedType,fromDate,toDate,selectedDate), new BeanPropertyRowMapper<>(MisReport.class));
         } catch (Exception e) {
             logger.error("Error while executing report query" + e.getMessage());
             return fetchedData;
@@ -656,14 +656,13 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         }
         for (MisReport details : applicationDetails) {
             Row row = sheet.createRow(rowCount++);
-            row.createCell(0).setCellValue(details.getApplicationNumber());
-            row.createCell(1).setCellValue(details.getBranchName());
-            row.createCell(2).setCellValue(details.getApplicantName());
-            row.createCell(3).setCellValue(details.getChequeAmount());
-            row.createCell(4).setCellValue(details.getConsumerType());
-            row.createCell(5).setCellValue(details.getHandoverDate().toString());
-            row.createCell(6).setCellValue(details.getLoanAmount());
-            row.createCell(7).setCellValue(details.getUpdatedBy());
+            row.createCell(0).setCellValue(details.getApplicationNumber() != null ? details.getApplicationNumber() : "");
+            row.createCell(1).setCellValue(details.getBranchName() != null ? details.getBranchName() : "");
+            row.createCell(2).setCellValue(details.getApplicantName() != null ? details.getApplicantName() : "");
+            row.createCell(3).setCellValue(details.getChequeAmount() != null ? details.getChequeAmount() : 0.0);
+            row.createCell(4).setCellValue(details.getConsumerType() != null ? details.getConsumerType() : "");
+            row.createCell(5).setCellValue(details.getHandoverDate() != null ? details.getHandoverDate().toString() : "");
+            row.createCell(6).setCellValue(details.getLoanAmount() != null ? details.getLoanAmount() : 0.0);
         }
 
         try {
