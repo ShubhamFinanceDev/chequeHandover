@@ -124,7 +124,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             userDetails.setMobileNo("******" + userData.getMobileNo().substring(userData.getMobileNo().length() - 4));
             userDetails.setEncodedMobileNo(Base64.getEncoder().encodeToString(userData.getMobileNo().getBytes()));
             String fullNames = userDetailRepo.findFullNameByEmailId(userData.getCreatedBy());
-            if (!fullNames.isEmpty() && fullNames!=null) {
+            if (fullNames!=null) {
                 userDetails.setCreatedBy(fullNames);
             }
             userDetails.setEnabled(userData.isEnabled());
