@@ -116,5 +116,4 @@ public class HandoverLogin {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(commonResponse);
         }
     }
-
 }
