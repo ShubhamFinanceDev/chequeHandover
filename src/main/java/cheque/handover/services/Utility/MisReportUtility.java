@@ -53,7 +53,7 @@ public class MisReportUtility {
                 baseQuery = "SELECT em.applicant_name, em.loan_amount, em.cheque_amount, em.branch_name, \n" +
                         "       em.application_number " +
                         "FROM import_data em \n" +
-                        "WHERE em.cheque_status = 'N'; ";
+                        "WHERE em.cheque_status = 'N' ";
                 break;
 
             default:
