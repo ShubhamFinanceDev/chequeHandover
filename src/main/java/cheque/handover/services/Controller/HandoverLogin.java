@@ -26,7 +26,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/handover-service")
-@CrossOrigin("*")
+@CrossOrigin
 public class HandoverLogin {
 
     @Autowired
@@ -118,5 +118,4 @@ public class HandoverLogin {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(commonResponse);
         }
     }
-
 }
