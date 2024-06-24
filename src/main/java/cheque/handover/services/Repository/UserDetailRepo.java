@@ -28,18 +28,4 @@ public interface UserDetailRepo extends JpaRepository<UserDetail,Long> {
      Optional<UserDetail> findByEmailId(String emailId);
     @Query("select count(e) from UserDetail e where e.emailId=:emailId")
     int checkEditedEmail(String emailId);
-
-    @Query("select concat(u.firstName, ' ', u.lastName) from UserDetail u where u.emailId = :createdBy")
-    String findFullNameByEmailId(@Param("createdBy") String createdBy);
-
-//    @Modifying
-//    @Transactional
-//    @Query("UPDATE UserDetail u\n" +
-//            "SET u.enabled = CASE\n" +
-//            "                   WHEN u.enabled = true THEN false\n" +
-//            "                   ELSE true\n" +
-//            "                 END,\n" +
-//            "    u.createDate = current_timestamp, u.createdBy=:updatedBy \n"+
-//            "WHERE u.emailId = :emailId")
-//    void enableUserStatus(String emailId,String updatedBy);
 }
