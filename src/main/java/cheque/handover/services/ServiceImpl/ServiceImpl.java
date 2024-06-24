@@ -14,8 +14,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,6 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -124,7 +123,10 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             userDetails.setEmailId(userData.getEmailId());
             userDetails.setMobileNo("******" + userData.getMobileNo().substring(userData.getMobileNo().length() - 4));
             userDetails.setEncodedMobileNo(Base64.getEncoder().encodeToString(userData.getMobileNo().getBytes()));
-            userDetails.setCreatedBy(userData.getCreatedBy());
+            String fullNames = userDetailRepo.findFullNameByEmailId(userData.getCreatedBy());
+            if (!fullNames.isEmpty()) {
+                userDetails.setCreatedBy(fullNames);
+            }
             userDetails.setEnabled(userData.isEnabled());
             userDetails.setCreateDate(String.valueOf(userData.getCreateDate()));
             List<String> assignBranches = new ArrayList<>();
@@ -487,26 +489,10 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         List<String> assignBranches = userUtility.findBranchesByUser(emailId);
         try {
             for (String branch : assignBranches) {
-                if (branch.equals(branchName)) ;
+                if (branch.equals(branchName) || branchName != null && !branchName.isEmpty() || applicationNo != null && !applicationNo.isEmpty() || status != null && !status.isEmpty())
                 {
-                    if ((applicationNo != null && !applicationNo.isEmpty()) && (branchName != null && !branchName.isEmpty())) {
-                        applicationDetails = applicationDetailsRepo.findDetailByBranchAndApplication(branchName, applicationNo, pageable);
-                        totalCount = applicationDetailsRepo.findDetailByBranchAndApplicationCount(branchName, applicationNo);
-                    } else if (((branchName != null && !branchName.isEmpty() && (status != null && !status.isEmpty())))) {
-                        applicationDetails = applicationDetailsRepo.findDetailsBybranchnameAndStatus(branchName, status);
-                        totalCount = applicationDetailsRepo.findDetailsByBranchStatusCount(branchName, status);
-                    } else if (applicationNo != null && !applicationNo.isEmpty() && pageable != null) {
-                        {
-                            applicationDetails = applicationDetailsRepo.findDetailByPagingAndApplication(applicationNo, pageable);
-                            totalCount = applicationDetailsRepo.findDetailByPageAndApplicationCount(applicationNo);
-
-                        }
-                    } else {
-                        applicationDetails = (applicationNo != null && !applicationNo.isEmpty()) ? applicationDetailsRepo.findDetailByApplication(applicationNo, assignBranches, pageable) : applicationDetailsRepo.findDetailByBranch(branchName, pageable);
-                        totalCount = (applicationNo != null && !applicationNo.isEmpty()) ? applicationDetailsRepo.findDetailByApplicationCount(applicationNo, assignBranches) : applicationDetailsRepo.findDetailByBranchCount(branchName);
-                        System.out.println("total" + totalCount);
-                    }
-                    break;
+                    applicationDetails = jdbcTemplate.query(userUtility.findByGivenCriteria(applicationNo,branchName,status,pageable), new BeanPropertyRowMapper<>(ApplicationDetails.class));
+                    totalCount = applicationDetails.size();
                 }
             }
         } catch (Exception e) {
@@ -644,11 +630,11 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return commonResponse;
     }
 
-    public List<MisReport> fetchReportData(String reportType, String selectedType) {
+    public List<MisReport> fetchReportData(String reportType, String selectedType, String fromDate, String toDate,String selectedDate) {
         List<MisReport> fetchedData = new ArrayList<>();
         try {
 
-            return jdbcTemplate.query(misReportUtility.misQuery(reportType, selectedType), new MisReportUtility.MisReportRowMapper());
+            return jdbcTemplate.query(misReportUtility.misQuery(reportType, selectedType,fromDate,toDate,selectedDate), new BeanPropertyRowMapper<>(MisReport.class));
         } catch (Exception e) {
             logger.error("Error while executing report query" + e.getMessage());
             return fetchedData;
@@ -670,14 +656,13 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         }
         for (MisReport details : applicationDetails) {
             Row row = sheet.createRow(rowCount++);
-            row.createCell(0).setCellValue(details.getApplicationNumber());
-            row.createCell(1).setCellValue(details.getBranchName());
-            row.createCell(2).setCellValue(details.getApplicantName());
-            row.createCell(3).setCellValue(details.getChequeAmount());
-            row.createCell(4).setCellValue(details.getConsumerType());
-            row.createCell(5).setCellValue(details.getHandoverDate().toString());
-            row.createCell(6).setCellValue(details.getLoanAmount());
-            row.createCell(7).setCellValue(details.getUpdatedBy());
+            row.createCell(0).setCellValue(details.getApplicationNumber() != null ? details.getApplicationNumber() : "");
+            row.createCell(1).setCellValue(details.getBranchName() != null ? details.getBranchName() : "");
+            row.createCell(2).setCellValue(details.getApplicantName() != null ? details.getApplicantName() : "");
+            row.createCell(3).setCellValue(details.getChequeAmount() != null ? details.getChequeAmount() : 0.0);
+            row.createCell(4).setCellValue(details.getConsumerType() != null ? details.getConsumerType() : "");
+            row.createCell(5).setCellValue(details.getHandoverDate() != null ? details.getHandoverDate().toString() : "");
+            row.createCell(6).setCellValue(details.getLoanAmount() != null ? details.getLoanAmount() : 0.0);
         }
 
         try {
@@ -765,5 +750,19 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             commonResponse.setMsg("User not exist.");
             return ResponseEntity.ok(commonResponse);
         }
+    }
+
+    @Override
+    public boolean checkPattern(String password, String empCode, CommonResponse commonResponse, String emailId) {
+        if (!password.matches(".{8,}") || !emailId.contains("@shubham")) {
+            commonResponse.setCode("1111");
+            commonResponse.setMsg("invalid email format or password to short.");
+            return false;
+        }else if (!empCode.matches("\\d{5}")){
+            commonResponse.setCode("1111");
+            commonResponse.setMsg("Invalid employee code format. It must be exactly 5 numeric digits.");
+            return false;
+        }
+        return true;
     }
 }
