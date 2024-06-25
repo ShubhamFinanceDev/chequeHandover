@@ -130,12 +130,20 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             userDetails.setEnabled(userData.isEnabled());
             userDetails.setCreateDate(String.valueOf(userData.getCreateDate()));
             List<String> assignBranches = new ArrayList<>();
+
             if (!userData.getAssignBranches().isEmpty()) {
                 userData.getAssignBranches().forEach(branch -> {
 
                     assignBranches.add(branch.getBranchCode());
                 });
             }
+            List<String>  allBranches = userUtility.listOfBranch(assignBranches);
+            if (assignBranches.equals("ALL")){
+                userDetails.setAssignBranches(allBranches);
+            }else {
+                userUtility.listOfBranch(assignBranches);
+            }
+
             userDetails.setAssignBranches(userUtility.listOfBranch(assignBranches));
             userDetails.setBranchesCode(assignBranches);
             userDetails.setRoleMaster(userData.getRoleMasters().getRole());
@@ -686,6 +694,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         if (!userAssignBranch.isEmpty()) {
             commonResponse.setCode("0000");
             commonResponse.setMsg("Data found successfully");
+            userAssignBranch.remove("ALL");
             assignBranchResponse.setAssignBranchList(userAssignBranch);
         } else {
             commonResponse.setCode("1111");
