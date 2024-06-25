@@ -27,6 +27,7 @@ public class Admin {
         CommonResponse commonResponse = new CommonResponse();
         String emailId = userDetail.getEmailId();
 
+
         if(service.checkPattern(userDetail.getPassword(),userDetail.getEmpCode(),commonResponse,emailId)){
             commonResponse = service.saveUser(userDetail);
             return ResponseEntity.ok(commonResponse);
