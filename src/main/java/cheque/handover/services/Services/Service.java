@@ -40,7 +40,7 @@ public interface Service {
     CommonResponse chequeStatus(ApplicationFlagUpdate flagUpdate, MultipartFile file) throws IOException, ExecutionException, InterruptedException;
 
     CommonResponse saveBranch(MultipartFile file, String emailId);
-    List<MisReport> fetchReportData(String reportType, String selectedType, String fromDate, String toDate, String selectedDate);
+    List<MisReport> fetchReportData(String reportType, String selectedType);
     void generateExcel(HttpServletResponse response, List<MisReport> applicationDetails) throws IOException;
 
     AllAssignBranchResponse findAssignBranchList(String emailId);

@@ -12,115 +12,65 @@ import java.sql.SQLException;
 @Service
 public class MisReportUtility {
 
-    public String  misQuery(String reportType, String selectedType, String fromDate, String toDate, String selectedDate) {
+    public String misQuery(String reportType, String selectedType) {
 
-        StringBuilder baseQuery = new StringBuilder("SELECT em.applicant_name, em.loan_amount, em.cheque_amount, em.branch_name, \n")
-                .append("       em.application_number, cs.consumer_type, cs.handover_date, cs.updated_by \n")
-                .append("FROM import_data em \n")
-                .append("JOIN issued_cheque cs ON em.cheque_id = cs.cheque_id \n")
-                .append("WHERE em.cheque_status = 'Y' ");
 
-        boolean isFirstCondition = true;
+        String baseQuery = "SELECT em.applicant_name, em.loan_amount, em.cheque_amount, em.branch_name, \n" +
+                "       em.application_number, cs.consumer_type, cs.handover_date, cs.updated_by \n" +
+                "FROM import_data em \n" +
+                "JOIN issued_cheque cs ON em.cheque_id = cs.cheque_id \n" +
+                "WHERE em.cheque_status = 'Y' ";
 
         switch (reportType.toLowerCase()) {
             case "user-wise":
-                if (selectedType != null && !selectedType.isEmpty()) {
-                    baseQuery.append("AND cs.updated_by = '").append(selectedType).append("' ");
-                    isFirstCondition = false;
-                }
+                baseQuery =baseQuery+"AND cs.updated_by = '" + selectedType + "' ";
                 break;
 
             case "branch-wise":
-                if (selectedType != null && !selectedType.isEmpty()) {
-                    baseQuery.append("AND em.branch_name = '").append(selectedType).append("' ");
-                    isFirstCondition = false;
-                }
-                break;
-
-            case "user-wise-fromdate-todate":
-                if (selectedType != null && !selectedType.isEmpty()) {
-                    baseQuery.append("AND cs.updated_by = '").append(selectedType).append("' ");
-                    isFirstCondition = false;
-                }
-
-                if (fromDate != null && !fromDate.isEmpty() && toDate != null && !toDate.isEmpty()) {
-                    if (!isFirstCondition) {
-                        baseQuery.append("AND ");
-                    }
-                    baseQuery.append("DATE(cs.updated_date) BETWEEN '").append(fromDate).append("' AND '").append(toDate).append("' ");
-                    isFirstCondition = false;
-                }
-                break;
-
-            case "branch-wise-fromdate-todate":
-                if (selectedType != null && !selectedType.isEmpty()) {
-                    baseQuery.append("AND em.branch_name = '").append(selectedType).append("' ");
-                    isFirstCondition = false;
-                }
-
-                if (fromDate != null && !fromDate.isEmpty() && toDate != null && !toDate.isEmpty()) {
-                    if (!isFirstCondition) {
-                        baseQuery.append("AND ");
-                    }
-                    baseQuery.append("DATE(cs.updated_date) BETWEEN '").append(fromDate).append("' AND '").append(toDate).append("' ");
-                    isFirstCondition = false;
-                }
+                baseQuery =baseQuery +"AND em.branch_name = '" + selectedType + "' ";
                 break;
 
             case "daily-report":
-                baseQuery.append("AND DATE(cs.updated_date) = CURDATE()");
-                break;
-
-            case "fromdate-todate":
-                if (fromDate != null && !fromDate.isEmpty() && toDate != null && !toDate.isEmpty()) {
-                    baseQuery.append("AND DATE(cs.updated_date) BETWEEN '").append(fromDate).append("' AND '").append(toDate).append("'");
-                }
-                break;
-
-            case "selected-date":
-                if (selectedDate != null && !selectedDate.isEmpty()) {
-                    baseQuery.append("AND DATE(cs.updated_date) = '").append(selectedDate).append("'");
-                }
-                break;
-
-            case "issued":
-                baseQuery.setLength(0);
-                baseQuery.append("SELECT em.applicant_name, em.loan_amount, em.cheque_amount, em.branch_name, \n")
-                        .append("       em.application_number, cs.consumer_type, cs.handover_date, cs.updated_by \n")
-                        .append("FROM import_data em \n")
-                        .append("JOIN issued_cheque cs ON em.cheque_id = cs.cheque_id \n")
-                        .append("WHERE em.cheque_status = 'Y' ");
-                break;
-
-            case "not-issued":
-                baseQuery.setLength(0);
-                baseQuery.append("SELECT em.applicant_name, em.loan_amount, em.cheque_amount, em.branch_name, \n")
-                        .append("       em.application_number \n")
-                        .append("FROM import_data em \n")
-                        .append("WHERE em.cheque_status = 'N' ");
-                break;
-
-            case "user-wise-selected-date":
-                if (selectedType != null && !selectedType.isEmpty() && selectedDate != null && !selectedDate.isEmpty()) {
-                    baseQuery.append("AND cs.updated_by = '").append(selectedType).append("' ")
-                            .append("AND DATE(cs.updated_date) = '").append(selectedDate).append("'");
-                }
-                break;
-
-            case "branch-wise-selected-date":
-                if (selectedType != null && !selectedType.isEmpty() && selectedDate != null && !selectedDate.isEmpty()) {
-                    baseQuery.append("AND em.branch_name = '").append(selectedType).append("' ")
-                            .append("AND DATE(cs.updated_date) = '").append(selectedDate).append("'");
-                }
+                baseQuery =baseQuery+ "AND DATE(cs.updated_date) = CURDATE()";
                 break;
 
             default:
                 throw new IllegalArgumentException("Invalid report type: " + reportType);
         }
+        return baseQuery;
+    }
 
-        return baseQuery.toString();
+    public static class MisReportRowMapper implements RowMapper<MisReport> {
+
+        @Override
+
+        public MisReport mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+            return new MisReport(
+
+                    rs.getString("applicant_name"),
+
+                    rs.getString("branch_name"),
+
+                    rs.getString("application_number"),
+
+                    rs.getLong("cheque_amount"),
+
+//                    rs.getString("ddfs_flag"),
+
+                    rs.getString("consumer_type"),
+
+                    rs.getDate("handover_date"),
+
+                    rs.getLong("loan_amount"),
+
+                    rs.getString("updated_by")
+
+            );
+
+        }
+
     }
 
 }
-
 

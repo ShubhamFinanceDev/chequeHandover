@@ -32,5 +32,4 @@ public interface BranchMasterRepo extends JpaRepository<BranchMaster,Long> {
     @Query("select b.branchName from BranchMaster b where b.branchCode in :branchCode")
     List<String> findByBranchCode(List<String> branchCode);
 
-
 }

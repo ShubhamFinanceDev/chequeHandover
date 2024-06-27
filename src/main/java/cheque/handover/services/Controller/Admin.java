@@ -16,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/admin")
-@CrossOrigin("*")
+@CrossOrigin
 public class Admin {
     @Autowired
     private Service service;
@@ -26,7 +26,6 @@ public class Admin {
     public ResponseEntity<CommonResponse> userDetail(@RequestBody UserDetail userDetail) {
         CommonResponse commonResponse = new CommonResponse();
         String emailId = userDetail.getEmailId();
-
 
         if(service.checkPattern(userDetail.getPassword(),userDetail.getEmpCode(),commonResponse,emailId)){
             commonResponse = service.saveUser(userDetail);
