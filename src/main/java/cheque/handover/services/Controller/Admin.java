@@ -5,6 +5,7 @@ import cheque.handover.services.Model.CommonResponse;
 import cheque.handover.services.Model.EditUserDetails;
 import cheque.handover.services.Model.RestPasswordRequest;
 import cheque.handover.services.Services.Service;
+import cheque.handover.services.Utility.PasswordPattern;
 import org.apache.commons.collections4.map.HashedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
