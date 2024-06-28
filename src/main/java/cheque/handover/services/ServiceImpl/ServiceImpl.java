@@ -721,7 +721,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         }
         return commonResponse;
     }
-    @Transactional
+
     public ResponseEntity<CommonResponse> userUpdate(Long userId, EditUserDetails inputDetails) {
 
         CommonResponse commonResponse = new CommonResponse();
@@ -735,16 +735,8 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             userDetails.getRoleMasters().setRole(inputDetails.getRoleMasters().getRole());
 
             for (AssignBranch assignBranch : userDetails.getAssignBranches()) {
+
                 inputDetails.getAssignBranches().removeIf(assignBranch1 -> assignBranch.getBranchCode().equals(assignBranch1.getBranchCode()));
-
-            }
-            logger.info("Granted Branches access {}",userDetails.getAssignBranches().size());
-
-            for (AssignBranch updatedBranch : inputDetails.getAssignBranches()) {
-                userDetails.getAssignBranches().removeIf(existingBranch -> updatedBranch.getBranchCode()!=existingBranch.getBranchCode());
-                logger.info("Branches access revoke {}",userDetails.getAssignBranches().size());
-
-                assignBranchRepo.deleteAllInBatch(userDetails.getAssignBranches());
             }
             inputDetails.getAssignBranches().forEach(branch -> {
                 branch.setUserMaster(userDetails);
