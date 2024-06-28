@@ -738,8 +738,10 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                 inputDetails.getAssignBranches().removeIf(assignBranch1 -> assignBranch.getBranchCode().equals(assignBranch1.getBranchCode()));
 
             }
+            logger.info("Granted Branches access {}",userDetails.getAssignBranches().size());
+
             for (AssignBranch updatedBranch : inputDetails.getAssignBranches()) {
-                userDetails.getAssignBranches().removeIf(existingBranch -> !(updatedBranch.getBranchCode().equals(existingBranch.getBranchCode())));
+                userDetails.getAssignBranches().removeIf(existingBranch -> updatedBranch.getBranchCode()!=existingBranch.getBranchCode());
                 assignBranchRepo.deleteAllInBatch(userDetails.getAssignBranches());
                 logger.info("Branches access revoke {}",userDetails.getAssignBranches().size());
             }
