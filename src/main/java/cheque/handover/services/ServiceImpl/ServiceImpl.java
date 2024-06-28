@@ -742,8 +742,9 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
 
             for (AssignBranch updatedBranch : inputDetails.getAssignBranches()) {
                 userDetails.getAssignBranches().removeIf(existingBranch -> updatedBranch.getBranchCode()!=existingBranch.getBranchCode());
-                assignBranchRepo.deleteAllInBatch(userDetails.getAssignBranches());
                 logger.info("Branches access revoke {}",userDetails.getAssignBranches().size());
+
+                assignBranchRepo.deleteAllInBatch(userDetails.getAssignBranches());
             }
             inputDetails.getAssignBranches().forEach(branch -> {
                 branch.setUserMaster(userDetails);
