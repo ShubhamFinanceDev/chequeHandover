@@ -1,8 +1,6 @@
 package cheque.handover.services.Services;
 
-import cheque.handover.services.Entity.AssignBranch;
 import cheque.handover.services.Entity.BranchMaster;
-import cheque.handover.services.Entity.RoleMaster;
 import cheque.handover.services.Entity.UserDetail;
 import cheque.handover.services.Model.*;
 import jakarta.servlet.http.HttpServletResponse;
@@ -10,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.sql.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -49,4 +48,6 @@ public interface Service {
     CommonResponse statusEnableOrDisable(String emailId, String updatedBy);
 
     ResponseEntity<CommonResponse> userUpdate(Long userId,EditUserDetails inputUpdate);
+
+    boolean checkPattern(String password, String empCode, CommonResponse commonResponse, String emailId);
 }
