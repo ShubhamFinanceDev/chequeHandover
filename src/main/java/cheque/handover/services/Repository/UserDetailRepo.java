@@ -31,6 +31,10 @@ public interface UserDetailRepo extends JpaRepository<UserDetail,Long> {
 
     @Query("select concat(u.firstName, ' ', u.lastName) from UserDetail u where u.emailId = :createdBy")
     String findFullNameByEmailId(@Param("createdBy") String createdBy);
+//    @Transactional
+//    @Modifying
+//    @Query("update UserDetail p set p.password=:newPassword where p.emailId=:email")
+//    void updatePasswordByOldPassword(String email, String newPassword);
 
 //    @Modifying
 //    @Transactional

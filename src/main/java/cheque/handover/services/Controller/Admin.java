@@ -83,4 +83,64 @@ public class Admin {
         return ResponseEntity.ok(service.userUpdate(userId,inputUpdate).getBody());
     }
 
+    //    @PutMapping("/update-password")
+//    public CommonResponse updatePassword(@RequestBody UpdatePassword updatePassword){
+//        CommonResponse commonResponse = new CommonResponse();
+//        try {
+//            Optional<UserDetail> userDetail = userDetailRepo.findByEmailId(updatePassword.getEmail());
+//            UserDetail userDetail1 = userDetail.get();
+//            if (updatePassword.getNewPassword().matches(".{8,}") && updatePassword.getConfirmNewPassword().matches(".{8,}")) {
+//                if (passwordEncoder.matches(updatePassword.getOldPassword(), userDetail1.getPassword())) {
+//                    return service.updateOldPassword(updatePassword);
+//                }else {
+//                    commonResponse.setCode("1111");
+//                    commonResponse.setMsg("Wrong password try again");
+//                }
+//            }else {
+//                commonResponse.setCode("1111");
+//                commonResponse.setMsg("Password is not in correct pattern");
+//            }
+//        }catch (Exception e){
+//            System.out.println(e);
+//            commonResponse.setCode("1111");
+//            commonResponse.setMsg("User not found or Technical issue :"+ e.getMessage());
+//        }
+//        return commonResponse;
+//    }
+
+
+//    @PutMapping("/update-password")
+//    public CommonResponse updatePassword(@RequestBody UpdatePassword updatePassword) {
+//        CommonResponse commonResponse = new CommonResponse();
+//        try {
+//            Optional<UserDetail> userDetailOptional = userDetailRepo.findByEmailId(updatePassword.getEmail());
+//            if (userDetailOptional.isPresent()) {
+//                UserDetail userDetail = userDetailOptional.get();
+//                if (isValidPassword(updatePassword.getNewPassword()) && isValidPassword(updatePassword.getConfirmNewPassword())) {
+//                    if (passwordEncoder.matches(updatePassword.getOldPassword(), userDetail.getPassword())) {
+//                        return service.updateOldPassword(updatePassword);
+//                    } else {
+//                        return commonMsg("1111", "Wrong password, please try again");
+//                    }
+//                } else {
+//                    return commonMsg("1111", "Password must be at least 8 characters long");
+//                }
+//            } else {
+//                return commonMsg("1111", "User not found");
+//            }
+//        } catch (Exception e) {
+//            return commonMsg("1111", "Technical issue: " + e.getMessage());
+//        }
+//    }
+//
+//    private boolean isValidPassword(String password) {
+//        return password != null && password.matches(".{8,}");
+//    }
+//
+//    private CommonResponse commonMsg(String code, String message) {
+//        CommonResponse commonResponse = new CommonResponse();
+//        commonResponse.setCode(code);
+//        commonResponse.setMsg(message);
+//        return commonResponse;
+//    }
 }

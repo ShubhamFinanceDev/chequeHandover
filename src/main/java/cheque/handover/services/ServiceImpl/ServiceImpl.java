@@ -624,11 +624,11 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return commonResponse;
     }
 
-    public List<MisReport> fetchReportData(String reportType, String selectedType, String fromDate, String toDate, String selectedDate) {
+    public List<MisReport> fetchReportData(String reportType, String selectedType, String fromDate, String toDate, String selectedDate, String status) {
         List<MisReport> fetchedData = new ArrayList<>();
         try {
 
-            return jdbcTemplate.query(misReportUtility.misQuery(reportType, selectedType, fromDate, toDate, selectedDate), new BeanPropertyRowMapper<>(MisReport.class));
+            return jdbcTemplate.query(misReportUtility.misQuery(reportType, selectedType, fromDate, toDate, selectedDate,status), new BeanPropertyRowMapper<>(MisReport.class));
         } catch (Exception e) {
             logger.error("Error while executing report query" + e.getMessage());
             return fetchedData;
@@ -760,4 +760,23 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         }
         return true;
     }
+
+//    public CommonResponse updateOldPassword(UpdatePassword updatePassword){
+//        CommonResponse commonResponse = new CommonResponse();
+//
+//        try {
+//            if (updatePassword.getNewPassword().equals(updatePassword.getConfirmNewPassword())){
+//                userDetailRepo.updatePasswordByOldPassword(updatePassword.getEmail(),passwordEncoder.encode(updatePassword.getNewPassword()));
+//                commonResponse.setCode("0000");
+//                commonResponse.setMsg("Password update successfully");
+//            }else {
+//                commonResponse.setCode("1111");
+//                commonResponse.setMsg("New password and confirm password are not match");
+//            }
+//        }catch (Exception e){
+//            commonResponse.setCode("1111");
+//            commonResponse.setMsg("Exception found :"+e.getMessage());
+//        }
+//        return commonResponse;
+//    }
 }
