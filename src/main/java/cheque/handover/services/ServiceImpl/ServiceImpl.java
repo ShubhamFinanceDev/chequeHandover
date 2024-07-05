@@ -761,12 +761,14 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return true;
     }
 
-//    public CommonResponse updateOldPassword(UpdatePassword updatePassword){
+//    public CommonResponse updateOldPassword(UpdatePassword updatePassword, Optional<UserDetail> userDetail){
 //        CommonResponse commonResponse = new CommonResponse();
 //
 //        try {
 //            if (updatePassword.getNewPassword().equals(updatePassword.getConfirmNewPassword())){
-//                userDetailRepo.updatePasswordByOldPassword(updatePassword.getEmail(),passwordEncoder.encode(updatePassword.getNewPassword()));
+//                UserDetail user = userDetail.get();
+//                user.setPassword(passwordEncoder.encode(updatePassword.getNewPassword()));
+//                userDetailRepo.save(user);
 //                commonResponse.setCode("0000");
 //                commonResponse.setMsg("Password update successfully");
 //            }else {

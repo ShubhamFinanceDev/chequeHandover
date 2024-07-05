@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 public interface Service {
@@ -50,5 +51,5 @@ public interface Service {
 
     boolean checkPattern(String password, String empCode, CommonResponse commonResponse, String emailId);
 
-//    CommonResponse updateOldPassword(UpdatePassword updatePassword);
+//    CommonResponse updateOldPassword(UpdatePassword updatePassword, Optional<UserDetail> userDetail);
 }

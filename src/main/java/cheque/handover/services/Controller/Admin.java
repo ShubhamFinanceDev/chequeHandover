@@ -4,6 +4,8 @@ import cheque.handover.services.Entity.UserDetail;
 import cheque.handover.services.Model.CommonResponse;
 import cheque.handover.services.Model.EditUserDetails;
 import cheque.handover.services.Model.RestPasswordRequest;
+//import cheque.handover.services.Model.UpdatePassword;
+import cheque.handover.services.Repository.UserDetailRepo;
 import cheque.handover.services.Services.Service;
 import org.apache.commons.collections4.map.HashedMap;
 import org.slf4j.Logger;
@@ -11,8 +13,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/admin")
@@ -20,6 +26,10 @@ import org.springframework.web.multipart.MultipartFile;
 public class Admin {
     @Autowired
     private Service service;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private UserDetailRepo userDetailRepo;
     private final Logger logger = LoggerFactory.getLogger(Admin.class);
 
     @PostMapping("/create-user")
@@ -83,32 +93,6 @@ public class Admin {
         return ResponseEntity.ok(service.userUpdate(userId,inputUpdate).getBody());
     }
 
-    //    @PutMapping("/update-password")
-//    public CommonResponse updatePassword(@RequestBody UpdatePassword updatePassword){
-//        CommonResponse commonResponse = new CommonResponse();
-//        try {
-//            Optional<UserDetail> userDetail = userDetailRepo.findByEmailId(updatePassword.getEmail());
-//            UserDetail userDetail1 = userDetail.get();
-//            if (updatePassword.getNewPassword().matches(".{8,}") && updatePassword.getConfirmNewPassword().matches(".{8,}")) {
-//                if (passwordEncoder.matches(updatePassword.getOldPassword(), userDetail1.getPassword())) {
-//                    return service.updateOldPassword(updatePassword);
-//                }else {
-//                    commonResponse.setCode("1111");
-//                    commonResponse.setMsg("Wrong password try again");
-//                }
-//            }else {
-//                commonResponse.setCode("1111");
-//                commonResponse.setMsg("Password is not in correct pattern");
-//            }
-//        }catch (Exception e){
-//            System.out.println(e);
-//            commonResponse.setCode("1111");
-//            commonResponse.setMsg("User not found or Technical issue :"+ e.getMessage());
-//        }
-//        return commonResponse;
-//    }
-
-
 //    @PutMapping("/update-password")
 //    public CommonResponse updatePassword(@RequestBody UpdatePassword updatePassword) {
 //        CommonResponse commonResponse = new CommonResponse();
@@ -118,7 +102,7 @@ public class Admin {
 //                UserDetail userDetail = userDetailOptional.get();
 //                if (isValidPassword(updatePassword.getNewPassword()) && isValidPassword(updatePassword.getConfirmNewPassword())) {
 //                    if (passwordEncoder.matches(updatePassword.getOldPassword(), userDetail.getPassword())) {
-//                        return service.updateOldPassword(updatePassword);
+//                        return service.updateOldPassword(updatePassword,userDetailOptional);
 //                    } else {
 //                        return commonMsg("1111", "Wrong password, please try again");
 //                    }
