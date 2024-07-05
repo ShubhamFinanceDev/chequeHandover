@@ -18,7 +18,7 @@ public class MisReportUtility {
                     if (status.equalsIgnoreCase("issued")) {
                         baseQuery.append("AND em.cheque_status = 'Y' ");
                     } else if (status.equalsIgnoreCase("not-issued")) {
-                        baseQuery = new StringBuilder("SELECT em.applicant_name, em.loan_amount, em.cheque_amount, em.branch_name, em.application_number FROM import_data em WHERE em.cheque_status = 'N' ");
+                        baseQuery = new StringBuilder("SELECT em.applicant_name, em.loan_amount, em.cheque_amount, em.branch_name,em.application_number, cs.consumer_type, cs.handover_date, cs.updated_by FROM import_data em JOIN issued_cheque cs ON em.cheque_id = cs.cheque_id  WHERE em.cheque_status = 'N' AND cs.updated_by = '").append(selectedType).append("' ");
                     }
                 }
                 if (!fromDate.isEmpty() && !toDate.isEmpty()) {
