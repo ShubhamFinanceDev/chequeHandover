@@ -4,7 +4,6 @@ import cheque.handover.services.Entity.UserDetail;
 import cheque.handover.services.Model.CommonResponse;
 import cheque.handover.services.Model.EditUserDetails;
 import cheque.handover.services.Model.RestPasswordRequest;
-//import cheque.handover.services.Model.UpdatePassword;
 import cheque.handover.services.Model.UpdatePassword;
 import cheque.handover.services.Repository.UserDetailRepo;
 import cheque.handover.services.Services.Service;
@@ -36,7 +35,6 @@ public class Admin {
     public ResponseEntity<CommonResponse> userDetail(@RequestBody UserDetail userDetail) {
         CommonResponse commonResponse = new CommonResponse();
         String emailId = userDetail.getEmailId();
-
 
         if(service.checkPattern(userDetail.getPassword(),userDetail.getEmpCode(),commonResponse,emailId)){
             commonResponse = service.saveUser(userDetail);

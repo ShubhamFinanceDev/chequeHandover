@@ -21,8 +21,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.sql.Date;
-import java.util.List;
 
 @RestController
 @RequestMapping("/handover-service")
@@ -111,8 +109,6 @@ public class HandoverLogin {
         if (reset.getConfirmNewPassword().matches(".{8,}") && reset.getNewPassword().matches(".{8,}")) {
             return ResponseEntity.ok(service.updatePassword(reset.getConfirmNewPassword(), reset.getNewPassword(), reset.getEmailId()));
         }else {
-
-
             commonResponse.setCode("1111");
             commonResponse.setMsg("your password is to short.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(commonResponse);

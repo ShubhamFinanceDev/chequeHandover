@@ -14,11 +14,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -26,10 +28,12 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 @Service
 public class ServiceImpl implements cheque.handover.services.Services.Service {
@@ -124,26 +128,18 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             userDetails.setMobileNo("******" + userData.getMobileNo().substring(userData.getMobileNo().length() - 4));
             userDetails.setEncodedMobileNo(Base64.getEncoder().encodeToString(userData.getMobileNo().getBytes()));
             String fullNames = userDetailRepo.findFullNameByEmailId(userData.getCreatedBy());
-            if (!fullNames.isEmpty()) {
+            if (fullNames != null) {
                 userDetails.setCreatedBy(fullNames);
             }
             userDetails.setEnabled(userData.isEnabled());
             userDetails.setCreateDate(String.valueOf(userData.getCreateDate()));
             List<String> assignBranches = new ArrayList<>();
-
             if (!userData.getAssignBranches().isEmpty()) {
                 userData.getAssignBranches().forEach(branch -> {
 
                     assignBranches.add(branch.getBranchCode());
                 });
             }
-            List<String> allBranches = userUtility.listOfBranch(assignBranches);
-            if (assignBranches.equals("ALL")) {
-                userDetails.setAssignBranches(allBranches);
-            } else {
-                userUtility.listOfBranch(assignBranches);
-            }
-
             userDetails.setAssignBranches(userUtility.listOfBranch(assignBranches));
             userDetails.setBranchesCode(assignBranches);
             userDetails.setRoleMaster(userData.getRoleMasters().getRole());
@@ -390,7 +386,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                     otpRepository.save(otpManage);
 
 //                    resetPasswordResponse.setOtpId(otpManage.getOtpId());
-                    resetPasswordResponse.setOtpCode(String.valueOf(otpCode));
+//                    resetPasswordResponse.setOtpCode(String.valueOf(otpCode));
                     resetPasswordResponse.setEmailId(otpManage.getEmailId());
 
                     commonResponse.setCode("0000");
@@ -680,7 +676,6 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         if (!userAssignBranch.isEmpty()) {
             commonResponse.setCode("0000");
             commonResponse.setMsg("Data found successfully");
-            userAssignBranch.remove("ALL");
             assignBranchResponse.setAssignBranchList(userAssignBranch);
         } else {
             commonResponse.setCode("1111");
@@ -713,7 +708,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         }
         return commonResponse;
     }
-
+    @Transactional
     public ResponseEntity<CommonResponse> userUpdate(Long userId, EditUserDetails inputDetails) {
 
         CommonResponse commonResponse = new CommonResponse();
@@ -725,16 +720,14 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             userDetails.setLastName(inputDetails.getLastName());
             userDetails.setMobileNo(inputDetails.getMobileNo());
             userDetails.getRoleMasters().setRole(inputDetails.getRoleMasters().getRole());
-
-            for (AssignBranch assignBranch : userDetails.getAssignBranches()) {
-
-                inputDetails.getAssignBranches().removeIf(assignBranch1 -> assignBranch.getBranchCode().equals(assignBranch1.getBranchCode()));
-            }
-            inputDetails.getAssignBranches().forEach(branch -> {
+            List<AssignBranch> newBranch=inputDetails.getAssignBranches().stream().filter(branch -> userDetails.getAssignBranches().stream().noneMatch(addedBranch -> addedBranch.getBranchCode().equals(branch.getBranchCode()))).collect(Collectors.toList());
+            List<AssignBranch> revokeBranches= userDetails.getAssignBranches().stream().filter(branch -> inputDetails.getAssignBranches().stream().noneMatch(revokeBranch -> revokeBranch.getBranchCode().equals(branch.getBranchCode()))).collect(Collectors.toList());
+            newBranch.forEach(branch -> {
                 branch.setUserMaster(userDetails);
             });
 
             userDetails.setAssignBranches(inputDetails.getAssignBranches());
+            assignBranchRepo.deleteAll(revokeBranches);
             userDetailRepo.save(userDetails);
             commonResponse.setCode("0000");
             commonResponse.setMsg("Updated successfully");
