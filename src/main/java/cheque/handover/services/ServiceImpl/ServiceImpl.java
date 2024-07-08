@@ -754,24 +754,34 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return true;
     }
 
-    public CommonResponse updateOldPassword(UpdatePassword updatePassword, Optional<UserDetail> userDetail){
+    public CommonResponse updateOldPassword(UpdatePassword updatePassword, UserDetail userDetail){
         CommonResponse commonResponse = new CommonResponse();
-
         try {
-            if (updatePassword.getNewPassword().equals(updatePassword.getConfirmNewPassword())){
-                UserDetail user = userDetail.get();
-                user.setPassword(passwordEncoder.encode(updatePassword.getNewPassword()));
-                userDetailRepo.save(user);
+                userDetail.setPassword(passwordEncoder.encode(updatePassword.getNewPassword()));
+                userDetailRepo.save(userDetail);
                 commonResponse.setCode("0000");
-                commonResponse.setMsg("Password update successfully");
-            }else {
-                commonResponse.setCode("1111");
-                commonResponse.setMsg("New password and confirm password are not match");
-            }
+                commonResponse.setMsg("Update Password successful");
         }catch (Exception e){
             commonResponse.setCode("1111");
             commonResponse.setMsg("Exception found :"+e.getMessage());
         }
         return commonResponse;
+    }
+
+    public void setUpdatePasswordResponse(UpdatePassword updatePassword, UserDetail userDetailOptional, CommonResponse commonResponse){
+        if (updatePassword.getNewPassword().equals(updatePassword.getConfirmNewPassword())) {
+            if (updatePassword.getNewPassword().matches(".{8,}") && updatePassword.getConfirmNewPassword().matches(".{8,}")) {
+                if (!passwordEncoder.matches(updatePassword.getOldPassword(), userDetailOptional.getPassword())) {
+                    commonResponse.setMsg("Old password is not correct");
+                    commonResponse.setCode("1111");
+                }
+            } else {
+                commonResponse.setMsg("The new password or confirm password is not 8 characters long");
+                commonResponse.setCode("1111");
+            }
+        }else {
+            commonResponse.setCode("1111");
+            commonResponse.setMsg("New password and confirm password did not matched");
+        }
     }
 }

@@ -97,32 +97,17 @@ public class Admin {
         try {
             Optional<UserDetail> userDetailOptional = userDetailRepo.findByEmailId(updatePassword.getEmail());
             if (userDetailOptional.isPresent()) {
-                UserDetail userDetail = userDetailOptional.get();
-                if (isValidPassword(updatePassword.getNewPassword()) && isValidPassword(updatePassword.getConfirmNewPassword())) {
-                    if (passwordEncoder.matches(updatePassword.getOldPassword(), userDetail.getPassword())) {
-                        return service.updateOldPassword(updatePassword,userDetailOptional);
-                    } else {
-                        return commonMsg("Wrong password, please try again");
-                    }
-                } else {
-                    return commonMsg("Password must be at least 8 characters long");
+                service.setUpdatePasswordResponse(updatePassword, userDetailOptional.get(), commonResponse);
+                if (commonResponse.getCode() == null) {
+                    return service.updateOldPassword(updatePassword, userDetailOptional.get());
                 }
             } else {
-                return commonMsg("User not found");
+                commonResponse.setMsg("user not found");
+                commonResponse.setCode("1111");
             }
         } catch (Exception e) {
-            return commonMsg("Technical issue: " + e.getMessage());
+            System.out.println(e.getMessage());
         }
-    }
-
-    private boolean isValidPassword(String password) {
-        return password != null && password.matches(".{8,}");
-    }
-
-    private CommonResponse commonMsg(String message) {
-        CommonResponse commonResponse = new CommonResponse();
-        commonResponse.setCode("1111");
-        commonResponse.setMsg(message);
         return commonResponse;
     }
 }
