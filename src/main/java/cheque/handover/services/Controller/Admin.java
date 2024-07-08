@@ -5,6 +5,7 @@ import cheque.handover.services.Model.CommonResponse;
 import cheque.handover.services.Model.EditUserDetails;
 import cheque.handover.services.Model.RestPasswordRequest;
 //import cheque.handover.services.Model.UpdatePassword;
+import cheque.handover.services.Model.UpdatePassword;
 import cheque.handover.services.Repository.UserDetailRepo;
 import cheque.handover.services.Services.Service;
 import org.apache.commons.collections4.map.HashedMap;
@@ -14,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -93,38 +93,38 @@ public class Admin {
         return ResponseEntity.ok(service.userUpdate(userId,inputUpdate).getBody());
     }
 
-//    @PutMapping("/update-password")
-//    public CommonResponse updatePassword(@RequestBody UpdatePassword updatePassword) {
-//        CommonResponse commonResponse = new CommonResponse();
-//        try {
-//            Optional<UserDetail> userDetailOptional = userDetailRepo.findByEmailId(updatePassword.getEmail());
-//            if (userDetailOptional.isPresent()) {
-//                UserDetail userDetail = userDetailOptional.get();
-//                if (isValidPassword(updatePassword.getNewPassword()) && isValidPassword(updatePassword.getConfirmNewPassword())) {
-//                    if (passwordEncoder.matches(updatePassword.getOldPassword(), userDetail.getPassword())) {
-//                        return service.updateOldPassword(updatePassword,userDetailOptional);
-//                    } else {
-//                        return commonMsg("1111", "Wrong password, please try again");
-//                    }
-//                } else {
-//                    return commonMsg("1111", "Password must be at least 8 characters long");
-//                }
-//            } else {
-//                return commonMsg("1111", "User not found");
-//            }
-//        } catch (Exception e) {
-//            return commonMsg("1111", "Technical issue: " + e.getMessage());
-//        }
-//    }
-//
-//    private boolean isValidPassword(String password) {
-//        return password != null && password.matches(".{8,}");
-//    }
-//
-//    private CommonResponse commonMsg(String code, String message) {
-//        CommonResponse commonResponse = new CommonResponse();
-//        commonResponse.setCode(code);
-//        commonResponse.setMsg(message);
-//        return commonResponse;
-//    }
+    @PutMapping("/update-password")
+    public CommonResponse updatePassword(@RequestBody UpdatePassword updatePassword) {
+        CommonResponse commonResponse = new CommonResponse();
+        try {
+            Optional<UserDetail> userDetailOptional = userDetailRepo.findByEmailId(updatePassword.getEmail());
+            if (userDetailOptional.isPresent()) {
+                UserDetail userDetail = userDetailOptional.get();
+                if (isValidPassword(updatePassword.getNewPassword()) && isValidPassword(updatePassword.getConfirmNewPassword())) {
+                    if (passwordEncoder.matches(updatePassword.getOldPassword(), userDetail.getPassword())) {
+                        return service.updateOldPassword(updatePassword,userDetailOptional);
+                    } else {
+                        return commonMsg("Wrong password, please try again");
+                    }
+                } else {
+                    return commonMsg("Password must be at least 8 characters long");
+                }
+            } else {
+                return commonMsg("User not found");
+            }
+        } catch (Exception e) {
+            return commonMsg("Technical issue: " + e.getMessage());
+        }
+    }
+
+    private boolean isValidPassword(String password) {
+        return password != null && password.matches(".{8,}");
+    }
+
+    private CommonResponse commonMsg(String message) {
+        CommonResponse commonResponse = new CommonResponse();
+        commonResponse.setCode("1111");
+        commonResponse.setMsg(message);
+        return commonResponse;
+    }
 }

@@ -51,5 +51,5 @@ public interface Service {
 
     boolean checkPattern(String password, String empCode, CommonResponse commonResponse, String emailId);
 
-//    CommonResponse updateOldPassword(UpdatePassword updatePassword, Optional<UserDetail> userDetail);
+    CommonResponse updateOldPassword(UpdatePassword updatePassword, Optional<UserDetail> userDetail);
 }
