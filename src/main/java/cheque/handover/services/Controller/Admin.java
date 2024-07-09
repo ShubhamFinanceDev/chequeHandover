@@ -4,6 +4,8 @@ import cheque.handover.services.Entity.UserDetail;
 import cheque.handover.services.Model.CommonResponse;
 import cheque.handover.services.Model.EditUserDetails;
 import cheque.handover.services.Model.RestPasswordRequest;
+import cheque.handover.services.Model.UpdatePassword;
+import cheque.handover.services.Repository.UserDetailRepo;
 import cheque.handover.services.Services.Service;
 import org.apache.commons.collections4.map.HashedMap;
 import org.slf4j.Logger;
@@ -11,8 +13,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/admin")
@@ -20,6 +25,10 @@ import org.springframework.web.multipart.MultipartFile;
 public class Admin {
     @Autowired
     private Service service;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private UserDetailRepo userDetailRepo;
     private final Logger logger = LoggerFactory.getLogger(Admin.class);
 
     @PostMapping("/create-user")
@@ -82,4 +91,23 @@ public class Admin {
         return ResponseEntity.ok(service.userUpdate(userId,inputUpdate).getBody());
     }
 
+    @PutMapping("/update-password")
+    public CommonResponse updatePassword(@RequestBody UpdatePassword updatePassword) {
+        CommonResponse commonResponse = new CommonResponse();
+        try {
+            Optional<UserDetail> userDetailOptional = userDetailRepo.findByEmailId(updatePassword.getEmail());
+            if (userDetailOptional.isPresent()) {
+                service.setUpdatePasswordResponse(updatePassword, userDetailOptional.get(), commonResponse);
+                if (commonResponse.getCode() == null) {
+                    return service.updateOldPassword(updatePassword, userDetailOptional.get());
+                }
+            } else {
+                commonResponse.setMsg("user not found");
+                commonResponse.setCode("1111");
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return commonResponse;
+    }
 }

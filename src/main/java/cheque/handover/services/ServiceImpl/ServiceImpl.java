@@ -463,24 +463,27 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             List<String> branchNames = userUtility.findBranchesByUser(emailId);
             applicationDetails = applicationDetailsRepo.findAllDetails(branchNames, pageable);
             totalCount = applicationDetailsRepo.findCount(branchNames);
+            addFetchData(commonResponse, fetchExcelData, applicationDetails, totalCount, pageNo, pageSize);
 
-            if (!applicationDetails.isEmpty()) {
-                commonResponse.setMsg("Data found successfully");
-                commonResponse.setCode("0000");
-                fetchExcelData.setTotalCount(totalCount);
-                fetchExcelData.setNextPage(pageNo <= (totalCount / pageSize));
-                fetchExcelData.setApplicationDetails(applicationDetails);
-                fetchExcelData.setCommonResponse(commonResponse);
-                return fetchExcelData;
-            } else {
-                commonResponse.setCode("1111");
-                commonResponse.setMsg("Data not found");
-                fetchExcelData.setCommonResponse(commonResponse);
-            }
         } catch (Exception e) {
             System.out.println(("Technical issue :" + e.getMessage()));
         }
         return fetchExcelData;
+    }
+
+    private void addFetchData(CommonResponse commonResponse, FetchExcelData fetchExcelData, List<ApplicationDetails> applicationDetails, Long totalCount, int pageNo, int pageSize) {
+        if (!applicationDetails.isEmpty()) {
+            commonResponse.setMsg("Data found successfully");
+            commonResponse.setCode("0000");
+            fetchExcelData.setTotalCount(totalCount);
+            fetchExcelData.setNextPage(pageNo <= (totalCount / pageSize));
+            fetchExcelData.setApplicationDetails(applicationDetails);
+            fetchExcelData.setCommonResponse(commonResponse);
+        } else {
+            commonResponse.setCode("1111");
+            commonResponse.setMsg("Data not found");
+            fetchExcelData.setCommonResponse(commonResponse);
+        }
     }
 
     public FetchExcelData fetchExcelDataByApplicationNo(String applicationNo, String branchName, int pageNo, String emailId, String status) {
@@ -499,27 +502,11 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                     totalCount = applicationDetails.size();
                 }
             }
+            addFetchData(commonResponse, fetchExcelData, applicationDetails, totalCount, pageNo, pageSize);
+
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-
-        if (!applicationDetails.isEmpty()) {
-            commonResponse.setMsg("Data found successfully");
-            commonResponse.setCode("0000");
-            fetchExcelData.setTotalCount(totalCount);
-            fetchExcelData.setNextPage(pageNo <= (totalCount / pageSize));
-            fetchExcelData.setApplicationDetails(applicationDetails);
-            fetchExcelData.setCommonResponse(commonResponse);
-
-            fetchExcelData.setApplicationDetails(applicationDetails);
-            fetchExcelData.setCommonResponse(commonResponse);
-        } else {
-            commonResponse.setCode("1111");
-            commonResponse.setMsg("Data not found");
-
-            fetchExcelData.setCommonResponse(commonResponse);
-        }
-
         return fetchExcelData;
     }
 
@@ -765,5 +752,36 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             return false;
         }
         return true;
+    }
+
+    public CommonResponse updateOldPassword(UpdatePassword updatePassword, UserDetail userDetail){
+        CommonResponse commonResponse = new CommonResponse();
+        try {
+                userDetail.setPassword(passwordEncoder.encode(updatePassword.getNewPassword()));
+                userDetailRepo.save(userDetail);
+                commonResponse.setCode("0000");
+                commonResponse.setMsg("Update Password successful");
+        }catch (Exception e){
+            commonResponse.setCode("1111");
+            commonResponse.setMsg("Exception found :"+e.getMessage());
+        }
+        return commonResponse;
+    }
+
+    public void setUpdatePasswordResponse(UpdatePassword updatePassword, UserDetail userDetailOptional, CommonResponse commonResponse){
+        if (updatePassword.getNewPassword().equals(updatePassword.getConfirmNewPassword())) {
+            if (updatePassword.getNewPassword().matches(".{8,}") && updatePassword.getConfirmNewPassword().matches(".{8,}")) {
+                if (!passwordEncoder.matches(updatePassword.getOldPassword(), userDetailOptional.getPassword())) {
+                    commonResponse.setMsg("Old password is not correct");
+                    commonResponse.setCode("1111");
+                }
+            } else {
+                commonResponse.setMsg("The new password or confirm password is not 8 characters long");
+                commonResponse.setCode("1111");
+            }
+        }else {
+            commonResponse.setCode("1111");
+            commonResponse.setMsg("New password and confirm password did not matched");
+        }
     }
 }
