@@ -21,7 +21,7 @@ import java.io.IOException;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private Logger logger = LoggerFactory.getLogger(OncePerRequestFilter.class);
+    private final Logger logger = LoggerFactory.getLogger(OncePerRequestFilter.class);
     @Autowired
     private JwtHelper jwtHelper;
 
@@ -36,6 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String username = null;
             String token = null;
         if (!request.getRequestURI().startsWith("/actuator") && !request.getRequestURI().startsWith("/favicon.ico")) {
+            logger.info(" Invoked request :  {}",request.getRequestURI());
             logger.info(" Header :  {}", requestHeader);
             if (requestHeader != null && requestHeader.startsWith("Bearer")) {
                 //looking good
