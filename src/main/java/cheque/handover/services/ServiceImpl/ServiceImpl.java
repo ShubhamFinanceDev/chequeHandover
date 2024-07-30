@@ -770,15 +770,18 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
 
     public void setUpdatePasswordResponse(UpdatePassword updatePassword, UserDetail userDetailOptional, CommonResponse commonResponse){
         if (updatePassword.getNewPassword().equals(updatePassword.getConfirmNewPassword())) {
-            if (updatePassword.getNewPassword().matches(".{8,}") && updatePassword.getConfirmNewPassword().matches(".{8,}")) {
-                if (!passwordEncoder.matches(updatePassword.getOldPassword(), userDetailOptional.getPassword())) {
-                    commonResponse.setMsg("Old password is not correct");
-                    commonResponse.setCode("1111");
-                }
-            } else {
+            if (!(updatePassword.getNewPassword().matches(".{8,}") && updatePassword.getConfirmNewPassword().matches(".{8,}"))) {
                 commonResponse.setMsg("The new password or confirm password is not 8 characters long");
                 commonResponse.setCode("1111");
+//                if (/*!passwordEncoder.matches(updatePassword.getOldPassword(), userDetailOptional.getPassword())*/ ) {
+//                    commonResponse.setMsg("Old password is not correct");
+//                    commonResponse.setCode("1111");
+//                }
             }
+//            else {
+//                commonResponse.setMsg("The new password or confirm password is not 8 characters long");
+//                commonResponse.setCode("1111");
+//            }
         }else {
             commonResponse.setCode("1111");
             commonResponse.setMsg("New password and confirm password did not matched");
