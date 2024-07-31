@@ -99,7 +99,7 @@ public class Admin {
             if (userDetailOptional.isPresent()) {
                 service.setUpdatePasswordResponse(updatePassword, userDetailOptional.get(), commonResponse);
                 if (commonResponse.getCode() == null) {
-                    return service.updateOldPassword(updatePassword, userDetailOptional.get());
+                    commonResponse = service.updateOldPassword(updatePassword, userDetailOptional.get());
                 }
             } else {
                 commonResponse.setMsg("user not found");
