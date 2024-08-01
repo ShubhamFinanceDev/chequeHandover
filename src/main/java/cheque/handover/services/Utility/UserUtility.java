@@ -40,9 +40,9 @@ public class UserUtility {
     }
 
 
-    public String findByGivenCriteria(String applicationNo, String branchName, String status, Pageable pageable) {
+    public String findByGivenCriteria(String applicationNo, String branchName, String status) {
 
-        StringBuilder query = new StringBuilder("SELECT * FROM import_data WHERE ");
+        StringBuilder query = new StringBuilder();
 
         boolean isFirstCondition = true;
 
@@ -66,9 +66,11 @@ public class UserUtility {
             query.append("cheque_status = '").append(status).append("'");
             isFirstCondition = false;
         }
-
-        query.append(" LIMIT ").append(pageable.getPageSize()).append(" OFFSET ").append(pageable.getOffset());
-
         return query.toString();
+    }
+
+    public String pagination(Pageable pageable)
+    {
+        return " LIMIT " + pageable.getPageSize() + " OFFSET " + pageable.getOffset();
     }
 }

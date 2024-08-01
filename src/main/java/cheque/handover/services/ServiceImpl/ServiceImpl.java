@@ -339,7 +339,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                     }
                     if (!errorMsg.isEmpty()) break;
                     applicationDetails1.setChequeStatus("N");
-                    applicationDetails1.setUploadBy(emailId);
+                    applicationDetails1.setUploadedBy(emailId);
                     applicationDetails1.setUploadDate(Timestamp.from(Instant.now()));
                     applicationDetails.add(applicationDetails1);
                 }
@@ -491,15 +491,19 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         FetchExcelData fetchExcelData = new FetchExcelData();
         List<ApplicationDetails> applicationDetails = new ArrayList<>();
         int pageSize = 100;
-        long totalCount = 0;
+        Long totalCount = 0L;
 
         Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
         List<String> assignBranches = userUtility.findBranchesByUser(emailId);
         try {
             for (String branch : assignBranches) {
                 if (branch.equals(branchName) || branchName != null && !branchName.isEmpty() || applicationNo != null && !applicationNo.isEmpty() || status != null && !status.isEmpty()) {
-                    applicationDetails = jdbcTemplate.query(userUtility.findByGivenCriteria(applicationNo, branchName, status, pageable), new BeanPropertyRowMapper<>(ApplicationDetails.class));
-                    totalCount = applicationDetails.size();
+                    String searchFilter=userUtility.findByGivenCriteria(applicationNo, branchName, status);
+                    String searchQuery="SELECT * FROM import_data WHERE "+searchFilter+userUtility.pagination(pageable);
+                    applicationDetails = jdbcTemplate.query(searchQuery, new BeanPropertyRowMapper<>(ApplicationDetails.class));
+                    String countQuery="SELECT count(*) FROM import_data WHERE "+searchFilter;
+                    totalCount= jdbcTemplate.queryForObject(countQuery, Long.class);
+                    totalCount=(totalCount!=null) ? totalCount: 0;
                 }
             }
             addFetchData(commonResponse, fetchExcelData, applicationDetails, totalCount, pageNo, pageSize);

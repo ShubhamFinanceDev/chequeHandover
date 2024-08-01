@@ -13,8 +13,8 @@ import java.sql.Timestamp;
 public class ApplicationDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "cheque_Id")
-    private Long id;
+    @Column(name = "cheque_id")
+    private Long chequeId;
     @Column(name = "applicant_name")
     private String applicantName;
     @Column(name = "branch_name")
@@ -40,7 +40,7 @@ public class ApplicationDetails {
     @Column(name = "cheque_number")
     private Long chequeNumber;
     @Column(name="uploaded_by")
-    private String uploadBy;
+    private String uploadedBy;
     @Column(name = "upload_date")
     private Timestamp uploadDate;
 
