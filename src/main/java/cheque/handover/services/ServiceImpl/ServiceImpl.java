@@ -624,11 +624,11 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return commonResponse;
     }
 
-    public List<MisReport> fetchReportData(String reportType, String selectedType) {
+    public List<MisReport> fetchReportData(String reportType, String selectedType, String fromDate, String toDate, String selectedDate, String status) {
         List<MisReport> fetchedData = new ArrayList<>();
         try {
 
-            return jdbcTemplate.query(misReportUtility.misQuery(reportType, selectedType), new MisReportUtility.MisReportRowMapper());
+            return jdbcTemplate.query(misReportUtility.misQuery(reportType, selectedType, fromDate, toDate, selectedDate,status), new BeanPropertyRowMapper<>(MisReport.class));
         } catch (Exception e) {
             logger.error("Error while executing report query" + e.getMessage());
             return fetchedData;
@@ -650,14 +650,13 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         }
         for (MisReport details : applicationDetails) {
             Row row = sheet.createRow(rowCount++);
-            row.createCell(0).setCellValue(details.getApplicationNumber());
-            row.createCell(1).setCellValue(details.getBranchName());
-            row.createCell(2).setCellValue(details.getApplicantName());
-            row.createCell(3).setCellValue(details.getChequeAmount());
-            row.createCell(4).setCellValue(details.getConsumerType());
-            row.createCell(5).setCellValue(details.getHandoverDate().toString());
-            row.createCell(6).setCellValue(details.getLoanAmount());
-            row.createCell(7).setCellValue(details.getUpdatedBy());
+            row.createCell(0).setCellValue(details.getApplicationNumber() != null ? details.getApplicationNumber() : "");
+            row.createCell(1).setCellValue(details.getBranchName() != null ? details.getBranchName() : "");
+            row.createCell(2).setCellValue(details.getApplicantName() != null ? details.getApplicantName() : "");
+            row.createCell(3).setCellValue(details.getChequeAmount() != null ? details.getChequeAmount() : 0.0);
+            row.createCell(4).setCellValue(details.getConsumerType() != null ? details.getConsumerType() : "");
+            row.createCell(5).setCellValue(details.getHandoverDate() != null ? details.getHandoverDate().toString() : "");
+            row.createCell(6).setCellValue(details.getLoanAmount() != null ? details.getLoanAmount() : 0.0);
         }
 
         try {
@@ -757,5 +756,39 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             return false;
         }
         return true;
+    }
+
+    public CommonResponse updateOldPassword(UpdatePassword updatePassword, UserDetail userDetail){
+        CommonResponse commonResponse = new CommonResponse();
+        try {
+                userDetail.setPassword(passwordEncoder.encode(updatePassword.getNewPassword()));
+                userDetailRepo.save(userDetail);
+                commonResponse.setCode("0000");
+                commonResponse.setMsg("Update Password successful");
+        }catch (Exception e){
+            commonResponse.setCode("1111");
+            commonResponse.setMsg("Exception found :"+e.getMessage());
+        }
+        return commonResponse;
+    }
+
+    public void setUpdatePasswordResponse(UpdatePassword updatePassword, UserDetail userDetailOptional, CommonResponse commonResponse){
+        if (updatePassword.getNewPassword().equals(updatePassword.getConfirmNewPassword())) {
+            if (!(updatePassword.getNewPassword().matches(".{8,}") && updatePassword.getConfirmNewPassword().matches(".{8,}"))) {
+                commonResponse.setMsg("The new password or confirm password is not 8 characters long");
+                commonResponse.setCode("1111");
+//                if (/*!passwordEncoder.matches(updatePassword.getOldPassword(), userDetailOptional.getPassword())*/ ) {
+//                    commonResponse.setMsg("Old password is not correct");
+//                    commonResponse.setCode("1111");
+//                }
+            }
+//            else {
+//                commonResponse.setMsg("The new password or confirm password is not 8 characters long");
+//                commonResponse.setCode("1111");
+//            }
+        }else {
+            commonResponse.setCode("1111");
+            commonResponse.setMsg("New password and confirm password did not matched");
+        }
     }
 }

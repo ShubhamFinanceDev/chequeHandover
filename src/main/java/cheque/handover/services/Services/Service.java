@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.sql.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 public interface Service {
@@ -40,7 +41,7 @@ public interface Service {
     CommonResponse chequeStatus(ApplicationFlagUpdate flagUpdate, MultipartFile file) throws IOException, ExecutionException, InterruptedException;
 
     CommonResponse saveBranch(MultipartFile file, String emailId);
-    List<MisReport> fetchReportData(String reportType, String selectedType);
+    List<MisReport> fetchReportData(String reportType, String selectedType, String fromDate, String toDate, String selectedDate, String status);
     void generateExcel(HttpServletResponse response, List<MisReport> applicationDetails) throws IOException;
 
     AllAssignBranchResponse findAssignBranchList(String emailId);
@@ -50,4 +51,8 @@ public interface Service {
     ResponseEntity<CommonResponse> userUpdate(Long userId,EditUserDetails inputUpdate);
 
     boolean checkPattern(String password, String empCode, CommonResponse commonResponse, String emailId);
+
+    CommonResponse updateOldPassword(UpdatePassword updatePassword, UserDetail userDetail);
+
+    void setUpdatePasswordResponse(UpdatePassword updatePassword, UserDetail userDetailOptional, CommonResponse commonResponse);
 }
