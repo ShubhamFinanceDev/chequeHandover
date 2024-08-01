@@ -43,7 +43,7 @@ public class OtpUtility {
 
             String msgBody = "Dear User\n Your OTP for reset password  is: " + otpCode + " Please enter this OTP to proceed. \n Thank you,\nShubham Finance;";
 
-            System.out.println(msgBody);
+//            System.out.println(msgBody);
 
             mailMessage.setFrom(sender);
             mailMessage.setTo(sentTo);
