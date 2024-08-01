@@ -41,7 +41,7 @@ public class OtpUtility {
         try {
             SimpleMailMessage mailMessage = new SimpleMailMessage();
 
-            String msgBody = "Dear Sir/Mam \n\n\n\n Your OTP for reset password  is: " + otpCode + ".Please enter this OTP to proceed. \n Regards,\nIT Support;";
+            String msgBody = "Dear Sir/Mam \n\n\n\n Your One time password is: " + otpCode + ". Please enter this OTP to complete the reset password process. \n\n\n\n Regards,\nIT Support.";
 
 //            System.out.println(msgBody);
 
