@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -50,20 +51,27 @@ public class HandoverLogin {
 
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest request) {
-
-//        System.out.println("email+"+request.getEmailId());
-//        System.out.println(passwordEncoder.encode(request.getPassword()));
-
-        final boolean[] userRole = new boolean[1];
+        final int[] userRole = new int[1];
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmailId());
-
         this.doAuthenticate(request.getEmailId(), request.getPassword());
 
         String token = this.helper.generateToken(userDetails);
+
         userDetails.getAuthorities().forEach(grantedAuthority -> {
-                String roleName= String.valueOf(grantedAuthority);
-              userRole[0] =(roleName.equals("ROLE_ADMIN")) ? true : false;
+            String roleName = String.valueOf(grantedAuthority);
+
+            switch (roleName) {
+                case "ROLE_ADMIN":
+                    userRole[0] = 0;
+                    break;
+                case "ROLE_USER":
+                    userRole[0] = 1;
+                    break;
+                case "ROLE_REPORT_USER":
+                    userRole[0] = 2;
+                    break;
+            }
             System.out.println(roleName);
         });
 

@@ -8,9 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.sql.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 public interface Service {
@@ -55,4 +53,6 @@ public interface Service {
     CommonResponse updateOldPassword(UpdatePassword updatePassword, UserDetail userDetail);
 
     void setUpdatePasswordResponse(UpdatePassword updatePassword, UserDetail userDetailOptional, CommonResponse commonResponse);
+
+    ResponseEntity<?> excelExportService(String loanNo, HttpServletResponse response);
 }

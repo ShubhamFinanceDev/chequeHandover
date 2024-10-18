@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -28,7 +29,6 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -67,6 +67,8 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
     private LoginDetailsRepo loginDetailsRepo;
     @Autowired
     private AssignBranchRepo assignBranchRepo;
+    @Autowired
+    private GetExcelDataForReportUser getExcelDataForReportUser;
 
 
     private final Logger logger = LoggerFactory.getLogger(User.class);
@@ -339,7 +341,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                     }
                     if (!errorMsg.isEmpty()) break;
                     applicationDetails1.setChequeStatus("N");
-                    applicationDetails1.setUploadBy(emailId);
+                    applicationDetails1.setUploadedBy(emailId);
                     applicationDetails1.setUploadDate(Timestamp.from(Instant.now()));
                     applicationDetails.add(applicationDetails1);
                 }
@@ -491,15 +493,19 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         FetchExcelData fetchExcelData = new FetchExcelData();
         List<ApplicationDetails> applicationDetails = new ArrayList<>();
         int pageSize = 100;
-        long totalCount = 0;
+        Long totalCount = 0L;
 
         Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
         List<String> assignBranches = userUtility.findBranchesByUser(emailId);
         try {
             for (String branch : assignBranches) {
                 if (branch.equals(branchName) || branchName != null && !branchName.isEmpty() || applicationNo != null && !applicationNo.isEmpty() || status != null && !status.isEmpty()) {
-                    applicationDetails = jdbcTemplate.query(userUtility.findByGivenCriteria(applicationNo, branchName, status, pageable), new BeanPropertyRowMapper<>(ApplicationDetails.class));
-                    totalCount = applicationDetails.size();
+                    String searchFilter=userUtility.findByGivenCriteria(applicationNo, branchName, status);
+                    String searchQuery="SELECT * FROM import_data WHERE "+searchFilter+userUtility.pagination(pageable);
+                    applicationDetails = jdbcTemplate.query(searchQuery, new BeanPropertyRowMapper<>(ApplicationDetails.class));
+                    String countQuery="SELECT count(*) FROM import_data WHERE "+searchFilter;
+                    totalCount= jdbcTemplate.queryForObject(countQuery, Long.class);
+                    totalCount=(totalCount!=null) ? totalCount: 0;
                 }
             }
             addFetchData(commonResponse, fetchExcelData, applicationDetails, totalCount, pageNo, pageSize);
@@ -786,5 +792,50 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             commonResponse.setCode("1111");
             commonResponse.setMsg("New password and confirm password did not matched");
         }
+    }
+
+    @Override
+    public ResponseEntity<?> excelExportService(String loanNo, HttpServletResponse response) {
+
+        CommonResponse commonResponse = new CommonResponse();
+        List<ReportUserModel> reportUserModel = new ArrayList<>();
+        if (loanNo != null || !loanNo.isEmpty()){
+            return (ResponseEntity<?>) ResponseEntity.status(HttpStatus.NOT_FOUND);
+        }
+        try {
+            reportUserModel = jdbcTemplate.query(getExcelDataForReportUser.query(), new BeanPropertyRowMapper<>(ReportUserModel.class));
+
+            if (reportUserModel.isEmpty()) {
+                commonResponse.setCode("1111");
+                commonResponse.setMsg("Data not found");
+                return ResponseEntity.ok(commonResponse);
+            }
+            XSSFWorkbook workbook = new XSSFWorkbook();
+            XSSFSheet sheet = workbook.createSheet("USER_REPORT");
+            int rowCount = 0;
+
+            String[] header = {"ApplicationNumber", "BranchName", "ApplicantName", "ChequeAmount", "ConsumerType", "HandoverDate", "LoanAmount", "UpdatedBy"};
+            Row headerRow = sheet.createRow(rowCount++);
+            int cellCount = 0;
+
+            for (String headerValue : header) {
+                headerRow.createCell(cellCount++).setCellValue(headerValue);
+            }
+            for (ReportUserModel details : reportUserModel) {
+                Row row = sheet.createRow(rowCount++);
+                System.out.println("12345678");
+            }
+
+            response.setContentType("text/csv");
+            response.setHeader("Content-Disposition", "attachment; filename=USER_REPORT.xlsx");
+
+            workbook.write(response.getOutputStream());
+            logger.info("Excel generate successfully");
+            workbook.close();
+
+        } catch (Exception e) {
+            logger.error("Exception found :", e.getMessage());
+        }
+        return ResponseEntity.ok("success");
     }
 }

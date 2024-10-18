@@ -7,5 +7,5 @@ import lombok.Data;
 public class JwtResponse {
     private String token;
     private String emailId;
-    private boolean role;
+    private int role;
 }
