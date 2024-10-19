@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -21,10 +22,11 @@ import javax.sql.DataSource;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-        basePackages = "cheque.handover.service.Repository",
+        basePackages = "cheque.handover.services.Repository", // Ensure this matches the actual package
         entityManagerFactoryRef = "mysqlEntityManagerFactory",
         transactionManagerRef = "mysqlTransactionManager"
 )
+
 public class MySQLDataSourceConfig {
 
     @Autowired
@@ -58,7 +60,7 @@ public class MySQLDataSourceConfig {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(EntityManagerFactoryBuilder builder, @Qualifier("mysqlDataSource") DataSource dataSource) {
         return builder
                 .dataSource(dataSource)
-                .packages("cheque.handover.service.Entity")
+                .packages("cheque.handover.services.Entity")
                 .persistenceUnit("mysql")
                 .build();
     }

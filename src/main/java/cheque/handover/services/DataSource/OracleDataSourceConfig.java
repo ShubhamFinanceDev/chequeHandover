@@ -9,16 +9,16 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 @Configuration
 public class OracleDataSourceConfig {
 
-    @Value("${oracle.datasource.url}")
+    @Value("${oracale.datasource.url}")
     private String url;
 
-    @Value("${oracle.datasource.username}")
+    @Value("${oracale.datasource.username}")
     private String username;
 
-    @Value("${oracle.datasource.password}")
+    @Value("${oracale.datasource.password}")
     private String password;
 
-    @Value("${oracle.datasource.driver-class-name}")
+    @Value("${oracale.datasource.driver-class-name}")
     private String driverClassName;
 
     @Bean(name = "oracleJdbcTemplate")
