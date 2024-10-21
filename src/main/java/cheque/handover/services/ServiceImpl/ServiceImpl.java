@@ -795,17 +795,20 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
     }
 
     @Override
-    public ResponseEntity<?> excelExportService(String loanNo, HttpServletResponse response) {
+    public ResponseEntity<?> excelExportService(String applicationNo, HttpServletResponse response) {
 
         CommonResponse commonResponse = new CommonResponse();
         List<ReportUserModel> reportUserModel = new ArrayList<>();
-        if (loanNo != null || !loanNo.isEmpty()){
-            return (ResponseEntity<?>) ResponseEntity.status(HttpStatus.NOT_FOUND);
+        if (applicationNo.isEmpty() || applicationNo == null) {
+            List<BranchMaster> userDetails = branchMasterRepo.findByBranchName("Ayodhya");
+            System.out.println("user details  === "+userDetails);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Application number is required.");
         }
         try {
-            reportUserModel = jdbcTemplate.query(getExcelDataForReportUser.query(), new BeanPropertyRowMapper<>(ReportUserModel.class));
-
-            if (reportUserModel.isEmpty()) {
+            reportUserModel = jdbcTemplate.query(getExcelDataForReportUser.query(applicationNo), new BeanPropertyRowMapper<>(ReportUserModel.class));
+            System.out.println(reportUserModel);
+            if (!reportUserModel.isEmpty()) {
                 commonResponse.setCode("1111");
                 commonResponse.setMsg("Data not found");
                 return ResponseEntity.ok(commonResponse);
@@ -823,19 +826,28 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             }
             for (ReportUserModel details : reportUserModel) {
                 Row row = sheet.createRow(rowCount++);
-                System.out.println("12345678");
+//                row.createCell(0).setCellValue(details.getApplicationNumber());
+//                row.createCell(1).setCellValue(details.getBranchName());
+//                row.createCell(2).setCellValue(details.getApplicantName());
+//                row.createCell(3).setCellValue(details.getChequeAmount());
+//                row.createCell(4).setCellValue(details.getConsumerType());
+//                row.createCell(5).setCellValue(details.getHandoverDate());
+//                row.createCell(6).setCellValue(details.getLoanAmount());
+//                row.createCell(7).setCellValue(details.getUpdatedBy());
             }
 
-            response.setContentType("text/csv");
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             response.setHeader("Content-Disposition", "attachment; filename=USER_REPORT.xlsx");
 
             workbook.write(response.getOutputStream());
-            logger.info("Excel generate successfully");
             workbook.close();
 
+            logger.info("Excel generated successfully");
+            return ResponseEntity.ok("File exported successfully.");
         } catch (Exception e) {
-            logger.error("Exception found :", e.getMessage());
+            logger.error("Exception found:", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error generating the Excel file.");
         }
-        return ResponseEntity.ok("success");
     }
 }

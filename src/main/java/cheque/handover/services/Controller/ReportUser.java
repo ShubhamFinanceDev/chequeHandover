@@ -17,7 +17,7 @@ public class ReportUser {
     private Service service;
 
     @GetMapping("/excel-sheet-builder")
-    public ResponseEntity<?> getDataForNewRole(@RequestParam("loanNo")String loanNo, HttpServletResponse response){
-        return service.excelExportService(loanNo, response);
+    public ResponseEntity<?> getDataForNewRole(@RequestParam(value = "applicationNo")String applicationNo, HttpServletResponse response){
+        return ResponseEntity.ok(service.excelExportService(applicationNo, response)).getBody();
     }
 }

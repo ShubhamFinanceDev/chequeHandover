@@ -5,5 +5,9 @@ import lombok.Data;
 
 @Data
 public class ReportUserModel {
-    private String abc;
+    private String emailId;
+    private String firstName;
+    private String lastName;
+    private String mobileNo;
+    private String password;
 }

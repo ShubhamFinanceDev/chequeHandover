@@ -5,8 +5,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class GetExcelDataForReportUser {
 
-    public String query() {
-        String query = "select 8 from newRole";
+    public String query(String applicationNo) {
+        String query = "select * from user";
         return query;
     }
 }
