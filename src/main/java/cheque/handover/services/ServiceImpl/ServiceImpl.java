@@ -799,16 +799,14 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
 
         CommonResponse commonResponse = new CommonResponse();
         List<ReportUserModel> reportUserModel = new ArrayList<>();
-        if (applicationNo.isEmpty() || applicationNo == null) {
-            List<BranchMaster> userDetails = branchMasterRepo.findByBranchName("Ayodhya");
-            System.out.println("user details  === "+userDetails);
+        if (applicationNo == null || applicationNo.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Application number is required.");
         }
         try {
             reportUserModel = jdbcTemplate.query(getExcelDataForReportUser.query(applicationNo), new BeanPropertyRowMapper<>(ReportUserModel.class));
             System.out.println(reportUserModel);
-            if (!reportUserModel.isEmpty()) {
+            if (reportUserModel.isEmpty()) {
                 commonResponse.setCode("1111");
                 commonResponse.setMsg("Data not found");
                 return ResponseEntity.ok(commonResponse);
