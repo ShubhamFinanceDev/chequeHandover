@@ -34,6 +34,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+import java.lang.reflect.Field;
 
 @Service
 public class ServiceImpl implements cheque.handover.services.Services.Service {
@@ -500,12 +501,12 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         try {
             for (String branch : assignBranches) {
                 if (branch.equals(branchName) || branchName != null && !branchName.isEmpty() || applicationNo != null && !applicationNo.isEmpty() || status != null && !status.isEmpty()) {
-                    String searchFilter=userUtility.findByGivenCriteria(applicationNo, branchName, status);
-                    String searchQuery="SELECT * FROM import_data WHERE "+searchFilter+userUtility.pagination(pageable);
+                    String searchFilter = userUtility.findByGivenCriteria(applicationNo, branchName, status);
+                    String searchQuery = "SELECT * FROM import_data WHERE " + searchFilter + userUtility.pagination(pageable);
                     applicationDetails = jdbcTemplate.query(searchQuery, new BeanPropertyRowMapper<>(ApplicationDetails.class));
-                    String countQuery="SELECT count(*) FROM import_data WHERE "+searchFilter;
-                    totalCount= jdbcTemplate.queryForObject(countQuery, Long.class);
-                    totalCount=(totalCount!=null) ? totalCount: 0;
+                    String countQuery = "SELECT count(*) FROM import_data WHERE " + searchFilter;
+                    totalCount = jdbcTemplate.queryForObject(countQuery, Long.class);
+                    totalCount = (totalCount != null) ? totalCount : 0;
                 }
             }
             addFetchData(commonResponse, fetchExcelData, applicationDetails, totalCount, pageNo, pageSize);
@@ -630,7 +631,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         List<MisReport> fetchedData = new ArrayList<>();
         try {
 
-            return jdbcTemplate.query(misReportUtility.misQuery(reportType, selectedType, fromDate, toDate, selectedDate,status), new BeanPropertyRowMapper<>(MisReport.class));
+            return jdbcTemplate.query(misReportUtility.misQuery(reportType, selectedType, fromDate, toDate, selectedDate, status), new BeanPropertyRowMapper<>(MisReport.class));
         } catch (Exception e) {
             logger.error("Error while executing report query" + e.getMessage());
             return fetchedData;
@@ -714,6 +715,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         }
         return commonResponse;
     }
+
     @Transactional
     public ResponseEntity<CommonResponse> userUpdate(Long userId, EditUserDetails inputDetails) {
 
@@ -726,8 +728,8 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             userDetails.setLastName(inputDetails.getLastName());
             userDetails.setMobileNo(inputDetails.getMobileNo());
             userDetails.getRoleMasters().setRole(inputDetails.getRoleMasters().getRole());
-            List<AssignBranch> newBranch=inputDetails.getAssignBranches().stream().filter(branch -> userDetails.getAssignBranches().stream().noneMatch(addedBranch -> addedBranch.getBranchCode().equals(branch.getBranchCode()))).collect(Collectors.toList());
-            List<AssignBranch> revokeBranches= userDetails.getAssignBranches().stream().filter(branch -> inputDetails.getAssignBranches().stream().noneMatch(revokeBranch -> revokeBranch.getBranchCode().equals(branch.getBranchCode()))).collect(Collectors.toList());
+            List<AssignBranch> newBranch = inputDetails.getAssignBranches().stream().filter(branch -> userDetails.getAssignBranches().stream().noneMatch(addedBranch -> addedBranch.getBranchCode().equals(branch.getBranchCode()))).collect(Collectors.toList());
+            List<AssignBranch> revokeBranches = userDetails.getAssignBranches().stream().filter(branch -> inputDetails.getAssignBranches().stream().noneMatch(revokeBranch -> revokeBranch.getBranchCode().equals(branch.getBranchCode()))).collect(Collectors.toList());
             newBranch.forEach(branch -> {
                 branch.setUserMaster(userDetails);
             });
@@ -760,21 +762,21 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return true;
     }
 
-    public CommonResponse updateOldPassword(UpdatePassword updatePassword, UserDetail userDetail){
+    public CommonResponse updateOldPassword(UpdatePassword updatePassword, UserDetail userDetail) {
         CommonResponse commonResponse = new CommonResponse();
         try {
-                userDetail.setPassword(passwordEncoder.encode(updatePassword.getNewPassword()));
-                userDetailRepo.save(userDetail);
-                commonResponse.setCode("0000");
-                commonResponse.setMsg("Update Password successful");
-        }catch (Exception e){
+            userDetail.setPassword(passwordEncoder.encode(updatePassword.getNewPassword()));
+            userDetailRepo.save(userDetail);
+            commonResponse.setCode("0000");
+            commonResponse.setMsg("Update Password successful");
+        } catch (Exception e) {
             commonResponse.setCode("1111");
-            commonResponse.setMsg("Exception found :"+e.getMessage());
+            commonResponse.setMsg("Exception found :" + e.getMessage());
         }
         return commonResponse;
     }
 
-    public void setUpdatePasswordResponse(UpdatePassword updatePassword, UserDetail userDetailOptional, CommonResponse commonResponse){
+    public void setUpdatePasswordResponse(UpdatePassword updatePassword, UserDetail userDetailOptional, CommonResponse commonResponse) {
         if (updatePassword.getNewPassword().equals(updatePassword.getConfirmNewPassword())) {
             if (!(updatePassword.getNewPassword().matches(".{8,}") && updatePassword.getConfirmNewPassword().matches(".{8,}"))) {
                 commonResponse.setMsg("The new password or confirm password is not 8 characters long");
@@ -788,7 +790,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
 //                commonResponse.setMsg("The new password or confirm password is not 8 characters long");
 //                commonResponse.setCode("1111");
 //            }
-        }else {
+        } else {
             commonResponse.setCode("1111");
             commonResponse.setMsg("New password and confirm password did not matched");
         }
@@ -815,7 +817,133 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             XSSFSheet sheet = workbook.createSheet("USER_REPORT");
             int rowCount = 0;
 
-            String[] header = {"ApplicationNumber", "BranchName", "ApplicantName", "ChequeAmount", "ConsumerType", "HandoverDate", "LoanAmount", "UpdatedBy"};
+            String[] header = {
+                    "documentName",
+                    "irn",
+                    "field0Id", "field0Name", "field0Value",
+                    "field1Id", "field1Name", "field1Value",
+                    "field2Id", "field2Name", "field2Value",
+                    "field3Id", "field3Name", "field3Value",
+                    "field4Id", "field4Name", "field4Value",
+                    "field5Id", "field5Name", "field5Value",
+                    "field6Id", "field6Name", "field6Value",
+                    "field7Id", "field7Name", "field7Value",
+                    "field8Id", "field8Name", "field8Value",
+                    "field9Id", "field9Name", "field9Value",
+                    "field10Id", "field10Name", "field10Value",
+                    "field11Id", "field11Name", "field11Value",
+                    "field12Id", "field12Name", "field12Value",
+                    "field13Id", "field13Name", "field13Value",
+                    "field14Id", "field14Name", "field14Value",
+                    "field15Id", "field15Name", "field15Value",
+                    "field16Id", "field16Name", "field16Value",
+                    "field17Id", "field17Name", "field17Value",
+                    "field18Id", "field18Name", "field18Value",
+                    "field19Id", "field19Name", "field19Value",
+                    "field20Id", "field20Name", "field20Value",
+                    "field21Id", "field21Name", "field21Value",
+                    "field22Id", "field22Name", "field22Value",
+                    "field23Id", "field23Name", "field23Value",
+                    "field24Id", "field24Name", "field24Value",
+                    "field25Id", "field25Name", "field25Value",
+                    "field26Id", "field26Name", "field26Value",
+                    "field27Id", "field27Name", "field27Value",
+                    "field28Id", "field28Name", "field28Value",
+                    "field29Id", "field29Name", "field29Value",
+                    "field30Id", "field30Name", "field30Value",
+                    "field31Id", "field31Name", "field31Value",
+                    "field32Id", "field32Name", "field32Value",
+                    "field33Id", "field33Name", "field33Value",
+                    "field34Id", "field34Name", "field34Value",
+                    "field35Id", "field35Name", "field35Value",
+                    "field36Id", "field36Name", "field36Value",
+                    "field37Id", "field37Name", "field37Value",
+                    "field38Id", "field38Name", "field38Value",
+                    "field39Id", "field39Name", "field39Value",
+                    "field40Id", "field40Name", "field40Value",
+                    "field41Id", "field41Name", "field41Value",
+                    "field42Id", "field42Name", "field42Value",
+                    "field43Id", "field43Name", "field43Value",
+                    "field44Id", "field44Name", "field44Value",
+                    "field45Id", "field45Name", "field45Value",
+                    "field46Id", "field46Name", "field46Value",
+                    "field47Id", "field47Name", "field47Value",
+                    "field48Id", "field48Name", "field48Value",
+                    "field49Id", "field49Name", "field49Value",
+                    "field50Id", "field50Name", "field50Value",
+                    "field51Id", "field51Name", "field51Value",
+                    "field52Id", "field52Name", "field52Value",
+                    "field53Id", "field53Name", "field53Value",
+                    "field54Id", "field54Name", "field54Value",
+                    "field55Id", "field55Name", "field55Value",
+                    "field56Id", "field56Name", "field56Value",
+                    "field57Id", "field57Name", "field57Value",
+                    "field58Id", "field58Name", "field58Value",
+                    "field59Id", "field59Name", "field59Value",
+                    "field60Id", "field60Name", "field60Value",
+                    "field61Id", "field61Name", "field61Value",
+                    "field62Id", "field62Name", "field62Value",
+                    "field63Id", "field63Name", "field63Value",
+                    "field64Id", "field64Name", "field64Value",
+                    "registrationType", "loanNo", "sanctionNo", "state",
+                    "branch", "branchAddress", "loanSanctionDate",
+                    "installmentAmt", "interestRate", "sanctionAmount",
+                    "tenure", "typeOfDebt", "accountClosedFlag",
+                    "fundedType", "loanCurrency", "creditSubType",
+                    "facilityName", "amtOverdue", "otherCharges",
+                    "debtStartDate", "interestAmount", "oldDebtRefNo",
+                    "principalOutstanding", "loanRemarks", "totalOutstanding",
+                    "creditorBusinessUnit", "drawingPower", "daysPastDue",
+                    "docRefNo", "event", "expiryDate", "currencyOfDebt",
+                    "claimExpiryDate", "contractRefNo", "vendorCode",
+                    "portalId",
+                    "stamp0FirstParty", "stamp0SecondParty",
+                    "stamp0FirstPartyPin", "stamp0SecondPartyPin",
+                    "stamp0FirstPartyIDType", "stamp0SecondPartyIDType",
+                    "stamp0FirstPartyIDNumber", "stamp0SecondPartyIDNumber",
+                    "stamp0Amount", "stamp0Consideration",
+                    "stamp0DocDescription", "stamp0StampDutyPayer",
+                    "stamp0Article",
+                    "stamp1FirstParty", "stamp1SecondParty",
+                    "stamp1FirstPartyPin", "stamp1SecondPartyPin",
+                    "stamp1FirstPartyIDType", "stamp1SecondPartyIDType",
+                    "stamp1FirstPartyIDNumber", "stamp1SecondPartyIDNumber",
+                    "stamp1Amount", "stamp1Consideration",
+                    "stamp1DocDescription", "stamp1StampDutyPayer",
+                    "stamp1Article",
+                    "stamp2FirstParty", "stamp2SecondParty",
+                    "stamp2FirstPartyPin", "stamp2SecondPartyPin",
+                    "stamp2FirstPartyIDType", "stamp2SecondPartyIDType",
+                    "stamp2FirstPartyIDNumber", "stamp2SecondPartyIDNumber",
+                    "stamp2Amount", "stamp2Consideration",
+                    "stamp2DocDescription", "stamp2StampDutyPayer",
+                    "stamp2Article",
+                    "invitee0Name", "invitee0Email", "invitee0Phone",
+                    "invitee0AadhaarVerifyYob", "invitee0AadhaarVerifyTitle",
+                    "invitee0AadhaarVerifyGender", "invitee0PartyName",
+                    "invitee0PrimaryEmail", "invitee0PrimaryMobile",
+                    "invitee0ContactName", "invitee0RelationshipOfPartyWithLoan",
+                    "invitee0DobIncorporation", "invitee0LegalConstitution",
+                    "invitee0AlternateEmailOfParty", "invitee0AlternateMobileOfParty",
+                    "invitee0OfficialDocType", "invitee0OfficialDocId",
+                    "invitee0RegisteredAddressOfTheParty",
+                    "invitee0PermanentRegisteredAddressPin",
+                    "invitee0ContactDesignation", "invitee0PartyCommunicationAddress",
+                    "invitee0PartyCommunicationAddressPin",
+                    "invitee0CorpIdentificationNo", "invitee0CkycKin",
+                    "invitee0PartyType", "invitee0IsIndividual",
+                    "invitee0SignatoryGender", "invitee0BusinessUnit",
+                    "invitee1Name", "invitee1Email", "invitee1Phone",
+                    "invitee1AadhaarVerifyYob", "invitee1AadhaarVerifyTitle",
+                    "invitee1AadhaarVerifyGender",
+                    "invitee2Name", "invitee2Email", "invitee2Phone",
+                    "invitee2AadhaarVerifyYob", "invitee2AadhaarVerifyTitle",
+                    "invitee2AadhaarVerifyGender",
+                    "invitee3Name", "invitee3Email", "invitee3Phone",
+                    "invitee3AadhaarVerifyYob", "invitee3AadhaarVerifyTitle",
+                    "invitee3AadhaarVerifyGender",
+                    "invitee4Name", "invitee4Email", "invitee4Phone"
+            };
             Row headerRow = sheet.createRow(rowCount++);
             int cellCount = 0;
 
@@ -824,15 +952,80 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             }
             for (ReportUserModel details : reportUserModel) {
                 Row row = sheet.createRow(rowCount++);
-//                row.createCell(0).setCellValue(details.getApplicationNumber());
-//                row.createCell(1).setCellValue(details.getBranchName());
-//                row.createCell(2).setCellValue(details.getApplicantName());
-//                row.createCell(3).setCellValue(details.getChequeAmount());
-//                row.createCell(4).setCellValue(details.getConsumerType());
-//                row.createCell(5).setCellValue(details.getHandoverDate());
-//                row.createCell(6).setCellValue(details.getLoanAmount());
-//                row.createCell(7).setCellValue(details.getUpdatedBy());
+                cellCount = 0;
+
+                // Set common fields directly
+                row.createCell(cellCount++).setCellValue(details.getDocumentName()); // documentName
+                row.createCell(cellCount++).setCellValue(details.getIrn()); // irn
+                row.createCell(cellCount++).setCellValue(details.getRegistrationType());
+                row.createCell(cellCount++).setCellValue(details.getLoanNo());
+                row.createCell(cellCount++).setCellValue(details.getSanctionNo());
+                row.createCell(cellCount++).setCellValue(details.getState());
+                row.createCell(cellCount++).setCellValue(details.getBranch());
+                row.createCell(cellCount++).setCellValue(details.getBranchAddress());
+                row.createCell(cellCount++).setCellValue(details.getLoanSanctionDate());
+                row.createCell(cellCount++).setCellValue(details.getInstallmentAmt());
+                row.createCell(cellCount++).setCellValue(details.getInterestRate());
+                row.createCell(cellCount++).setCellValue(details.getSanctionAmount());
+                row.createCell(cellCount++).setCellValue(details.getTenure());
+                row.createCell(cellCount++).setCellValue(details.getTypeOfDebt());
+                row.createCell(cellCount++).setCellValue(details.getAccountClosedFlag());
+                row.createCell(cellCount++).setCellValue(details.getFundedType());
+                row.createCell(cellCount++).setCellValue(details.getLoanCurrency());
+                row.createCell(cellCount++).setCellValue(details.getCreditSubType());
+                row.createCell(cellCount++).setCellValue(details.getFacilityName());
+                row.createCell(cellCount++).setCellValue(details.getAmtOverdue());
+                row.createCell(cellCount++).setCellValue(details.getOtherCharges());
+                row.createCell(cellCount++).setCellValue(details.getDebtStartDate());
+                row.createCell(cellCount++).setCellValue(details.getInterestAmount());
+                row.createCell(cellCount++).setCellValue(details.getOldDebtRefNo());
+                row.createCell(cellCount++).setCellValue(details.getPrincipalOutstanding());
+                row.createCell(cellCount++).setCellValue(details.getLoanRemarks());
+                row.createCell(cellCount++).setCellValue(details.getTotalOutstanding());
+                row.createCell(cellCount++).setCellValue(details.getCreditorBusinessUnit());
+                row.createCell(cellCount++).setCellValue(details.getDrawingPower());
+                row.createCell(cellCount++).setCellValue(details.getDaysPastDue());
+                row.createCell(cellCount++).setCellValue(details.getDocRefNo());
+                row.createCell(cellCount++).setCellValue(details.getEvent());
+                row.createCell(cellCount++).setCellValue(details.getExpiryDate());
+                row.createCell(cellCount++).setCellValue(details.getCurrencyOfDebt());
+                row.createCell(cellCount++).setCellValue(details.getClaimExpiryDate());
+                row.createCell(cellCount++).setCellValue(details.getContractRefNo());
+                row.createCell(cellCount++).setCellValue(details.getVendorCode());
+                row.createCell(cellCount++).setCellValue(details.getPortalId());
+
+                // Loop through fields, stamps, and invitees in a single loop
+                for (int i = 0; i < 65; i++) { // Looping through field0 to field64
+                    row.createCell(cellCount++).setCellValue(getFieldValue(details, "field" + i + "Id"));
+                    row.createCell(cellCount++).setCellValue(getFieldValue(details, "field" + i + "Name"));
+                    row.createCell(cellCount++).setCellValue(getFieldValue(details, "field" + i + "Value"));
+                }
+
+                // Loop through stamps (3 stamps)
+                for (int stampIndex = 0; stampIndex < 3; stampIndex++) {
+                    row.createCell(cellCount++).setCellValue(getFieldValue(details, "stamp" + stampIndex + "FirstParty"));
+                    row.createCell(cellCount++).setCellValue(getFieldValue(details, "stamp" + stampIndex + "SecondParty"));
+                    row.createCell(cellCount++).setCellValue(getFieldValue(details, "stamp" + stampIndex + "FirstPartyPin"));
+                    row.createCell(cellCount++).setCellValue(getFieldValue(details, "stamp" + stampIndex + "SecondPartyPin"));
+                    row.createCell(cellCount++).setCellValue(getFieldValue(details, "stamp" + stampIndex + "FirstPartyIDType"));
+                    row.createCell(cellCount++).setCellValue(getFieldValue(details, "stamp" + stampIndex + "SecondPartyIDType"));
+                    row.createCell(cellCount++).setCellValue(getFieldValue(details, "stamp" + stampIndex + "FirstPartyIDNumber"));
+                    row.createCell(cellCount++).setCellValue(getFieldValue(details, "stamp" + stampIndex + "SecondPartyIDNumber"));
+                    row.createCell(cellCount++).setCellValue(getFieldValue(details, "stamp" + stampIndex + "Amount"));
+                    row.createCell(cellCount++).setCellValue(getFieldValue(details, "stamp" + stampIndex + "Consideration"));
+                    row.createCell(cellCount++).setCellValue(getFieldValue(details, "stamp" + stampIndex + "DocDescription"));
+                    row.createCell(cellCount++).setCellValue(getFieldValue(details, "stamp" + stampIndex + "StampDutyPayer"));
+                    row.createCell(cellCount++).setCellValue(getFieldValue(details, "stamp" + stampIndex + "Article"));
+                }
+
+                // Loop through invitees (5 invitees)
+                for (int inviteeIndex = 0; inviteeIndex < 5; inviteeIndex++) {
+                    row.createCell(cellCount++).setCellValue(getFieldValue(details, "invitee" + inviteeIndex + "Name"));
+                    row.createCell(cellCount++).setCellValue(getFieldValue(details, "invitee" + inviteeIndex + "Email"));
+                    row.createCell(cellCount++).setCellValue(getFieldValue(details, "invitee" + inviteeIndex + "Phone"));
+                }
             }
+
 
             response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             response.setHeader("Content-Disposition", "attachment; filename=USER_REPORT.xlsx");
@@ -846,6 +1039,17 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             logger.error("Exception found:", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error generating the Excel file.");
+        }
+    }
+
+    private String getFieldValue(ReportUserModel details, String fieldName) {
+        try {
+            Field field = details.getClass().getDeclaredField(fieldName);
+            field.setAccessible(true);
+            return field.get(details).toString();
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            logger.error("Field not found or inaccessible: " + fieldName, e);
+            return null;
         }
     }
 }
