@@ -59,7 +59,6 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
     @Autowired
     private ChequeStatusRepo chequeStatusRepo;
     @Autowired
-    @Qualifier("jdbcJdbcTemplate")
     private JdbcTemplate jdbcTemplate;
     @Autowired
     private MisReportUtility misReportUtility;
