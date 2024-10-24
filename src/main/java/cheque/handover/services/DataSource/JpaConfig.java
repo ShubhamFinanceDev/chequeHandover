@@ -52,10 +52,6 @@ public class JpaConfig {
         bean.setJpaVendorAdapter(adapter);
         HashMap<String, String> props = new HashMap<>();
 
-        props.put("hibernate.hbm2ddl.auto", "update");
-        props.put("hibernate.show_sql", "true");
-        props.put("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
-
         bean.setJpaPropertyMap(props);
         bean.setPackagesToScan("cheque.handover.services.Entity");
 
