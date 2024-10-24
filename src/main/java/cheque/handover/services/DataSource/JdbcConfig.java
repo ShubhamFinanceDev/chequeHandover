@@ -17,7 +17,7 @@ public class JdbcConfig {
     @Autowired
     public Environment environment;
 
-    @Bean(name = "jdbcDataSource")
+    @Bean(name ="jdbcDataSource")
     @ConfigurationProperties(prefix = "spring.datasource.jdbc")
     public DataSource dataSource() {
 

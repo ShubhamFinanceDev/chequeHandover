@@ -1,5 +1,6 @@
 package cheque.handover.services.Controller;
 
+import cheque.handover.services.ServiceImpl.ReportUserServiceImpl;
 import cheque.handover.services.Services.Service;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReportUser {
 
     @Autowired
-    private Service service;
+    private ReportUserServiceImpl service;
 
     @GetMapping("/excel-sheet-builder")
     public ResponseEntity<?> getDataForNewRole(@RequestParam(value = "applicationNo")String applicationNo, HttpServletResponse response){

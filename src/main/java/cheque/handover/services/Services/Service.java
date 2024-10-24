@@ -53,6 +53,4 @@ public interface Service {
     CommonResponse updateOldPassword(UpdatePassword updatePassword, UserDetail userDetail);
 
     void setUpdatePasswordResponse(UpdatePassword updatePassword, UserDetail userDetailOptional, CommonResponse commonResponse);
-
-    ResponseEntity<?> excelExportService(String applicationNo, HttpServletResponse response);
 }

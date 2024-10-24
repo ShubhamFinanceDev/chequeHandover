@@ -6,73 +6,72 @@ import org.springframework.stereotype.Component;
 public class GetExcelDataForReportUser {
 
     public String query(String applicationNo) {
-        String query = "\n" +
-                "select 'Combined Loan Agreement'as\"Document Name\",'122346'as\"IRN\",\n" +
-                "'1702208952696'as\"Field(0).id\",'Authorised Signatory Name on behalf of Shubham Finance'as\"Field(0).name\",'Shubham Housing Development Finance Compnay Limited'as\"Field(0).value\",\n" +
-                "'1702209131361'as\"Field(1).id\",'Borrower Name'as\"Field(1).name\",appl.\"Customer Name\"as\"Field(1).value\",\n" +
-                "'1702209192965'as\"Field(2).id\",'Borrower Address'as\"Field(2).name\",appl.\"Borrower Address\"as\"Field(2).value\",\n" +
-                "'1702211436019'as\"Field(3).id\",'Title for Borrower Name(Mr.)'as\"Field(3).name\",CASE WHEN appl.\"Salutation\"='Mr' THEN 'True' else ''END as\"Field(3).value\",\n" +
-                "'1702211446710'as\"Field(4).id\",'Title for Borrower Name(Ms.)'as\"Field(4).name\",CASE WHEN appl.\"Salutation\"='Mrs' THEN 'True' else ''END as\"Field(4).value\",\n" +
-                "'1702209439389'as\"Field(5).id\",'Authorised Signatory Name on behalf of Borrower' as\"Field(5).name\",appl.\"Customer Name\"as\"Field(5).value\",\n" +
-                "'1702209818056'as\"Field(6).id\",'Title for Co-Borrower 1 Name(Mr.)'as\"Field(6).name\",CASE WHEN appl.\"Salutation1\"='Mr' THEN 'True' else ''END as\"Field(6).value\",\n" +
-                "'1702209836524'as\"Field(7).id\",'Title for Co-Borrower 1 Name(Ms.)'as\"Field(7).name\",CASE WHEN appl.\"Salutation1\"='Mrs' THEN 'True' else ''END as\"Field(7).value\",\n" +
-                "'1702213589429'as\"Field(8).id\",'Co-Borrower 1 Name' as\"Field(8).name\",appl.\"CoApplicant1 Name\"as\"Field(8).value\",\n" +
-                "'1702209854836'as\"Field(9).id\",'Title for Co-Borrower 2 Name(Mr.)'as\"Field(9).name\",CASE WHEN appl.\"Salutation2\"='Mr' THEN 'True' else ''END as\"Field(9).value\",\n" +
-                "'1702209866025'as\"Field(10).id\",'Title for Co-Borrower 2 Name(Ms.)'as\"Field(10).name\",CASE WHEN appl.\"Salutation2\"='Mrs' THEN 'True' else ''END as\"Field(10).value\",\n" +
-                "'1702213589432'as\"Field(11).id\",'Co-Borrower 2 Name' as\"Field(11).name\",appl.\"CoApplicant2 Name\"as\"Field(11).value\",\n" +
-                "'1702209883198'as\"Field(12).id\",'Title for Co-Borrower 3 Name(Mr.)'as\"Field(12).name\",CASE WHEN appl.\"Salutation3\"='Mr' THEN 'True' else ''END as\"Field(12).value\",\n" +
-                "'1702209894382'as\"Field(13).id\",'Title for Co-Borrower 3 Name(Ms.)'as\"Field(13).name\",CASE WHEN appl.\"Salutation3\"='Mrs' THEN 'True' else ''END as\"Field(13).value\",\n" +
-                "'1702213589435'as\"Field(14).id\",'Co-Borrower 3 Name' as\"Field(14).name\",appl.\"CoApplicant3 Name\"as\"Field(14).value\",\n" +
-                "'1702209758344'as\"Field(15).id\",'Title for Witness Name(Mr.)'as\"Field(15).name\",''as\"Field(15).value\",\n" +
-                "'1702209769648'as\"Field(16).id\",'Title for Witness Name(Ms.)'as\"Field(16).name\",''as\"Field(16).value\",\n" +
-                "'1702213589438'as\"Field(17).id\",'Witness Name as'\"Field(17).name\",appl.witness_name as\"Field(17).value\",\n" +
-                "'1702210652317'as\"Field(18).id\",'Borrower Name (DPN)'as\"Field(18).name\",appl.\"Customer Name\"as\"Field(18).value\",\n" +
-                "'1702210719791'as\"Field(19).id\",'Loan Amount in Figures (DPN)'as\"Field(19).name\",appl.\"Sanction Loan Amount\"as\"Field(19).value\",\n" +
-                "'1702213589441'as\"Field(20).id\",'Loan Amount in Words (DPN)'as\"Field(20).name\",appl.\"SA words\"as\"Field(20).value\",\n" +
-                "'1702210804113'as\"Field(21).id\",'Interest Rate (DPN)' as\"Field(21).name\",appl.\"Sanctioned ROI\"as\"Field(21).value\",\n" +
-                "'1702210586587'as\"Field(22).id\",'Place (DPN)'as\"Field(22).name\",'Gurgaon'as\"Field(22).value\",\n" +
-                "'1702213589444'as\"Field(23).id\",'Date (DPN)'as\"Field(23).name\",TO_CHAR(appl.\"Sanction Date\",'DD-MM-YYYY')as\"Field(23).value\",\n" +
-                "'1702211032374'as\"Field(24).id\",'Demand Promissory Note Dated'as\"Field(24).name\",TO_CHAR(appl.\"Sanction Date\",'DD-MM-YYYY')as\"Field(24).value\",\n" +
-                "'1702213589446'as\"Field(25).id\",'Loan Amount in Figures (Letter of Continuity)'as\"Field(25).name\",appl.\"Sanction Loan Amount\"as\"Field(25).value\",\n" +
-                "'1702213589447'as\"Field(26).id\",'Loan Amount in Words (Letter of Continuity)'as\"Field(26).name\",appl.\"SA words\"as\"Field(26).value\",\n" +
-                "'1702213589448'as\"Field(27).id\",'Place (Letter of Continuity)'as\"Field(27).name\",'Gurgaon'as\"Field(27).value\",\n" +
-                "'1702213589449'as\"Field(28).id\",'Date (Letter of Continuity)'as\"Field(28).name\",appl.\"day\" as\"Field(28).value\",\n" +
-                "'1702213589450'as\"Field(29).id\",'Day (Letter of Continuity)'as\"Field(29).name\",appl.\"month\" as\"Field(29).value\",\n" +
-                "'1702213589451'as\"Field(30).id\",'Year (Letter of Continuity)'as\"Field(30).name\",appl.\"year\"as\"Field(30).value\",\n" +
-                "'1702211934599'as\"Field(31).id\",'Place (Power of Attorney)'as\"Field(31).name\",'Gurgaon'as\"Field(31).value\",\n" +
-                "'1702213589453'as\"Field(32).id\",'Date (Power of Attorney)'as\"Field(32).name\",appl.\"day\"as\"Field(32).value\",\n" +
-                "'1702213589454'as\"Field(33).id\",'Day (Power of Attorney)'as\"Field(33).name\",appl.\"month\" as\"Field(33).value\",\n" +
-                "'1702213589455'as\"Field(34).id\",'Year (Power of Attorney)'as\"Field(34).name\",appl.\"year\"as\"Field(34).value\",\n" +
-                "'1702213589456'as\"Field(35).id\",'Borrower Name (Power of Attorney)'as\"Field(35).name\",appl.\"Customer Name\"as\"Field(35).value\",\n" +
-                "'1702213589457'as\"Field(36).id\",'Borrower Address (Power of Attorney)'as\"Field(36).name\",appl.\"Borrower Address\"as\"Field(36).value\",\n" +
-                "'1702213589458'as\"Field(37).id\",'Title for Co-Borrower 1 Name (Power of Attorney)(Mr.)'as\"Field(37).name\",CASE WHEN appl.\"Salutation1\"='Mr' THEN 'True' else ''END as\"Field(37).value\",\n" +
-                "'1702213589459'as\"Field(38).id\",'Title for Co-Borrower 1 Name (Power of Attorney)(Ms.)'as\"Field(38).name\",CASE WHEN appl.\"Salutation1\"='Mrs' THEN 'True' else ''END as\"Field(38).value\",\n" +
-                "'1702213589460'as\"Field(39).id\",'Co-Borrower 1 Name  (Power of Attorney)'as\"Field(39).name\",appl.\"CoApplicant1 Name\"as\"Field(39).value\",\n" +
-                "'1702213589461'as\"Field(40).id\",'Title for Co-Borrower 2 Name (Power of Attorney)(Mr.)'as\"Field(40).name\",CASE WHEN appl.\"Salutation2\"='Mr' THEN 'True' else ''END as\"Field(40).value\",\n" +
-                "'1702213589462'as\"Field(41).id\",'Title for Co-Borrower 2 Name (Power of Attorney)(Ms.)'as\"Field(41).name\",CASE WHEN appl.\"Salutation2\"='Mrs' THEN 'True' else ''END as\"Field(41).value\",\n" +
-                "'1702213589463'as\"Field(42).id\",'Co-Borrower 2 Name (Power of Attorney)'as\"Field(42).name\",appl.\"CoApplicant2 Name\"as\"Field(42).value\",\n" +
-                "'1702213589464'as\"Field(43).id\",'Title for Co-Borrower 3 Name (Power of Attorney)(Mr.)'as\"Field(43).name\",CASE WHEN appl.\"Salutation3\"='Mr' THEN 'True' else ''END as\"Field(43).value\",\n" +
-                "'1702213589465'as\"Field(44).id\",'Title for Co-Borrower 3 Name (Power of Attorney)(Ms.)'as\"Field(44).name\",CASE WHEN appl.\"Salutation3\"='Mrs' THEN 'True' else ''END as\"Field(44).value\",\n" +
-                "'1702213589466'as\"Field(45).id\",'Co-Borrower 3 Name (Power of Attorney)'as\"Field(45).name\",appl.\"CoApplicant3 Name\"as\"Field(45).value\",\n" +
-                "'1702213589467'as\"Field(46).id\",'Title for Witness Name (Power of Attorney)(Mr.)'as\"Field(46).name\",''as\"Field(46).value\",\n" +
-                "'1702213589469'as\"Field(47).id\",'Title for Witness Name (Power of Attorney)(Ms.)'as\"Field(47).name\",''as\"Field(47).value\",\n" +
-                "'1702213589470'as\"Field(48).id\",'Witness Name  (Power of Attorney)'as\"Field(48).name\",appl.witness_name as\"Field(48).value\",\n" +
-                "'1702212879864'as\"Field(49).id\",'Property Description (Schedule)'as\"Field(49).name\",''as\"Field(49).value\",\n" +
-                "'1702214913800'as\"Field(50).id\",'Borrower Name (Memorandum of Entry)'as\"Field(50).name\",appl.\"Customer Name\"as\"Field(50).value\",\n" +
-                "'1717094311160'as\"Field(51).id\",'Acting through Proprietor/director/Partner'as\"Field(51).name\",''as\"Field(51).value\",\n" +
-                "'1712832519855'as\"Field(52).id\",'Loan Agreement/ Deposit Date (Memorandum of Entry)'as\"Field(52).name\",TO_CHAR(appl.\"Sanction Date\",'DD-MM-YYYY')as\"Field(52).value\",\n" +
-                "'1712832519856'as\"Field(53).id\",'Place (Memorandum of Entry)'as\"Field(53).name\",'Gurgaon' as\"Field(53).value\",\n" +
-                "'1712832519857'as\"Field(54).id\",'Loan Amt (Memorandum of Entry)'as\"Field(54).name\",appl.\"Sanction Loan Amount\"as\"Field(54).value\",\n" +
-                "'1712831279043'as\"Field(55).id\",'Loan Account/Application No. (Memorandum of Entry)'as\"Field(55).name\",appl.\"Application Number\"as\"Field(55).value\",\n" +
-                "'1712832519859'as\"Field(56).id\",'Shubham office where deposited (Memorandum of Entry)'as\"Field(56).name\",'Gurgaon'as\"Field(56).value\",\n" +
-                "'1712832519860'as\"Field(57).id\",'Shubham representative (Memorandum of Entry)'as\"Field(57).name\",appl.\"Sourcing RM Name\"as\"Field(57).value\",\n" +
-                "'1712831919185'as\"Field(58).id\",'Property Bearing Number (Memorandum of Entry)'as\"Field(58).name\",''as\"Field(58).value\",\n" +
-                "'1712831930752'as\"Field(59).id\",'Property Area (Memorandum of Entry)'as\"Field(59).name\",appl.\"Build up Area\"as\"Field(59).value\",\n" +
-                "'1712832519863'as\"Field(60).id\",'Property Location (Memorandum of Entry)'as\"Field(60).name\",appl.\"Property Address\"as\"Field(60).value\",\n" +
-                "'1702219366151'as\"Field(61).id\",'Title for Borrower (Acknowledgement)(Shri)'as\"Field(61).name\",CASE WHEN appl.\"Salutation\"='Mr' THEN 'True' else ''END as\"Field(61).value\",\n" +
-                "'1702219375976'as\"Field(62).id\",'Title for Borrower (Acknowledgement)(Smt.)'as\"Field(62).name\",CASE WHEN appl.\"Salutation\"='Mrs' THEN 'True' else ''END as\"Field(62).value\",\n" +
-                "'1702219382724'as\"Field(63).id\",'Title for Borrower (Acknowledgement)(Kum.)'as\"Field(63).name\",''as\"Field(63).value\",\n" +
-                "'1702219335653'as\"Field(64).id\",'Borrower Name (Acknowledgement)'as\"Field(64).name\",appl.\"Customer Name\" as\"Field(64).value\",\n" +
+        String query = "select 'Combined Loan Agreement'as\"Document Name\",'122346'as\"IRN\",\n" +
+                "'1702208952696'as\"Field0id\",'Authorised Signatory Name on behalf of Shubham Finance'as\"Field0name\",'Shubham Housing Development Finance Compnay Limited'as\"Field0value\",\n" +
+                "'1702209131361'as\"Field1id\",'Borrower Name'as\"Field1name\",appl.\"Customer Name\"as\"Field1value\",\n" +
+                "'1702209192965'as\"Field2id\",'Borrower Address'as\"Field2name\",appl.\"Borrower Address\"as\"Field2value\",\n" +
+                "'1702211436019'as\"Field3id\",'Title for Borrower Name(Mr.)'as\"Field3name\",CASE WHEN appl.\"Salutation\"='Mr' THEN 'True' else ''END as\"Field3value\",\n" +
+                "'1702211446710'as\"Field4id\",'Title for Borrower Name(Ms.)'as\"Field4name\",CASE WHEN appl.\"Salutation\"='Mrs' THEN 'True' else ''END as\"Field4value\",\n" +
+                "'1702209439389'as\"Field5id\",'Authorised Signatory Name on behalf of Borrower' as\"Field5name\",appl.\"Customer Name\"as\"Field5value\",\n" +
+                "'1702209818056'as\"Field6id\",'Title for Co-Borrower 1 Name(Mr.)'as\"Field6name\",CASE WHEN appl.\"Salutation1\"='Mr' THEN 'True' else ''END as\"Field6value\",\n" +
+                "'1702209836524'as\"Field7id\",'Title for Co-Borrower 1 Name(Ms.)'as\"Field7name\",CASE WHEN appl.\"Salutation1\"='Mrs' THEN 'True' else ''END as\"Field7value\",\n" +
+                "'1702213589429'as\"Field8id\",'Co-Borrower 1 Name' as\"Field8name\",appl.\"CoApplicant1 Name\"as\"Field8value\",\n" +
+                "'1702209854836'as\"Field9id\",'Title for Co-Borrower 2 Name(Mr.)'as\"Field9name\",CASE WHEN appl.\"Salutation2\"='Mr' THEN 'True' else ''END as\"Field9value\",\n" +
+                "'1702209866025'as\"Field10id\",'Title for Co-Borrower 2 Name(Ms.)'as\"Field10name\",CASE WHEN appl.\"Salutation2\"='Mrs' THEN 'True' else ''END as\"Field10value\",\n" +
+                "'1702213589432'as\"Field11id\",'Co-Borrower 2 Name' as\"Field11name\",appl.\"CoApplicant2 Name\"as\"Field11value\",\n" +
+                "'1702209883198'as\"Field12id\",'Title for Co-Borrower 3 Name(Mr.)'as\"Field12name\",CASE WHEN appl.\"Salutation3\"='Mr' THEN 'True' else ''END as\"Field12value\",\n" +
+                "'1702209894382'as\"Field13id\",'Title for Co-Borrower 3 Name(Ms.)'as\"Field13name\",CASE WHEN appl.\"Salutation3\"='Mrs' THEN 'True' else ''END as\"Field13value\",\n" +
+                "'1702213589435'as\"Field14id\",'Co-Borrower 3 Name' as\"Field14name\",appl.\"CoApplicant3 Name\"as\"Field14value\",\n" +
+                "'1702209758344'as\"Field15id\",'Title for Witness Name(Mr.)'as\"Field15name\",''as\"Field15value\",\n" +
+                "'1702209769648'as\"Field16id\",'Title for Witness Name(Ms.)'as\"Field16name\",''as\"Field16value\",\n" +
+                "'1702213589438'as\"Field17id\",'Witness Name as'\"Field17name\",appl.witness_name as\"Field17value\",\n" +
+                "'1702210652317'as\"Field18id\",'Borrower Name (DPN)'as\"Field18name\",appl.\"Customer Name\"as\"Field18value\",\n" +
+                "'1702210719791'as\"Field19id\",'Loan Amount in Figures (DPN)'as\"Field19name\",appl.\"Sanction Loan Amount\"as\"Field19value\",\n" +
+                "'1702213589441'as\"Field20id\",'Loan Amount in Words (DPN)'as\"Field20name\",appl.\"SA words\"as\"Field20value\",\n" +
+                "'1702210804113'as\"Field21id\",'Interest Rate (DPN)' as\"Field21name\",appl.\"Sanctioned ROI\"as\"Field21value\",\n" +
+                "'1702210586587'as\"Field22id\",'Place (DPN)'as\"Field22name\",'Gurgaon'as\"Field22value\",\n" +
+                "'1702213589444'as\"Field23id\",'Date (DPN)'as\"Field23name\",TO_CHAR(appl.\"Sanction Date\",'DD-MM-YYYY')as\"Field23value\",\n" +
+                "'1702211032374'as\"Field24id\",'Demand Promissory Note Dated'as\"Field24name\",TO_CHAR(appl.\"Sanction Date\",'DD-MM-YYYY')as\"Field24value\",\n" +
+                "'1702213589446'as\"Field25id\",'Loan Amount in Figures (Letter of Continuity)'as\"Field25name\",appl.\"Sanction Loan Amount\"as\"Field25value\",\n" +
+                "'1702213589447'as\"Field26id\",'Loan Amount in Words (Letter of Continuity)'as\"Field26name\",appl.\"SA words\"as\"Field26value\",\n" +
+                "'1702213589448'as\"Field27id\",'Place (Letter of Continuity)'as\"Field27name\",'Gurgaon'as\"Field27value\",\n" +
+                "'1702213589449'as\"Field28id\",'Date (Letter of Continuity)'as\"Field28name\",appl.\"day\" as\"Field28value\",\n" +
+                "'1702213589450'as\"Field29id\",'Day (Letter of Continuity)'as\"Field29name\",appl.\"month\" as\"Field29value\",\n" +
+                "'1702213589451'as\"Field30id\",'Year (Letter of Continuity)'as\"Field30name\",appl.\"year\"as\"Field30value\",\n" +
+                "'1702211934599'as\"Field31id\",'Place (Power of Attorney)'as\"Field31name\",'Gurgaon'as\"Field31value\",\n" +
+                "'1702213589453'as\"Field32id\",'Date (Power of Attorney)'as\"Field32name\",appl.\"day\"as\"Field32value\",\n" +
+                "'1702213589454'as\"Field33id\",'Day (Power of Attorney)'as\"Field33name\",appl.\"month\" as\"Field33value\",\n" +
+                "'1702213589455'as\"Field34id\",'Year (Power of Attorney)'as\"Field34name\",appl.\"year\"as\"Field34value\",\n" +
+                "'1702213589456'as\"Field35id\",'Borrower Name (Power of Attorney)'as\"Field35name\",appl.\"Customer Name\"as\"Field35value\",\n" +
+                "'1702213589457'as\"Field36id\",'Borrower Address (Power of Attorney)'as\"Field36name\",appl.\"Borrower Address\"as\"Field36value\",\n" +
+                "'1702213589458'as\"Field37id\",'Title for Co-Borrower 1 Name (Power of Attorney)(Mr.)'as\"Field37name\",CASE WHEN appl.\"Salutation1\"='Mr' THEN 'True' else ''END as\"Field37value\",\n" +
+                "'1702213589459'as\"Field38id\",'Title for Co-Borrower 1 Name (Power of Attorney)(Ms.)'as\"Field38name\",CASE WHEN appl.\"Salutation1\"='Mrs' THEN 'True' else ''END as\"Field38value\",\n" +
+                "'1702213589460'as\"Field39id\",'Co-Borrower 1 Name  (Power of Attorney)'as\"Field39name\",appl.\"CoApplicant1 Name\"as\"Field39value\",\n" +
+                "'1702213589461'as\"Field40id\",'Title for Co-Borrower 2 Name (Power of Attorney)(Mr.)'as\"Field40name\",CASE WHEN appl.\"Salutation2\"='Mr' THEN 'True' else ''END as\"Field40value\",\n" +
+                "'1702213589462'as\"Field41id\",'Title for Co-Borrower 2 Name (Power of Attorney)(Ms.)'as\"Field41name\",CASE WHEN appl.\"Salutation2\"='Mrs' THEN 'True' else ''END as\"Field41value\",\n" +
+                "'1702213589463'as\"Field42id\",'Co-Borrower 2 Name (Power of Attorney)'as\"Field42name\",appl.\"CoApplicant2 Name\"as\"Field42value\",\n" +
+                "'1702213589464'as\"Field43id\",'Title for Co-Borrower 3 Name (Power of Attorney)(Mr.)'as\"Field43name\",CASE WHEN appl.\"Salutation3\"='Mr' THEN 'True' else ''END as\"Field43value\",\n" +
+                "'1702213589465'as\"Field44id\",'Title for Co-Borrower 3 Name (Power of Attorney)(Ms.)'as\"Field44name\",CASE WHEN appl.\"Salutation3\"='Mrs' THEN 'True' else ''END as\"Field44value\",\n" +
+                "'1702213589466'as\"Field45id\",'Co-Borrower 3 Name (Power of Attorney)'as\"Field45name\",appl.\"CoApplicant3 Name\"as\"Field45value\",\n" +
+                "'1702213589467'as\"Field46id\",'Title for Witness Name (Power of Attorney)(Mr.)'as\"Field46name\",''as\"Field46value\",\n" +
+                "'1702213589469'as\"Field47id\",'Title for Witness Name (Power of Attorney)(Ms.)'as\"Field47name\",''as\"Field47value\",\n" +
+                "'1702213589470'as\"Field48id\",'Witness Name  (Power of Attorney)'as\"Field48name\",appl.witness_name as\"Field48value\",\n" +
+                "'1702212879864'as\"Field49id\",'Property Description (Schedule)'as\"Field49name\",''as\"Field49value\",\n" +
+                "'1702214913800'as\"Field50id\",'Borrower Name (Memorandum of Entry)'as\"Field50name\",appl.\"Customer Name\"as\"Field50value\",\n" +
+                "'1717094311160'as\"Field51id\",'Acting through Proprietor/director/Partner'as\"Field51name\",''as\"Field51value\",\n" +
+                "'1712832519855'as\"Field52id\",'Loan Agreement/ Deposit Date (Memorandum of Entry)'as\"Field52name\",TO_CHAR(appl.\"Sanction Date\",'DD-MM-YYYY')as\"Field52value\",\n" +
+                "'1712832519856'as\"Field53id\",'Place (Memorandum of Entry)'as\"Field53name\",'Gurgaon' as\"Field53value\",\n" +
+                "'1712832519857'as\"Field54id\",'Loan Amt (Memorandum of Entry)'as\"Field54name\",appl.\"Sanction Loan Amount\"as\"Field54value\",\n" +
+                "'1712831279043'as\"Field55id\",'Loan Account/Application No. (Memorandum of Entry)'as\"Field55name\",appl.\"Application Number\"as\"Field55value\",\n" +
+                "'1712832519859'as\"Field56id\",'Shubham office where deposited (Memorandum of Entry)'as\"Field56name\",'Gurgaon'as\"Field56value\",\n" +
+                "'1712832519860'as\"Field57id\",'Shubham representative (Memorandum of Entry)'as\"Field57name\",appl.\"Sourcing RM Name\"as\"Field57value\",\n" +
+                "'1712831919185'as\"Field58id\",'Property Bearing Number (Memorandum of Entry)'as\"Field58name\",''as\"Field58value\",\n" +
+                "'1712831930752'as\"Field59id\",'Property Area (Memorandum of Entry)'as\"Field59name\",appl.\"Build up Area\"as\"Field59value\",\n" +
+                "'1712832519863'as\"Field60id\",'Property Location (Memorandum of Entry)'as\"Field60name\",appl.\"Property Address\"as\"Field60value\",\n" +
+                "'1702219366151'as\"Field61id\",'Title for Borrower (Acknowledgement)(Shri)'as\"Field61name\",CASE WHEN appl.\"Salutation\"='Mr' THEN 'True' else ''END as\"Field61value\",\n" +
+                "'1702219375976'as\"Field62id\",'Title for Borrower (Acknowledgement)(Smt.)'as\"Field62name\",CASE WHEN appl.\"Salutation\"='Mrs' THEN 'True' else ''END as\"Field62value\",\n" +
+                "'1702219382724'as\"Field63id\",'Title for Borrower (Acknowledgement)(Kum.)'as\"Field63name\",''as\"Field63value\",\n" +
+                "'1702219335653'as\"Field64id\",'Borrower Name (Acknowledgement)'as\"Field64name\",appl.\"Customer Name\" as\"Field64value\",\n" +
                 "'INDIVIDUAL_LOAN'as\"RegistrationType\",appl.\"Application Number\"as \"LoanNo\",''as\"SanctionNo\",\n" +
                 "appl.\"Property State\"as\"State\",appl.\"Branch Name\"as\"Branch\",appl.\"Branch Address\"as\"BranchAddress\",\n" +
                 "TO_CHAR(appl.\"Sanction Date\",'YYYY-MM-DD')as\"LoanSanctionDate\",appl.\"Installment Amount\"as\"InstallmentAmt\",\n" +
@@ -84,55 +83,55 @@ public class GetExcelDataForReportUser {
                 "'0'as\"PrincipalOutstanding\",'NA'as\"LoanRemarks\",'0'as\"TotalOutstanding\",'NA'as\"CreditorBusinessUnit\",\n" +
                 "'0'as\"DrawingPower\",'0'as\"DaysPastDue\",'NA'as\"DocRefNo\",'NA'as\"Event\",'NA'as\"ExpiryDate\",\n" +
                 "'INR'as\"CurrencyOfDebt\",'NA'as\"ClaimExpiryDate\",'NA'as\"ContractRefNo\",'NA'as\"VendorCode\",'NA'as\"PortalID\",\n" +
-                "'Shubham Housing Development Finance LTD'as\"Stamp(0).FirstParty\",appl.\"Customer Name\"as\"Stamp(0).SecondParty\",\n" +
-                "''as\"Stamp(0).FirstPartyPin\",''as\"Stamp(0).SecondPartyPin\",''as\"Stamp(0).FirstPartyIDType\",\n" +
-                "''as\"Stamp(0).SecondPartyIDType\",'NA'as\"Stamp(0).FirstPartyIDNumber\",'NA'as\"Stamp(0).SecondPartyIDNumber\",\n" +
-                "'100'as\"Stamp(0).StampAmount\",appl.\"Sanction Loan Amount\"as\"Stamp(0).Consideration\",\n" +
-                "'Loan Agreement'as\"Stamp(0).DocDescription\",'Shubham Housing Development Finance LTD'as\"Stamp(0).StampDutyPayer\",\n" +
+                "'Shubham Housing Development Finance LTD'as\"Stamp(0FirstParty\",appl.\"Customer Name\"as\"Stamp(0SecondParty\",\n" +
+                "''as\"Stamp(0FirstPartyPin\",''as\"Stamp(0SecondPartyPin\",''as\"Stamp(0FirstPartyIDType\",\n" +
+                "''as\"Stamp(0SecondPartyIDType\",'NA'as\"Stamp(0FirstPartyIDNumber\",'NA'as\"Stamp(0SecondPartyIDNumber\",\n" +
+                "'100'as\"Stamp(0StampAmount\",appl.\"Sanction Loan Amount\"as\"Stamp(0Consideration\",\n" +
+                "'Loan Agreement'as\"Stamp(0DocDescription\",'Shubham Housing Development Finance LTD'as\"Stamp(0StampDutyPayer\",\n" +
                 "Decode(appl.\"Property State\",'Maharashtra','21','Uttar Pradesh','1','Haryana','NA','Telangana',\n" +
                 "'6','Delhi','1003','Andhra Pradesh','9','Punjab','1005','Uttarakhand','3','Gujarat','108',\n" +
-                "'Tamil Nadu','1076','Madhya Pradesh','4','Rajasthan','1151',0) as\"Stamp(0).Article\",'Shubham Housing Development Finance LTD'as\"Stamp(1).FirstParty\",\n" +
-                "appl.\"Customer Name\"as\"Stamp(1).SecondParty\",\n" +
-                "''as\"Stamp(1).FirstPartyPin\",''as\"Stamp(1).SecondPartyPin\",''as\"Stamp(1).FirstPartyIDType\",\n" +
-                "''as\"Stamp(1).SecondPartyIDType\",'NA'as\"Stamp(1).FirstPartyIDNumber\",'NA'as\"Stamp(1).SecondPartyIDNumber\",\n" +
-                "'100'as\"Stamp(1).StampAmount\",appl.\"Sanction Loan Amount\"as\"Stamp(1).Consideration\",\n" +
-                "'Loan Agreement'as\"Stamp(1).DocDescription\",'Shubham Housing Development Finance LTD'as\"Stamp(1).StampDutyPayer\",\n" +
+                "'Tamil Nadu','1076','Madhya Pradesh','4','Rajasthan','1151',0) as\"Stamp(0Article\",'Shubham Housing Development Finance LTD'as\"Stamp(1FirstParty\",\n" +
+                "appl.\"Customer Name\"as\"Stamp(1SecondParty\",\n" +
+                "''as\"Stamp(1FirstPartyPin\",''as\"Stamp(1SecondPartyPin\",''as\"Stamp(1FirstPartyIDType\",\n" +
+                "''as\"Stamp(1SecondPartyIDType\",'NA'as\"Stamp(1FirstPartyIDNumber\",'NA'as\"Stamp(1SecondPartyIDNumber\",\n" +
+                "'100'as\"Stamp(1StampAmount\",appl.\"Sanction Loan Amount\"as\"Stamp(1Consideration\",\n" +
+                "'Loan Agreement'as\"Stamp(1DocDescription\",'Shubham Housing Development Finance LTD'as\"Stamp(1StampDutyPayer\",\n" +
                 "Decode(appl.\"Property State\",'Maharashtra','21','Uttar Pradesh','1','Haryana','NA','Telangana',\n" +
                 "'6','Delhi','1003','Andhra Pradesh','9','Punjab','1005','Uttarakhand','3','Gujarat','108',\n" +
-                "'Tamil Nadu','1076','Madhya Pradesh','4','Rajasthan','1151',0)as\"Stamp(1).Article\",'Shubham Housing Development Finance LTD'as\"Stamp(2).FirstParty\",\n" +
-                "appl.\"Customer Name\"as\"Stamp(2).SecondParty\",\n" +
-                "''as\"Stamp(2).FirstPartyPin\",''as\"Stamp(2).SecondPartyPin\",''as\"Stamp(2).FirstPartyIDType\",\n" +
-                "''as\"Stamp(2).SecondPartyIDType\",'NA'as\"Stamp(2).FirstPartyIDNumber\",'NA'as\"Stamp(2).SecondPartyIDNumber\",\n" +
-                "'100'as\"Stamp(2).StampAmount\",appl.\"Sanction Loan Amount\"as\"Stamp(2).Consideration\",\n" +
-                "'Loan Agreement'as\"Stamp(2).DocDescription\",'Shubham Housing Development Finance LTD'as\"Stamp(2).StampDutyPayer\",\n" +
+                "'Tamil Nadu','1076','Madhya Pradesh','4','Rajasthan','1151',0)as\"Stamp(1Article\",'Shubham Housing Development Finance LTD'as\"Stamp(2FirstParty\",\n" +
+                "appl.\"Customer Name\"as\"Stamp(2SecondParty\",\n" +
+                "''as\"Stamp(2FirstPartyPin\",''as\"Stamp(2SecondPartyPin\",''as\"Stamp(2FirstPartyIDType\",\n" +
+                "''as\"Stamp(2SecondPartyIDType\",'NA'as\"Stamp(2FirstPartyIDNumber\",'NA'as\"Stamp(2SecondPartyIDNumber\",\n" +
+                "'100'as\"Stamp(2StampAmount\",appl.\"Sanction Loan Amount\"as\"Stamp(2Consideration\",\n" +
+                "'Loan Agreement'as\"Stamp(2DocDescription\",'Shubham Housing Development Finance LTD'as\"Stamp(2StampDutyPayer\",\n" +
                 "Decode(appl.\"Property State\",'Maharashtra','21','Uttar Pradesh','1','Haryana','NA','Telangana',\n" +
                 "'6','Delhi','1003','Andhra Pradesh','9','Punjab','1005','Uttarakhand','3','Gujarat','108',\n" +
-                "'Tamil Nadu','1076','Madhya Pradesh','4','Rajasthan','1151',0)as\"Stamp(2).Article\",\n" +
-                "appl.\"Customer Name\"as\"Invitee(0).name\",''as\"Invitee(0).email\",appl.\"Mobile Number\"as\"Invitee(0).phone\",\n" +
-                "TO_CHAR(appl.\"DOB\",'YYYY')as\"Invitee(0).aadhaar.verifyYob\",\n" +
-                "SUBSTR(appl.\"aadhar\",9,4)as\"Invitee(0).aadhaar.verifyTitle\",appl.\"Gender\" as\"Invitee(0).aadhaar.verifyGender\",\n" +
-                "appl.\"Customer Name\"as\"Invitee(0).Partyname\",''as\"Invitee(0).Primaryemail\",appl.\"Mobile Number\"as\"Invitee(0).Primarymobile\",\n" +
-                "appl.\"Customer Name\"as\"Invitee(0).ContactName\",\n" +
-                "'Debtor'as\"Invitee(0).RelationshipOfPartyWithLoan\",TO_CHAR(appl.\"DOB\",'YYYY-MM-DD')as\"Invitee(0).DoB/Incorporation\",\n" +
-                "'RESIDENT_INDIVIDUAL'as\"Invitee(0).LegalConstitution\",\n" +
-                "''as\"Invitee(0).AlternateEmailofParty\",''as\"Invitee(0).AlternateMobileOfParty\",\n" +
-                "'PAN_CARD'as\"Invitee(0).OfficialDocType\",appl.\"Identification Number\"as\"Invitee(0).OfficialDocId\",\n" +
-                "appl.\"Borrower Address\"as\"Invitee(0).RegisteredAddressOfTheParty\",\n" +
-                "appl.\"Pincode\"as\"Invitee(0).Permanent/RegisteredAddressPIN\",\n" +
-                "'NA'as\"Invitee(0).ContactDesignation\",'NA'as\"Invitee(0).PartyCommunicationAddress\",\n" +
-                "''as\"Invitee(0).PartyCommunicationAddressPIN\",''as\"Invitee(0).CorpIdentificationNo\",\n" +
-                "''as\"Invitee(0).CKYCKIN\",'INDIAN_ENTITY'as\"Invitee(0).PartyType\",''as\"Invitee(0).Is_Individual\",\n" +
-                "''as\"Invitee(0).SignatoryGender\",''as\"Invitee(0).BusinessUnit\",\n" +
-                "appl.\"CoApplicant1 Name\"as\"Invitee(1).name\",''as\"Invitee(1).email\",appl.\"Mobile No1\"as\"Invitee(1).phone\",\n" +
-                "appl.\"DOB1\"as\"Invitee(1).aadhaar.verifyYob\",appl.\"aadhar1\"as\"Invitee(1).aadhaar.verifyTitle\",\n" +
-                "appl.\"Gender1\"as\"Invitee(1).aadhaar.verifyGender\",\n" +
-                "appl.\"CoApplicant2 Name\"as\"Invitee(2).name\",''as\"Invitee(2).email\",appl.\"Mobile No2\"as\"Invitee(2).phone\",\n" +
-                "appl.\"DOB2\"as\"Invitee(2).aadhaar.verifyYob\",appl.\"aadhar2\"as\"Invitee(2).aadhaar.verifyTitle\",\n" +
-                "appl.\"Gender2\"as\"Invitee(2).aadhaar.verifyGender\",\n" +
-                "appl.\"CoApplicant3 Name\"as\"Invitee(3).name\",''as\"Invitee(3).email\",appl.\"Mobile No3\"as\"Invitee(3).phone\",\n" +
-                "appl.\"DOB3\"as\"Invitee(3).aadhaar.verifyYob\",appl.\"aadhar3\"as\"Invitee(3).aadhaar.verifyTitle\",\n" +
-                "appl.\"Gender3\"as\"Invitee(3).aadhaar.verifyGender\",\n" +
-                "'Bijayendra Kumar Jha'as\"Invitee(4).name\",'bijayendra.jha@shubham.co'as\"Invitee(4).email\",'7048951725'as\"Invitee(4).phone\"\n" +
+                "'Tamil Nadu','1076','Madhya Pradesh','4','Rajasthan','1151',0)as\"Stamp(2Article\",\n" +
+                "appl.\"Customer Name\"as\"Invitee0name\",''as\"Invitee0email\",appl.\"Mobile Number\"as\"Invitee0phone\",\n" +
+                "TO_CHAR(appl.\"DOB\",'YYYY')as\"Invitee0aadhaar.verifyYob\",\n" +
+                "SUBSTR(appl.\"aadhar\",9,4)as\"Invitee0aadhaar.verifyTitle\",appl.\"Gender\" as\"Invitee0aadhaar.verifyGender\",\n" +
+                "appl.\"Customer Name\"as\"Invitee0Partyname\",''as\"Invitee0Primaryemail\",appl.\"Mobile Number\"as\"Invitee0Primarymobile\",\n" +
+                "appl.\"Customer Name\"as\"Invitee0ContactName\",\n" +
+                "'Debtor'as\"Invitee0RelationshipOfPartyWithLoan\",TO_CHAR(appl.\"DOB\",'YYYY-MM-DD')as\"Invitee0DoB/Incorporation\",\n" +
+                "'RESIDENT_INDIVIDUAL'as\"Invitee0LegalConstitution\",\n" +
+                "''as\"Invitee0AlternateEmailofParty\",''as\"Invitee0AlternateMobileOfParty\",\n" +
+                "'PAN_CARD'as\"Invitee0OfficialDocType\",appl.\"Identification Number\"as\"Invitee0OfficialDocId\",\n" +
+                "appl.\"Borrower Address\"as\"Invitee0RegisteredAddressOfTheParty\",\n" +
+                "appl.\"Pincode\"as\"Invitee0Permanent/RegisteredAddressPIN\",\n" +
+                "'NA'as\"Invitee0ContactDesignation\",'NA'as\"Invitee0PartyCommunicationAddress\",\n" +
+                "''as\"Invitee0PartyCommunicationAddressPIN\",''as\"Invitee0CorpIdentificationNo\",\n" +
+                "''as\"Invitee0CKYCKIN\",'INDIAN_ENTITY'as\"Invitee0PartyType\",''as\"Invitee0Is_Individual\",\n" +
+                "''as\"Invitee0SignatoryGender\",''as\"Invitee0BusinessUnit\",\n" +
+                "appl.\"CoApplicant1 Name\"as\"Invitee1name\",''as\"Invitee1email\",appl.\"Mobile No1\"as\"Invitee1phone\",\n" +
+                "appl.\"DOB1\"as\"Invitee1aadhaar.verifyYob\",appl.\"aadhar1\"as\"Invitee1aadhaar.verifyTitle\",\n" +
+                "appl.\"Gender1\"as\"Invitee1aadhaar.verifyGender\",\n" +
+                "appl.\"CoApplicant2 Name\"as\"Invitee2name\",''as\"Invitee2email\",appl.\"Mobile No2\"as\"Invitee2phone\",\n" +
+                "appl.\"DOB2\"as\"Invitee2aadhaar.verifyYob\",appl.\"aadhar2\"as\"Invitee2aadhaar.verifyTitle\",\n" +
+                "appl.\"Gender2\"as\"Invitee2aadhaar.verifyGender\",\n" +
+                "appl.\"CoApplicant3 Name\"as\"Invitee3name\",''as\"Invitee3email\",appl.\"Mobile No3\"as\"Invitee3phone\",\n" +
+                "appl.\"DOB3\"as\"Invitee3aadhaar.verifyYob\",appl.\"aadhar3\"as\"Invitee3aadhaar.verifyTitle\",\n" +
+                "appl.\"Gender3\"as\"Invitee3aadhaar.verifyGender\",\n" +
+                "'Bijayendra Kumar Jha'as\"Invitee4name\",'bijayendra.jha@shubham.co'as\"Invitee4email\",'7048951725'as\"Invitee4phone\"\n" +
                 "from \n" +
                 "(SELECT a.\"Application Number\",CASE WHEN b.\"Gender\"='Male' THEN 'Mr' WHEN b.\"Gender\"='Female' THEN 'Mrs' ELSE ''END as \"Salutation\",\n" +
                 "b.\"Customer Name\",c.\"Address 1\"||' '||c.\"Address 2\"||' '||c.\"Address 3\"||' '||c.\"Landmark\"||' '||c.\"City\"||' '||c.\"State\"||' '||c.\"Pincode\" as \"Borrower Address\",\n" +
@@ -205,7 +204,7 @@ public class GetExcelDataForReportUser {
                 "b.\"Applicant Type\"='Co-Applicant') and a.\"Application Number\"=b.\"Application Number\")left join \n" +
                 "neo_cas_lms_sit1_sh.\"Address Details\" c on(c.\"Customer Number\"=b.\"Customer Number\" and \n" +
                 "\"Addresstype\"='Residential Address')\n" +
-                "where a.\"Application Number\" ='APPL05373362')\n" +
+                "where a.\"Application Number\" ='"+applicationNo+"')\n" +
                 " SELECT * from test where rank1=1) t1 ) tt1  left join ( select t2.* from (WITH test AS (\n" +
                 " select a.\"Application Number\"as\"CoApplicant2 Application No\",\n" +
                 " CASE WHEN \"Gender\"='Male' THEN 'Mr' WHEN \"Gender\"='Female' THEN 'Mrs' ELSE ''END as \"Salutation2\",\n" +
@@ -235,11 +234,11 @@ public class GetExcelDataForReportUser {
                 "b.\"Applicant Type\"='Co-Applicant') and a.\"Application Number\"=b.\"Application Number\")left join \n" +
                 "neo_cas_lms_sit1_sh.\"Address Details\" c on(c.\"Customer Number\"=b.\"Customer Number\" and \n" +
                 "\"Addresstype\"='Residential Address')\n" +
-                "where a.\"Application Number\" ='APPL05373362')\n" +
+                "where a.\"Application Number\" ='"+applicationNo+"')\n" +
                 " SELECT * from test where rank3=3) t3) tt3 on (tt1.\"CoApplicant1 Application No\"=tt3.\"CoApplicant3 Application No\")\n" +
                 " ))coap\n" +
                 "on(a.\"Application Number\"=coap.\"CoApplicant1 Application No\")\n" +
-                " where a.\"Application Number\"='APPL05373362'and c.\"Addresstype\"='Residential Address')appl;";
+                " where a.\"Application Number\"='"+applicationNo+"'and c.\"Addresstype\"='Residential Address')appl";
         return query;
     }
 }
