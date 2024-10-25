@@ -29,16 +29,16 @@ public class GetExcelDataForReportUser {
                 "'1702210719791'as\"Field19id\",'Loan Amount in Figures (DPN)'as\"Field19name\",appl.\"Sanction Loan Amount\"as\"Field19value\",\n" +
                 "'1702213589441'as\"Field20id\",'Loan Amount in Words (DPN)'as\"Field20name\",appl.\"SA words\"as\"Field20value\",\n" +
                 "'1702210804113'as\"Field21id\",'Interest Rate (DPN)' as\"Field21name\",appl.\"Sanctioned ROI\"as\"Field21value\",\n" +
-                "'1702210586587'as\"Field22id\",'Place (DPN)'as\"Field22name\",'Gurgaon'as\"Field22value\",\n" +
+                "'1712832519856'as\"Field22id\",'Place (Memorandum of Entry)'as\"Field22name\",appl.\"Branch Name\" as\"Field22value\",\n" +
                 "'1702213589444'as\"Field23id\",'Date (DPN)'as\"Field23name\",TO_CHAR(appl.\"Sanction Date\",'DD-MM-YYYY')as\"Field23value\",\n" +
                 "'1702211032374'as\"Field24id\",'Demand Promissory Note Dated'as\"Field24name\",TO_CHAR(appl.\"Sanction Date\",'DD-MM-YYYY')as\"Field24value\",\n" +
                 "'1702213589446'as\"Field25id\",'Loan Amount in Figures (Letter of Continuity)'as\"Field25name\",appl.\"Sanction Loan Amount\"as\"Field25value\",\n" +
                 "'1702213589447'as\"Field26id\",'Loan Amount in Words (Letter of Continuity)'as\"Field26name\",appl.\"SA words\"as\"Field26value\",\n" +
-                "'1702213589448'as\"Field27id\",'Place (Letter of Continuity)'as\"Field27name\",'Gurgaon'as\"Field27value\",\n" +
+                "'1702213589448'as\"Field27id\",'Place (Letter of Continuity)'as\"Field27name\",appl.\"Branch Name\"as\"Field27value\",\n" +
                 "'1702213589449'as\"Field28id\",'Date (Letter of Continuity)'as\"Field28name\",appl.\"day\" as\"Field28value\",\n" +
                 "'1702213589450'as\"Field29id\",'Day (Letter of Continuity)'as\"Field29name\",appl.\"month\" as\"Field29value\",\n" +
                 "'1702213589451'as\"Field30id\",'Year (Letter of Continuity)'as\"Field30name\",appl.\"year\"as\"Field30value\",\n" +
-                "'1702211934599'as\"Field31id\",'Place (Power of Attorney)'as\"Field31name\",'Gurgaon'as\"Field31value\",\n" +
+                "'1702211934599'as\"Field31id\",'Place (Power of Attorney)'as\"Field31name\",appl.\"Branch Name\"as\"Field31value\",\n" +
                 "'1702213589453'as\"Field32id\",'Date (Power of Attorney)'as\"Field32name\",appl.\"day\"as\"Field32value\",\n" +
                 "'1702213589454'as\"Field33id\",'Day (Power of Attorney)'as\"Field33name\",appl.\"month\" as\"Field33value\",\n" +
                 "'1702213589455'as\"Field34id\",'Year (Power of Attorney)'as\"Field34name\",appl.\"year\"as\"Field34value\",\n" +
@@ -60,10 +60,10 @@ public class GetExcelDataForReportUser {
                 "'1702214913800'as\"Field50id\",'Borrower Name (Memorandum of Entry)'as\"Field50name\",appl.\"Customer Name\"as\"Field50value\",\n" +
                 "'1717094311160'as\"Field51id\",'Acting through Proprietor/director/Partner'as\"Field51name\",''as\"Field51value\",\n" +
                 "'1712832519855'as\"Field52id\",'Loan Agreement/ Deposit Date (Memorandum of Entry)'as\"Field52name\",TO_CHAR(appl.\"Sanction Date\",'DD-MM-YYYY')as\"Field52value\",\n" +
-                "'1712832519856'as\"Field53id\",'Place (Memorandum of Entry)'as\"Field53name\",'Gurgaon' as\"Field53value\",\n" +
+                "'1712832519856'as\"Field53id\",'Place (Memorandum of Entry)'as\"Field53name\",appl.\"Branch Name\" as\"Field53value\",\n" +
                 "'1712832519857'as\"Field54id\",'Loan Amt (Memorandum of Entry)'as\"Field54name\",appl.\"Sanction Loan Amount\"as\"Field54value\",\n" +
                 "'1712831279043'as\"Field55id\",'Loan Account/Application No. (Memorandum of Entry)'as\"Field55name\",appl.\"Application Number\"as\"Field55value\",\n" +
-                "'1712832519859'as\"Field56id\",'Shubham office where deposited (Memorandum of Entry)'as\"Field56name\",'Gurgaon'as\"Field56value\",\n" +
+                "'1712832519859'as\"Field56id\",'Shubham office where deposited (Memorandum of Entry)'as\"Field56name\",appl.\"Branch Name\"as\"Field56value\",\n" +
                 "'1712832519860'as\"Field57id\",'Shubham representative (Memorandum of Entry)'as\"Field57name\",appl.\"Sourcing RM Name\"as\"Field57value\",\n" +
                 "'1712831919185'as\"Field58id\",'Property Bearing Number (Memorandum of Entry)'as\"Field58name\",''as\"Field58value\",\n" +
                 "'1712831930752'as\"Field59id\",'Property Area (Memorandum of Entry)'as\"Field59name\",appl.\"Build up Area\"as\"Field59value\",\n" +
