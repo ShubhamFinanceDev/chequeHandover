@@ -83,30 +83,30 @@ public class GetExcelDataForReportUser {
                 "'0'as\"PrincipalOutstanding\",'NA'as\"LoanRemarks\",'0'as\"TotalOutstanding\",'NA'as\"CreditorBusinessUnit\",\n" +
                 "'0'as\"DrawingPower\",'0'as\"DaysPastDue\",'NA'as\"DocRefNo\",'NA'as\"Event\",'NA'as\"ExpiryDate\",\n" +
                 "'INR'as\"CurrencyOfDebt\",'NA'as\"ClaimExpiryDate\",'NA'as\"ContractRefNo\",'NA'as\"VendorCode\",'NA'as\"PortalID\",\n" +
-                "'Shubham Housing Development Finance LTD'as\"Stamp(0FirstParty\",appl.\"Customer Name\"as\"Stamp(0SecondParty\",\n" +
-                "''as\"Stamp(0FirstPartyPin\",''as\"Stamp(0SecondPartyPin\",''as\"Stamp(0FirstPartyIDType\",\n" +
-                "''as\"Stamp(0SecondPartyIDType\",'NA'as\"Stamp(0FirstPartyIDNumber\",'NA'as\"Stamp(0SecondPartyIDNumber\",\n" +
-                "'100'as\"Stamp(0StampAmount\",appl.\"Sanction Loan Amount\"as\"Stamp(0Consideration\",\n" +
-                "'Loan Agreement'as\"Stamp(0DocDescription\",'Shubham Housing Development Finance LTD'as\"Stamp(0StampDutyPayer\",\n" +
+                "'Shubham Housing Development Finance LTD'as\"Stamp0FirstParty\",appl.\"Customer Name\"as\"Stamp0SecondParty\",\n" +
+                "''as\"Stamp0FirstPartyPin\",''as\"Stamp0SecondPartyPin\",''as\"Stamp0FirstPartyIDType\",\n" +
+                "''as\"Stamp0SecondPartyIDType\",'NA'as\"Stamp0FirstPartyIDNumber\",'NA'as\"Stamp0SecondPartyIDNumber\",\n" +
+                "'100'as\"Stamp0StampAmount\",appl.\"Sanction Loan Amount\"as\"Stamp0Consideration\",\n" +
+                "'Loan Agreement'as\"Stamp0DocDescription\",'Shubham Housing Development Finance LTD'as\"Stamp0StampDutyPayer\",\n" +
                 "Decode(appl.\"Property State\",'Maharashtra','21','Uttar Pradesh','1','Haryana','NA','Telangana',\n" +
                 "'6','Delhi','1003','Andhra Pradesh','9','Punjab','1005','Uttarakhand','3','Gujarat','108',\n" +
-                "'Tamil Nadu','1076','Madhya Pradesh','4','Rajasthan','1151',0) as\"Stamp(0Article\",'Shubham Housing Development Finance LTD'as\"Stamp(1FirstParty\",\n" +
-                "appl.\"Customer Name\"as\"Stamp(1SecondParty\",\n" +
-                "''as\"Stamp(1FirstPartyPin\",''as\"Stamp(1SecondPartyPin\",''as\"Stamp(1FirstPartyIDType\",\n" +
-                "''as\"Stamp(1SecondPartyIDType\",'NA'as\"Stamp(1FirstPartyIDNumber\",'NA'as\"Stamp(1SecondPartyIDNumber\",\n" +
-                "'100'as\"Stamp(1StampAmount\",appl.\"Sanction Loan Amount\"as\"Stamp(1Consideration\",\n" +
-                "'Loan Agreement'as\"Stamp(1DocDescription\",'Shubham Housing Development Finance LTD'as\"Stamp(1StampDutyPayer\",\n" +
+                "'Tamil Nadu','1076','Madhya Pradesh','4','Rajasthan','1151',0) as\"Stamp0Article\",'Shubham Housing Development Finance LTD'as\"Stamp1FirstParty\",\n" +
+                "appl.\"Customer Name\"as\"Stamp1SecondParty\",\n" +
+                "''as\"Stamp1FirstPartyPin\",''as\"Stamp1SecondPartyPin\",''as\"Stamp1FirstPartyIDType\",\n" +
+                "''as\"Stamp1SecondPartyIDType\",'NA'as\"Stamp1FirstPartyIDNumber\",'NA'as\"Stamp1SecondPartyIDNumber\",\n" +
+                "'100'as\"Stamp1StampAmount\",appl.\"Sanction Loan Amount\"as\"Stamp1Consideration\",\n" +
+                "'Loan Agreement'as\"Stamp1DocDescription\",'Shubham Housing Development Finance LTD'as\"Stamp1StampDutyPayer\",\n" +
                 "Decode(appl.\"Property State\",'Maharashtra','21','Uttar Pradesh','1','Haryana','NA','Telangana',\n" +
                 "'6','Delhi','1003','Andhra Pradesh','9','Punjab','1005','Uttarakhand','3','Gujarat','108',\n" +
-                "'Tamil Nadu','1076','Madhya Pradesh','4','Rajasthan','1151',0)as\"Stamp(1Article\",'Shubham Housing Development Finance LTD'as\"Stamp(2FirstParty\",\n" +
-                "appl.\"Customer Name\"as\"Stamp(2SecondParty\",\n" +
-                "''as\"Stamp(2FirstPartyPin\",''as\"Stamp(2SecondPartyPin\",''as\"Stamp(2FirstPartyIDType\",\n" +
-                "''as\"Stamp(2SecondPartyIDType\",'NA'as\"Stamp(2FirstPartyIDNumber\",'NA'as\"Stamp(2SecondPartyIDNumber\",\n" +
-                "'100'as\"Stamp(2StampAmount\",appl.\"Sanction Loan Amount\"as\"Stamp(2Consideration\",\n" +
-                "'Loan Agreement'as\"Stamp(2DocDescription\",'Shubham Housing Development Finance LTD'as\"Stamp(2StampDutyPayer\",\n" +
+                "'Tamil Nadu','1076','Madhya Pradesh','4','Rajasthan','1151',0)as\"Stamp1Article\",'Shubham Housing Development Finance LTD'as\"Stamp2FirstParty\",\n" +
+                "appl.\"Customer Name\"as\"Stamp2SecondParty\",\n" +
+                "''as\"Stamp2FirstPartyPin\",''as\"Stamp2SecondPartyPin\",''as\"Stamp2FirstPartyIDType\",\n" +
+                "''as\"Stamp2SecondPartyIDType\",'NA'as\"Stamp2FirstPartyIDNumber\",'NA'as\"Stamp2SecondPartyIDNumber\",\n" +
+                "'100'as\"Stamp2StampAmount\",appl.\"Sanction Loan Amount\"as\"Stamp2Consideration\",\n" +
+                "'Loan Agreement'as\"Stamp2DocDescription\",'Shubham Housing Development Finance LTD'as\"Stamp2StampDutyPayer\",\n" +
                 "Decode(appl.\"Property State\",'Maharashtra','21','Uttar Pradesh','1','Haryana','NA','Telangana',\n" +
                 "'6','Delhi','1003','Andhra Pradesh','9','Punjab','1005','Uttarakhand','3','Gujarat','108',\n" +
-                "'Tamil Nadu','1076','Madhya Pradesh','4','Rajasthan','1151',0)as\"Stamp(2Article\",\n" +
+                "'Tamil Nadu','1076','Madhya Pradesh','4','Rajasthan','1151',0)as\"Stamp2Article\",\n" +
                 "appl.\"Customer Name\"as\"Invitee0name\",''as\"Invitee0email\",appl.\"Mobile Number\"as\"Invitee0phone\",\n" +
                 "TO_CHAR(appl.\"DOB\",'YYYY')as\"Invitee0aadhaar.verifyYob\",\n" +
                 "SUBSTR(appl.\"aadhar\",9,4)as\"Invitee0aadhaar.verifyTitle\",appl.\"Gender\" as\"Invitee0aadhaar.verifyGender\",\n" +
@@ -218,7 +218,7 @@ public class GetExcelDataForReportUser {
                 "b.\"Applicant Type\"='Co-Applicant') and a.\"Application Number\"=b.\"Application Number\")left join \n" +
                 "neo_cas_lms_sit1_sh.\"Address Details\" c on(c.\"Customer Number\"=b.\"Customer Number\" and \n" +
                 "\"Addresstype\"='Residential Address')\n" +
-                "where a.\"Application Number\" ='APPL05370117')\n" +
+                "where a.\"Application Number\" ='APPL05373362')\n" +
                 " SELECT * from test where rank2=2) t2 ) tt2 \n" +
                 " on (tt1.\"CoApplicant1 Application No\"=tt2.\"CoApplicant2 Application No\")\n" +
                 " left join ( select t3.* from (WITH test AS (\n" +
