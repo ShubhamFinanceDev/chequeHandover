@@ -41,7 +41,7 @@ public class ReportUserServiceImpl {
         }
         try {
             reportUserModel = jdbcTemplate.query(getExcelDataForReportUser.query(applicationNo), new BeanPropertyRowMapper<>(ReportUserModel.class));
-            System.out.println(reportUserModel);
+            System.out.println(getExcelDataForReportUser.query(applicationNo));
             if (reportUserModel.isEmpty()) {
                 commonResponse.setCode("1111");
                 commonResponse.setMsg("Data not found");
@@ -129,9 +129,9 @@ public class ReportUserServiceImpl {
                 row.createCell(cellCount++).setCellValue(getFieldValue(details, "invitee0Name"));
                 row.createCell(cellCount++).setCellValue(getFieldValue(details, "invitee0Email"));
                 row.createCell(cellCount++).setCellValue(getFieldValue(details, "invitee0Phone"));
-                row.createCell(cellCount++).setCellValue(getFieldValue(details, "invitee0AadhaarVerifyYob"));
-                row.createCell(cellCount++).setCellValue(getFieldValue(details, "invitee0AadhaarVerifyTitle"));
-                row.createCell(cellCount++).setCellValue(getFieldValue(details, "invitee0AadhaarVerifyGender"));
+                row.createCell(cellCount++).setCellValue(getFieldValue(details, "invitee0Aadhaar_VerifyYob"));
+                row.createCell(cellCount++).setCellValue(getFieldValue(details, "invitee0Aadhaar_VerifyTitle"));
+                row.createCell(cellCount++).setCellValue(getFieldValue(details, "invitee0Aadhaar_VerifyGender"));
                 row.createCell(cellCount++).setCellValue(getFieldValue(details, "invitee0PartyName"));
                 row.createCell(cellCount++).setCellValue(getFieldValue(details, "invitee0PrimaryEmail"));
                 row.createCell(cellCount++).setCellValue(getFieldValue(details, "invitee0PrimaryMobile"));
@@ -159,9 +159,9 @@ public class ReportUserServiceImpl {
                     row.createCell(cellCount++).setCellValue(getFieldValue(details, "invitee" + inviteeIndex + "Name"));
                     row.createCell(cellCount++).setCellValue(getFieldValue(details, "invitee" + inviteeIndex + "Email"));
                     row.createCell(cellCount++).setCellValue(getFieldValue(details, "invitee" + inviteeIndex + "Phone"));
-                    row.createCell(cellCount++).setCellValue(getFieldValue(details, "invitee" + inviteeIndex + "AadhaarVerifyYob"));
-                    row.createCell(cellCount++).setCellValue(getFieldValue(details, "invitee" + inviteeIndex + "AadhaarVerifyGender"));
-                    row.createCell(cellCount++).setCellValue(getFieldValue(details, "invitee" + inviteeIndex + "AadhaarVerifyGender"));
+                    row.createCell(cellCount++).setCellValue(getFieldValue(details, "invitee" + inviteeIndex + "Aadhaar_VerifyYob"));
+                    row.createCell(cellCount++).setCellValue(getFieldValue(details, "invitee" + inviteeIndex + "Aadhaar_VerifyGender"));
+                    row.createCell(cellCount++).setCellValue(getFieldValue(details, "invitee" + inviteeIndex + "Aadhaar_VerifyGender"));
                 }
                 row.createCell(cellCount++).setCellValue(getFieldValue(details, "invitee4Name"));
                 row.createCell(cellCount++).setCellValue(getFieldValue(details, "invitee4Email"));

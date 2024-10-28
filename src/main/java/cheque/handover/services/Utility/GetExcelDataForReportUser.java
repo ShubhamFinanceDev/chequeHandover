@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 public class GetExcelDataForReportUser {
 
     public String query(String applicationNo) {
-        String query = "select 'Combined Loan Agreement'as\"Document Name\",'122346'as\"IRN\",\n" +
+        String query = "select 'Combined Loan Agreement'as\"Document Name\",appl.\"Application Number\"as\"IRN\",\n" +
                 "'1702208952696'as\"Field0id\",'Authorised Signatory Name on behalf of Shubham Finance'as\"Field0name\",'Shubham Housing Development Finance Compnay Limited'as\"Field0value\",\n" +
                 "'1702209131361'as\"Field1id\",'Borrower Name'as\"Field1name\",appl.\"Customer Name\"as\"Field1value\",\n" +
                 "'1702209192965'as\"Field2id\",'Borrower Address'as\"Field2name\",appl.\"Borrower Address\"as\"Field2value\",\n" +
@@ -29,7 +29,7 @@ public class GetExcelDataForReportUser {
                 "'1702210719791'as\"Field19id\",'Loan Amount in Figures (DPN)'as\"Field19name\",appl.\"Sanction Loan Amount\"as\"Field19value\",\n" +
                 "'1702213589441'as\"Field20id\",'Loan Amount in Words (DPN)'as\"Field20name\",appl.\"SA words\"as\"Field20value\",\n" +
                 "'1702210804113'as\"Field21id\",'Interest Rate (DPN)' as\"Field21name\",appl.\"Sanctioned ROI\"as\"Field21value\",\n" +
-                "'1712832519856'as\"Field22id\",'Place (Memorandum of Entry)'as\"Field22name\",appl.\"Branch Name\" as\"Field22value\",\n" +
+                "'1702210586587'as\"Field22id\",'Place (DPN)'as\"Field22name\",appl.\"Branch Name\"as\"Field22value\",\n" +
                 "'1702213589444'as\"Field23id\",'Date (DPN)'as\"Field23name\",TO_CHAR(appl.\"Sanction Date\",'DD-MM-YYYY')as\"Field23value\",\n" +
                 "'1702211032374'as\"Field24id\",'Demand Promissory Note Dated'as\"Field24name\",TO_CHAR(appl.\"Sanction Date\",'DD-MM-YYYY')as\"Field24value\",\n" +
                 "'1702213589446'as\"Field25id\",'Loan Amount in Figures (Letter of Continuity)'as\"Field25name\",appl.\"Sanction Loan Amount\"as\"Field25value\",\n" +
@@ -77,7 +77,7 @@ public class GetExcelDataForReportUser {
                 "TO_CHAR(appl.\"Sanction Date\",'YYYY-MM-DD')as\"LoanSanctionDate\",appl.\"Installment Amount\"as\"InstallmentAmt\",\n" +
                 "appl.\"Sanctioned ROI\"as\"InterestRate\",appl.\"Sanction Loan Amount\" as\"SanctionAmount\",\n" +
                 "appl.\"Sanction Tenure\"as\"Tenure\",'Financial'as\"TypeOfDebt\",'No'as\"AccountClosedFlag\",\n" +
-                "'Funded'as\"FundedType\",'INR'as\"LoanCurrency\",'CREDIT_FACILITY'as\"CreditSub-Type\",\n" +
+                "'Funded'as\"FundedType\",'INR'as\"LoanCurrency\",'CREDIT_FACILITY'as\"CreditSubType\",\n" +
                 "appl.\"Type of Loan\"as\"FacilityName\",'0'as\"AmtOverdue\",'0'as\"OtherCharges\",\n" +
                 "TO_CHAR(appl.\"Sanction Date\",'YYYY-MM-DD')as\"DebtStartDate\",'0'as\"InterestAmount\", 'NA'as\"OldDebtRefNo\",\n" +
                 "'0'as\"PrincipalOutstanding\",'NA'as\"LoanRemarks\",'0'as\"TotalOutstanding\",'NA'as\"CreditorBusinessUnit\",\n" +
@@ -86,51 +86,51 @@ public class GetExcelDataForReportUser {
                 "'Shubham Housing Development Finance LTD'as\"Stamp0FirstParty\",appl.\"Customer Name\"as\"Stamp0SecondParty\",\n" +
                 "''as\"Stamp0FirstPartyPin\",''as\"Stamp0SecondPartyPin\",''as\"Stamp0FirstPartyIDType\",\n" +
                 "''as\"Stamp0SecondPartyIDType\",'NA'as\"Stamp0FirstPartyIDNumber\",'NA'as\"Stamp0SecondPartyIDNumber\",\n" +
-                "'100'as\"Stamp0StampAmount\",appl.\"Sanction Loan Amount\"as\"Stamp0Consideration\",\n" +
+                "'100'as\"Stamp0Amount\",appl.\"Sanction Loan Amount\"as\"Stamp0Consideration\",\n" +
                 "'Loan Agreement'as\"Stamp0DocDescription\",'Shubham Housing Development Finance LTD'as\"Stamp0StampDutyPayer\",\n" +
                 "Decode(appl.\"Property State\",'Maharashtra','21','Uttar Pradesh','1','Haryana','NA','Telangana',\n" +
                 "'6','Delhi','1003','Andhra Pradesh','9','Punjab','1005','Uttarakhand','3','Gujarat','108',\n" +
-                "'Tamil Nadu','1076','Madhya Pradesh','4','Rajasthan','1151',0) as\"Stamp0Article\",'Shubham Housing Development Finance LTD'as\"Stamp1FirstParty\",\n" +
-                "appl.\"Customer Name\"as\"Stamp1SecondParty\",\n" +
-                "''as\"Stamp1FirstPartyPin\",''as\"Stamp1SecondPartyPin\",''as\"Stamp1FirstPartyIDType\",\n" +
-                "''as\"Stamp1SecondPartyIDType\",'NA'as\"Stamp1FirstPartyIDNumber\",'NA'as\"Stamp1SecondPartyIDNumber\",\n" +
-                "'100'as\"Stamp1StampAmount\",appl.\"Sanction Loan Amount\"as\"Stamp1Consideration\",\n" +
-                "'Loan Agreement'as\"Stamp1DocDescription\",'Shubham Housing Development Finance LTD'as\"Stamp1StampDutyPayer\",\n" +
+                "'Tamil Nadu','1076','Madhya Pradesh','4','Rajasthan','1151',0) as\"Stamp0Article\",'Shubham Housing Development Finance LTD'as\"stamp1FirstParty\",\n" +
+                "appl.\"Customer Name\"as\"stamp1SecondParty\",\n" +
+                "''as\"stamp1FirstPartyPin\",''as\"stamp1SecondPartyPin\",''as\"stamp1FirstPartyIDType\",\n" +
+                "''as\"stamp1SecondPartyIDType\",'NA'as\"stamp1FirstPartyIDNumber\",'NA'as\"stamp1SecondPartyIDNumber\",\n" +
+                "'100'as\"Stamp1Amount\",appl.\"Sanction Loan Amount\"as\"stamp1Consideration\",\n" +
+                "'Loan Agreement'as\"stamp1DocDescription\",'Shubham Housing Development Finance LTD'as\"stamp1StampDutyPayer\",\n" +
                 "Decode(appl.\"Property State\",'Maharashtra','21','Uttar Pradesh','1','Haryana','NA','Telangana',\n" +
                 "'6','Delhi','1003','Andhra Pradesh','9','Punjab','1005','Uttarakhand','3','Gujarat','108',\n" +
-                "'Tamil Nadu','1076','Madhya Pradesh','4','Rajasthan','1151',0)as\"Stamp1Article\",'Shubham Housing Development Finance LTD'as\"Stamp2FirstParty\",\n" +
-                "appl.\"Customer Name\"as\"Stamp2SecondParty\",\n" +
-                "''as\"Stamp2FirstPartyPin\",''as\"Stamp2SecondPartyPin\",''as\"Stamp2FirstPartyIDType\",\n" +
-                "''as\"Stamp2SecondPartyIDType\",'NA'as\"Stamp2FirstPartyIDNumber\",'NA'as\"Stamp2SecondPartyIDNumber\",\n" +
-                "'100'as\"Stamp2StampAmount\",appl.\"Sanction Loan Amount\"as\"Stamp2Consideration\",\n" +
-                "'Loan Agreement'as\"Stamp2DocDescription\",'Shubham Housing Development Finance LTD'as\"Stamp2StampDutyPayer\",\n" +
+                "'Tamil Nadu','1076','Madhya Pradesh','4','Rajasthan','1151',0)as\"stamp1Article\",'Shubham Housing Development Finance LTD'as\"stamp2FirstParty\",\n" +
+                "appl.\"Customer Name\"as\"stamp2SecondParty\",\n" +
+                "''as\"stamp2FirstPartyPin\",''as\"stamp2SecondPartyPin\",''as\"stamp2FirstPartyIDType\",\n" +
+                "''as\"stamp2SecondPartyIDType\",'NA'as\"stamp2FirstPartyIDNumber\",'NA'as\"stamp2SecondPartyIDNumber\",\n" +
+                "'100'as\"Stamp2Amount\",appl.\"Sanction Loan Amount\"as\"stamp2Consideration\",\n" +
+                "'Loan Agreement'as\"stamp2DocDescription\",'Shubham Housing Development Finance LTD'as\"stamp2StampDutyPayer\",\n" +
                 "Decode(appl.\"Property State\",'Maharashtra','21','Uttar Pradesh','1','Haryana','NA','Telangana',\n" +
                 "'6','Delhi','1003','Andhra Pradesh','9','Punjab','1005','Uttarakhand','3','Gujarat','108',\n" +
-                "'Tamil Nadu','1076','Madhya Pradesh','4','Rajasthan','1151',0)as\"Stamp2Article\",\n" +
+                "'Tamil Nadu','1076','Madhya Pradesh','4','Rajasthan','1151',0)as\"stamp2Article\",\n" +
                 "appl.\"Customer Name\"as\"Invitee0name\",''as\"Invitee0email\",appl.\"Mobile Number\"as\"Invitee0phone\",\n" +
-                "TO_CHAR(appl.\"DOB\",'YYYY')as\"Invitee0aadhaar.verifyYob\",\n" +
-                "SUBSTR(appl.\"aadhar\",9,4)as\"Invitee0aadhaar.verifyTitle\",appl.\"Gender\" as\"Invitee0aadhaar.verifyGender\",\n" +
+                "TO_CHAR(appl.\"DOB\",'YYYY')as\"Invitee0aadhaar_verifyYob\",\n" +
+                "SUBSTR(appl.\"aadhar\",9,4)as\"Invitee0aadhaar_verifyTitle\",appl.\"Gender\" as\"Invitee0aadhaar_verifyGender\",\n" +
                 "appl.\"Customer Name\"as\"Invitee0Partyname\",''as\"Invitee0Primaryemail\",appl.\"Mobile Number\"as\"Invitee0Primarymobile\",\n" +
                 "appl.\"Customer Name\"as\"Invitee0ContactName\",\n" +
-                "'Debtor'as\"Invitee0RelationshipOfPartyWithLoan\",TO_CHAR(appl.\"DOB\",'YYYY-MM-DD')as\"Invitee0DoB/Incorporation\",\n" +
+                "'Debtor'as\"Invitee0RelationshipOfPartyWithLoan\",TO_CHAR(appl.\"DOB\",'YYYY-MM-DD')as\"Invitee0DoBIncorporation\",\n" +
                 "'RESIDENT_INDIVIDUAL'as\"Invitee0LegalConstitution\",\n" +
                 "''as\"Invitee0AlternateEmailofParty\",''as\"Invitee0AlternateMobileOfParty\",\n" +
                 "'PAN_CARD'as\"Invitee0OfficialDocType\",appl.\"Identification Number\"as\"Invitee0OfficialDocId\",\n" +
                 "appl.\"Borrower Address\"as\"Invitee0RegisteredAddressOfTheParty\",\n" +
-                "appl.\"Pincode\"as\"Invitee0Permanent/RegisteredAddressPIN\",\n" +
+                "appl.\"Pincode\"as\"Invitee0PermanentRegisteredAddressPIN\",\n" +
                 "'NA'as\"Invitee0ContactDesignation\",'NA'as\"Invitee0PartyCommunicationAddress\",\n" +
                 "''as\"Invitee0PartyCommunicationAddressPIN\",''as\"Invitee0CorpIdentificationNo\",\n" +
                 "''as\"Invitee0CKYCKIN\",'INDIAN_ENTITY'as\"Invitee0PartyType\",''as\"Invitee0Is_Individual\",\n" +
                 "''as\"Invitee0SignatoryGender\",''as\"Invitee0BusinessUnit\",\n" +
                 "appl.\"CoApplicant1 Name\"as\"Invitee1name\",''as\"Invitee1email\",appl.\"Mobile No1\"as\"Invitee1phone\",\n" +
-                "appl.\"DOB1\"as\"Invitee1aadhaar.verifyYob\",appl.\"aadhar1\"as\"Invitee1aadhaar.verifyTitle\",\n" +
-                "appl.\"Gender1\"as\"Invitee1aadhaar.verifyGender\",\n" +
+                "appl.\"DOB1\"as\"Invitee1aadhaar_verifyYob\",appl.\"aadhar1\"as\"Invitee1aadhaar_verifyTitle\",\n" +
+                "appl.\"Gender1\"as\"Invitee1aadhaar_verifyGender\",\n" +
                 "appl.\"CoApplicant2 Name\"as\"Invitee2name\",''as\"Invitee2email\",appl.\"Mobile No2\"as\"Invitee2phone\",\n" +
-                "appl.\"DOB2\"as\"Invitee2aadhaar.verifyYob\",appl.\"aadhar2\"as\"Invitee2aadhaar.verifyTitle\",\n" +
-                "appl.\"Gender2\"as\"Invitee2aadhaar.verifyGender\",\n" +
+                "appl.\"DOB2\"as\"Invitee2aadhaar_verifyYob\",appl.\"aadhar2\"as\"Invitee2aadhaar_verifyTitle\",\n" +
+                "appl.\"Gender2\"as\"Invitee2aadhaar_verifyGender\",\n" +
                 "appl.\"CoApplicant3 Name\"as\"Invitee3name\",''as\"Invitee3email\",appl.\"Mobile No3\"as\"Invitee3phone\",\n" +
-                "appl.\"DOB3\"as\"Invitee3aadhaar.verifyYob\",appl.\"aadhar3\"as\"Invitee3aadhaar.verifyTitle\",\n" +
-                "appl.\"Gender3\"as\"Invitee3aadhaar.verifyGender\",\n" +
+                "appl.\"DOB3\"as\"Invitee3aadhaar_verifyYob\",appl.\"aadhar3\"as\"Invitee3aadhaar_verifyTitle\",\n" +
+                "appl.\"Gender3\"as\"Invitee3aadhaar_verifyGender\",\n" +
                 "'Bijayendra Kumar Jha'as\"Invitee4name\",'bijayendra.jha@shubham.co'as\"Invitee4email\",'7048951725'as\"Invitee4phone\"\n" +
                 "from \n" +
                 "(SELECT a.\"Application Number\",CASE WHEN b.\"Gender\"='Male' THEN 'Mr' WHEN b.\"Gender\"='Female' THEN 'Mrs' ELSE ''END as \"Salutation\",\n" +
@@ -172,7 +172,7 @@ public class GetExcelDataForReportUser {
                 "TO_DATE(MOD( TRUNC( \"Sanction Loan Amount\"/ 100000 ), 100 ),'J'),'JSP') || ' LAKH ' END||\n" +
                 "CASE WHEN \"Sanction Loan Amount\"= 0 THEN 'ZERO' WHEN MOD( \"Sanction Loan Amount\", 100000 ) > 0 THEN TO_CHAR(\n" +
                 "TO_DATE(MOD(\"Sanction Loan Amount\", 100000),'J'),'JSP') || ' 'END)AS VARCHAR2(4000)), 1,CEIL(LENGTH(ABS(\"Sanction Loan Amount\"))/7)\n" +
-                "FROM neo_cas_lms_sit1_sh.Application_Newprod where \"Application Number\" ='APPL05370117'\n" +
+                "FROM neo_cas_lms_sit1_sh.Application_Newprod where \"Application Number\" ='APPL05378458'\n" +
                 "UNION ALL\n" +
                 "SELECT \"Application Number\",original,TRUNC( \"Sanction Loan Amount\" / 10000000 ),'CRORE ' || suffix,\n" +
                 "RTRIM(CASE WHEN MOD( TRUNC( \"Sanction Loan Amount\" / 100000 ), 100 ) > 0 \n" +
@@ -218,7 +218,7 @@ public class GetExcelDataForReportUser {
                 "b.\"Applicant Type\"='Co-Applicant') and a.\"Application Number\"=b.\"Application Number\")left join \n" +
                 "neo_cas_lms_sit1_sh.\"Address Details\" c on(c.\"Customer Number\"=b.\"Customer Number\" and \n" +
                 "\"Addresstype\"='Residential Address')\n" +
-                "where a.\"Application Number\" ='APPL05373362')\n" +
+                "where a.\"Application Number\" ='"+applicationNo+"')\n" +
                 " SELECT * from test where rank2=2) t2 ) tt2 \n" +
                 " on (tt1.\"CoApplicant1 Application No\"=tt2.\"CoApplicant2 Application No\")\n" +
                 " left join ( select t3.* from (WITH test AS (\n" +

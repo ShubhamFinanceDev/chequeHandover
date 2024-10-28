@@ -217,7 +217,7 @@ public class ReportUserModel {
     private Double sanctionAmount;
     private Integer tenure;
     private String typeOfDebt;
-    private Boolean accountClosedFlag;
+    private String accountClosedFlag;
     private String fundedType;
     private String loanCurrency;
     private String creditSubType;
@@ -289,9 +289,9 @@ public class ReportUserModel {
     private String invitee0Name;
     private String invitee0Email;
     private String invitee0Phone;
-    private String invitee0AadhaarVerifyYob;
-    private String invitee0AadhaarVerifyTitle;
-    private String invitee0AadhaarVerifyGender;
+    private String invitee0Aadhaar_VerifyYob;
+    private String invitee0Aadhaar_VerifyTitle;
+    private String invitee0Aadhaar_VerifyGender;
     private String invitee0PartyName;
     private String invitee0PrimaryEmail;
     private String invitee0PrimaryMobile;
@@ -318,23 +318,23 @@ public class ReportUserModel {
     private String invitee1Name;
     private String invitee1Email;
     private String invitee1Phone;
-    private String invitee1AadhaarVerifyYob;
-    private String invitee1AadhaarVerifyTitle;
-    private String invitee1AadhaarVerifyGender;
+    private String invitee1Aadhaar_VerifyYob;
+    private String invitee1Aadhaar_VerifyTitle;
+    private String invitee1Aadhaar_VerifyGender;
 
     private String invitee2Name;
     private String invitee2Email;
     private String invitee2Phone;
-    private String invitee2AadhaarVerifyYob;
-    private String invitee2AadhaarVerifyTitle;
-    private String invitee2AadhaarVerifyGender;
+    private String invitee2Aadhaar_VerifyYob;
+    private String invitee2Aadhaar_VerifyTitle;
+    private String invitee2Aadhaar_VerifyGender;
 
     private String invitee3Name;
     private String invitee3Email;
     private String invitee3Phone;
-    private String invitee3AadhaarVerifyYob;
-    private String invitee3AadhaarVerifyTitle;
-    private String invitee3AadhaarVerifyGender;
+    private String invitee3Aadhaar_VerifyYob;
+    private String invitee3Aadhaar_VerifyTitle;
+    private String invitee3Aadhaar_VerifyGender;
 
     private String invitee4Name;
     private String invitee4Email;
