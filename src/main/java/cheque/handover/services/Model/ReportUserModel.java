@@ -251,7 +251,7 @@ public class ReportUserModel {
     private String stamp0SecondPartyIDType;
     private String stamp0FirstPartyIDNumber;
     private String stamp0SecondPartyIDNumber;
-    private Double stamp0Amount;
+    private Integer stamp0Amount;
     private String stamp0Consideration;
     private String stamp0DocDescription;
     private String stamp0StampDutyPayer;
@@ -265,7 +265,7 @@ public class ReportUserModel {
     private String stamp1SecondPartyIDType;
     private String stamp1FirstPartyIDNumber;
     private String stamp1SecondPartyIDNumber;
-    private Double stamp1Amount;
+    private Integer stamp1Amount;
     private String stamp1Consideration;
     private String stamp1DocDescription;
     private String stamp1StampDutyPayer;
@@ -279,7 +279,7 @@ public class ReportUserModel {
     private String stamp2SecondPartyIDType;
     private String stamp2FirstPartyIDNumber;
     private String stamp2SecondPartyIDNumber;
-    private Double stamp2Amount;
+    private Integer stamp2Amount;
     private String stamp2Consideration;
     private String stamp2DocDescription;
     private String stamp2StampDutyPayer;
