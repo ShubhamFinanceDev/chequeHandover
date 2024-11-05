@@ -10,7 +10,7 @@ import java.sql.Timestamp;
 @Table(name = "branch_master")
 public class BranchMaster {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "branch_id")
     private Long branchId;
     @Column(name = "branch_name")
