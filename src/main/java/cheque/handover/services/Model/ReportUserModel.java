@@ -217,7 +217,7 @@ public class ReportUserModel {
     private Double sanctionAmount;
     private Integer tenure;
     private String typeOfDebt;
-    private Boolean accountClosedFlag;
+    private String accountClosedFlag;
     private String fundedType;
     private String loanCurrency;
     private String creditSubType;
