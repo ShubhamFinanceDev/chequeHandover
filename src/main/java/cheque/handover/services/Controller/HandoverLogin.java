@@ -21,6 +21,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/handover-service")
@@ -51,6 +53,7 @@ public class HandoverLogin {
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest request) {
         final int[] userRole = new int[1];
+        List<String> roleList = new ArrayList<>();
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmailId());
         this.doAuthenticate(request.getEmailId(), request.getPassword());
@@ -59,20 +62,18 @@ public class HandoverLogin {
 
         userDetails.getAuthorities().forEach(grantedAuthority -> {
             String roleName = String.valueOf(grantedAuthority);
-
-            switch (roleName) {
-                case "ROLE_ADMIN":
-                    userRole[0] = 0;
-                    break;
-                case "ROLE_USER":
-                    userRole[0] = 1;
-                    break;
-                case "ROLE_REPORT_USER":
-                    userRole[0] = 2;
-                    break;
-            }
-            System.out.println(roleName);
+            roleList.add(roleName);
         });
+        System.out.println(roleList);
+        if (roleList.contains("ROLE_ADMIN") && !roleList.contains("ROLE_REPORT_USER") && !roleList.contains("ROLE_USER")) {
+            userRole[0] = 0;
+        } else if (roleList.contains("ROLE_USER") && !roleList.contains("ROLE_ADMIN") && !roleList.contains("ROLE_REPORT_USER")) {
+            userRole[0] = 1;
+        } else if (roleList.contains("ROLE_REPORT_USER") && !roleList.contains("ROLE_USER") && !roleList.contains("ROLE_ADMIN")) {
+            userRole[0] = 2;
+        } else if (roleList.contains("ROLE_USER") && roleList.contains("ROLE_REPORT_USER") && !roleList.contains("ROLE_ADMIN")) {
+            userRole[0] = 3;
+        }
 
         JwtResponse response = JwtResponse.builder()
                 .token(token)

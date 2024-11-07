@@ -21,7 +21,7 @@ public class UserDetailResponse {
     private Timestamp lastLogin;
     private List<String> branchesCode;
     private List<String> assignBranches;
-    private String roleMaster;
+    private List<String> roleMaster;
     private String empCode;
 
 }
