@@ -13,6 +13,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -51,8 +52,8 @@ public class UserDetail implements UserDetails {
         createDate = Timestamp.valueOf(localDateTime.format(formatter));
     }
 
-    @OneToOne(mappedBy = "userMaster", cascade = CascadeType.ALL)
-    private RoleMaster roleMasters;
+    @OneToMany(mappedBy = "userMaster", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
+    private List<RoleMaster> roleMasters;
 
     @OneToMany(mappedBy = "userMaster", cascade = CascadeType.ALL)
     private List<AssignBranch> assignBranches;
@@ -61,7 +62,11 @@ public class UserDetail implements UserDetails {
     private LoginDetails loginDetails;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority(this.roleMasters.getRole()));
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        for (RoleMaster roleMaster : this.roleMasters) {
+            authorities.add(new SimpleGrantedAuthority(roleMaster.getRole()));
+        }
+        return authorities;
     }
 
     @Override

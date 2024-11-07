@@ -16,7 +16,7 @@ public class RoleMaster {
     private String role;
 
     @JsonIgnore
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private UserDetail userMaster;
 }
