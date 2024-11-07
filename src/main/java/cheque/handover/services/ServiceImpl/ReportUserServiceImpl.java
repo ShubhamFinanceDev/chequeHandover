@@ -18,6 +18,8 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -167,12 +169,21 @@ public class ReportUserServiceImpl {
                 row.createCell(cellCount++).setCellValue(getFieldValue(details, "invitee4Phone"));
             }
             response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-            response.setHeader("Content-Disposition", "attachment; filename=USER_REPORT.xlsx");
+            response.setHeader("Content-Disposition", "attachment; filename=MIS_Report.xlsx");
 
-            workbook.write(response.getOutputStream());
-            workbook.close();
+            try (OutputStream out = response.getOutputStream()) {
+                workbook.write(out);
+                out.flush();
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+            } finally {
+                try {
+                    workbook.close();
+                } catch (IOException e) {
+                    System.out.println("Error closing workbook: " + e.getMessage());
+                }
 
-            logger.info("Excel generated successfully");
+            }
             return ResponseEntity.ok("File exported successfully.");
         } catch (Exception e) {
             logger.error("Exception found:", e);
