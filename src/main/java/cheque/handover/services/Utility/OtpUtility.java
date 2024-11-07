@@ -41,14 +41,14 @@ public class OtpUtility {
         try {
             SimpleMailMessage mailMessage = new SimpleMailMessage();
 
-            String msgBody = "Dear User\n Your OTP for reset password  is: " + otpCode + " Please enter this OTP to proceed. \n Thank you,\nShubham Finance;";
+            String msgBody = "Dear Sir/Mam \n\n\n\n Your One time password is: " + otpCode + ". Please enter this OTP to complete the reset password process. \n\n\n\n Regards,\nIT Support.";
 
-            System.out.println(msgBody);
+//            System.out.println(msgBody);
 
             mailMessage.setFrom(sender);
             mailMessage.setTo(sentTo);
             mailMessage.setText(msgBody);
-            mailMessage.setSubject("Your One-Time Password (OTP)");
+            mailMessage.setSubject("One-Time Password");
 
             javaMailSender.send(mailMessage);
             logger.info("otp sent on mail.");

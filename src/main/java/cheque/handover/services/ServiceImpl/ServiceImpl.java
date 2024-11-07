@@ -59,6 +59,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
     @Autowired
     private ChequeStatusRepo chequeStatusRepo;
     @Autowired
+    @Qualifier("jdbcMysqlTemplate")
     private JdbcTemplate jdbcTemplate;
     @Autowired
     private MisReportUtility misReportUtility;
@@ -658,6 +659,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             row.createCell(4).setCellValue(details.getConsumerType() != null ? details.getConsumerType() : "");
             row.createCell(5).setCellValue(details.getHandoverDate() != null ? details.getHandoverDate().toString() : "");
             row.createCell(6).setCellValue(details.getLoanAmount() != null ? details.getLoanAmount() : 0.0);
+            row.createCell(7).setCellValue(details.getUpdatedBy()!= null ? details.getUpdatedBy() : "");
         }
 
         try {
