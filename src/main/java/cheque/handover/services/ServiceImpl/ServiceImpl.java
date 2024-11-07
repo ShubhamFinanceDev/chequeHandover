@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.Duration;
@@ -500,12 +501,12 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         try {
             for (String branch : assignBranches) {
                 if (branch.equals(branchName) || branchName != null && !branchName.isEmpty() || applicationNo != null && !applicationNo.isEmpty() || status != null && !status.isEmpty()) {
-                    String searchFilter=userUtility.findByGivenCriteria(applicationNo, branchName, status);
-                    String searchQuery="SELECT * FROM import_data WHERE "+searchFilter+userUtility.pagination(pageable);
+                    String searchFilter = userUtility.findByGivenCriteria(applicationNo, branchName, status);
+                    String searchQuery = "SELECT * FROM import_data WHERE " + searchFilter + userUtility.pagination(pageable);
                     applicationDetails = jdbcTemplate.query(searchQuery, new BeanPropertyRowMapper<>(ApplicationDetails.class));
-                    String countQuery="SELECT count(*) FROM import_data WHERE "+searchFilter;
-                    totalCount= jdbcTemplate.queryForObject(countQuery, Long.class);
-                    totalCount=(totalCount!=null) ? totalCount: 0;
+                    String countQuery = "SELECT count(*) FROM import_data WHERE " + searchFilter;
+                    totalCount = jdbcTemplate.queryForObject(countQuery, Long.class);
+                    totalCount = (totalCount != null) ? totalCount : 0;
                 }
             }
             addFetchData(commonResponse, fetchExcelData, applicationDetails, totalCount, pageNo, pageSize);
@@ -630,7 +631,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         List<MisReport> fetchedData = new ArrayList<>();
         try {
 
-            return jdbcTemplate.query(misReportUtility.misQuery(reportType, selectedType, fromDate, toDate, selectedDate,status), new BeanPropertyRowMapper<>(MisReport.class));
+            return jdbcTemplate.query(misReportUtility.misQuery(reportType, selectedType, fromDate, toDate, selectedDate, status), new BeanPropertyRowMapper<>(MisReport.class));
         } catch (Exception e) {
             logger.error("Error while executing report query" + e.getMessage());
             return fetchedData;
@@ -659,20 +660,25 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             row.createCell(4).setCellValue(details.getConsumerType() != null ? details.getConsumerType() : "");
             row.createCell(5).setCellValue(details.getHandoverDate() != null ? details.getHandoverDate().toString() : "");
             row.createCell(6).setCellValue(details.getLoanAmount() != null ? details.getLoanAmount() : 0.0);
-            row.createCell(7).setCellValue(details.getUpdatedBy()!= null ? details.getUpdatedBy() : "");
+            row.createCell(7).setCellValue(details.getUpdatedBy() != null ? details.getUpdatedBy() : "");
         }
 
-        try {
-            response.setContentType("text/csv");
-            response.setHeader("Content-Disposition", "attachment; filename=MIS_Report.xlsx");
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=MIS_Report.xlsx");
 
-            workbook.write(response.getOutputStream());
-            workbook.close();
-
+        try (OutputStream out = response.getOutputStream()) {
+            workbook.write(out);
+            out.flush();
         } catch (IOException e) {
             System.out.println(e.getMessage());
-        }
+        } finally {
+            try {
+                workbook.close();
+            } catch (IOException e) {
+                System.out.println("Error closing workbook: " + e.getMessage());
+            }
 //        return response;
+        }
     }
 
     public AllAssignBranchResponse findAssignBranchList(String emailId) {
@@ -715,6 +721,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         }
         return commonResponse;
     }
+
     @Transactional
     public ResponseEntity<CommonResponse> userUpdate(Long userId, EditUserDetails inputDetails) {
 
@@ -727,8 +734,8 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             userDetails.setLastName(inputDetails.getLastName());
             userDetails.setMobileNo(inputDetails.getMobileNo());
             userDetails.getRoleMasters().setRole(inputDetails.getRoleMasters().getRole());
-            List<AssignBranch> newBranch=inputDetails.getAssignBranches().stream().filter(branch -> userDetails.getAssignBranches().stream().noneMatch(addedBranch -> addedBranch.getBranchCode().equals(branch.getBranchCode()))).collect(Collectors.toList());
-            List<AssignBranch> revokeBranches= userDetails.getAssignBranches().stream().filter(branch -> inputDetails.getAssignBranches().stream().noneMatch(revokeBranch -> revokeBranch.getBranchCode().equals(branch.getBranchCode()))).collect(Collectors.toList());
+            List<AssignBranch> newBranch = inputDetails.getAssignBranches().stream().filter(branch -> userDetails.getAssignBranches().stream().noneMatch(addedBranch -> addedBranch.getBranchCode().equals(branch.getBranchCode()))).collect(Collectors.toList());
+            List<AssignBranch> revokeBranches = userDetails.getAssignBranches().stream().filter(branch -> inputDetails.getAssignBranches().stream().noneMatch(revokeBranch -> revokeBranch.getBranchCode().equals(branch.getBranchCode()))).collect(Collectors.toList());
             newBranch.forEach(branch -> {
                 branch.setUserMaster(userDetails);
             });
@@ -761,21 +768,21 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return true;
     }
 
-    public CommonResponse updateOldPassword(UpdatePassword updatePassword, UserDetail userDetail){
+    public CommonResponse updateOldPassword(UpdatePassword updatePassword, UserDetail userDetail) {
         CommonResponse commonResponse = new CommonResponse();
         try {
-                userDetail.setPassword(passwordEncoder.encode(updatePassword.getNewPassword()));
-                userDetailRepo.save(userDetail);
-                commonResponse.setCode("0000");
-                commonResponse.setMsg("Update Password successful");
-        }catch (Exception e){
+            userDetail.setPassword(passwordEncoder.encode(updatePassword.getNewPassword()));
+            userDetailRepo.save(userDetail);
+            commonResponse.setCode("0000");
+            commonResponse.setMsg("Update Password successful");
+        } catch (Exception e) {
             commonResponse.setCode("1111");
-            commonResponse.setMsg("Exception found :"+e.getMessage());
+            commonResponse.setMsg("Exception found :" + e.getMessage());
         }
         return commonResponse;
     }
 
-    public void setUpdatePasswordResponse(UpdatePassword updatePassword, UserDetail userDetailOptional, CommonResponse commonResponse){
+    public void setUpdatePasswordResponse(UpdatePassword updatePassword, UserDetail userDetailOptional, CommonResponse commonResponse) {
         if (updatePassword.getNewPassword().equals(updatePassword.getConfirmNewPassword())) {
             if (!(updatePassword.getNewPassword().matches(".{8,}") && updatePassword.getConfirmNewPassword().matches(".{8,}"))) {
                 commonResponse.setMsg("The new password or confirm password is not 8 characters long");
@@ -789,7 +796,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
 //                commonResponse.setMsg("The new password or confirm password is not 8 characters long");
 //                commonResponse.setCode("1111");
 //            }
-        }else {
+        } else {
             commonResponse.setCode("1111");
             commonResponse.setMsg("New password and confirm password did not matched");
         }
