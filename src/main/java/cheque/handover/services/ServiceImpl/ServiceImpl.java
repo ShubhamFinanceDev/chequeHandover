@@ -12,6 +12,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -58,6 +59,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
     @Autowired
     private ChequeStatusRepo chequeStatusRepo;
     @Autowired
+    @Qualifier("jdbcMysqlTemplate")
     private JdbcTemplate jdbcTemplate;
     @Autowired
     private MisReportUtility misReportUtility;
