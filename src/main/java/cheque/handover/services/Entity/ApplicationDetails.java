@@ -12,7 +12,7 @@ import java.sql.Timestamp;
 @Table(name = "import_data")
 public class ApplicationDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cheque_id")
     private Long chequeId;
     @Column(name = "applicant_name")

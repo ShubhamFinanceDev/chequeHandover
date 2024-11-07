@@ -11,7 +11,7 @@ import java.util.List;
 @Table(name = "assign_branch")
 public class AssignBranch {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "assign_branch_id")
     private Long assignBranchId;
     @Column(name = "branch_code")
