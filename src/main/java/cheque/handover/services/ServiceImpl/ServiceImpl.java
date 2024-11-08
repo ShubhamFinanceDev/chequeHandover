@@ -30,7 +30,6 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -70,6 +69,8 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
     private LoginDetailsRepo loginDetailsRepo;
     @Autowired
     private AssignBranchRepo assignBranchRepo;
+    @Autowired
+    private AssignRole assignRoleRepo;
 
 
     private final Logger logger = LoggerFactory.getLogger(User.class);
@@ -145,7 +146,11 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             }
             userDetails.setAssignBranches(userUtility.listOfBranch(assignBranches));
             userDetails.setBranchesCode(assignBranches);
-            userDetails.setRoleMaster(userData.getRoleMasters().getRole());
+            List<String> roleList = new ArrayList<>();
+                for (RoleMaster role : userData.getRoleMasters()) {
+                    roleList.add(role.getRole());
+                }
+            userDetails.setRoleMaster(roleList);
             if (userData.getLoginDetails() != null) {
                 userDetails.setLastLogin(userData.getLoginDetails().getLastLogin());
             }
@@ -207,6 +212,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         CommonResponse commonResponse = new CommonResponse();
         UserDetail userDetails = new UserDetail();
         RoleMaster userRoleDetail = new RoleMaster();
+        List<RoleMaster> userRoleDetails = new ArrayList<>();
         LoginDetails loginDetails = new LoginDetails();
 
         List<AssignBranch> assignBranchList = new ArrayList<>();
@@ -227,9 +233,13 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                 userDetails.setLoginDetails(loginDetails);
 
 
-                userRoleDetail.setRole(String.valueOf(userDetail.getRoleMasters().getRole()));
-                userRoleDetail.setUserMaster(userDetails);
-                userDetails.setRoleMasters(userRoleDetail);
+                for (RoleMaster role : userDetail.getRoleMasters()) {
+                    RoleMaster newRole = new RoleMaster();
+                    newRole.setRole(role.getRole());
+                    newRole.setUserMaster(userDetails);
+                    userRoleDetails.add(newRole);
+                }
+                userDetails.setRoleMasters(userRoleDetails);
 
                 for (AssignBranch branch : userDetail.getAssignBranches()) {
                     branch.setUserMaster(userDetails);
@@ -725,6 +735,8 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
     public ResponseEntity<CommonResponse> userUpdate(Long userId, EditUserDetails inputDetails) {
 
         CommonResponse commonResponse = new CommonResponse();
+        List<RoleMaster> roleMasterList = new ArrayList<>();
+        RoleMaster roleMaster = new RoleMaster();
         try {
             Optional<UserDetail> userDetail1 = userDetailRepo.findById(userId);
             UserDetail userDetails = userDetail1.get();
@@ -732,15 +744,27 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             userDetails.setFirstName(inputDetails.getFirstName());
             userDetails.setLastName(inputDetails.getLastName());
             userDetails.setMobileNo(inputDetails.getMobileNo());
-            userDetails.getRoleMasters().setRole(inputDetails.getRoleMasters().getRole());
-            List<AssignBranch> newBranch=inputDetails.getAssignBranches().stream().filter(branch -> userDetails.getAssignBranches().stream().noneMatch(addedBranch -> addedBranch.getBranchCode().equals(branch.getBranchCode()))).collect(Collectors.toList());
-            List<AssignBranch> revokeBranches= userDetails.getAssignBranches().stream().filter(branch -> inputDetails.getAssignBranches().stream().noneMatch(revokeBranch -> revokeBranch.getBranchCode().equals(branch.getBranchCode()))).collect(Collectors.toList());
+
+            List<RoleMaster> newRoles = inputDetails.getRoleMasters().stream().filter(inputRole -> userDetails.getRoleMasters().stream().noneMatch(existingRole -> existingRole.getRole().equals(inputRole.getRole()))).collect(Collectors.toList());
+            List<RoleMaster> revokedRoles = userDetails.getRoleMasters().stream().filter(existingRole -> inputDetails.getRoleMasters().stream().noneMatch(inputRole -> inputRole.getRole().equals(existingRole.getRole()))).collect(Collectors.toList());
+
+            for (RoleMaster newRole : newRoles){
+                roleMaster.setRole(newRole.getRole());
+                roleMasterList.add(roleMaster);
+            }
+            userDetails.setRoleMasters(roleMasterList);
+            roleMaster.setUserMaster(userDetails);
+
+            List<AssignBranch> newBranch = inputDetails.getAssignBranches().stream().filter(branch -> userDetails.getAssignBranches().stream().noneMatch(addedBranch -> addedBranch.getBranchCode().equals(branch.getBranchCode()))).collect(Collectors.toList());
+            List<AssignBranch> revokeBranches = userDetails.getAssignBranches().stream().filter(branch -> inputDetails.getAssignBranches().stream().noneMatch(revokeBranch -> revokeBranch.getBranchCode().equals(branch.getBranchCode()))).collect(Collectors.toList());
+
             newBranch.forEach(branch -> {
                 branch.setUserMaster(userDetails);
             });
 
             userDetails.setAssignBranches(inputDetails.getAssignBranches());
             assignBranchRepo.deleteAll(revokeBranches);
+            assignRoleRepo.deleteAll(revokedRoles);
             userDetailRepo.save(userDetails);
             commonResponse.setCode("0000");
             commonResponse.setMsg("Updated successfully");
