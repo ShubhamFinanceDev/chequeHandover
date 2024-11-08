@@ -32,7 +32,7 @@ public class SecurityConfig {
 
         http.csrf(csrf -> csrf.disable())
                 .authorizeRequests().
-                requestMatchers("/admin/**").hasRole("ADMIN").requestMatchers("/user/**").hasAnyRole("USER","ADMIN").requestMatchers("/report-user/**").hasRole("REPORT_USER")
+                requestMatchers("/admin/**").hasRole("ADMIN").requestMatchers("/user/**").hasAnyRole("USER","ADMIN").requestMatchers("/report-user/**").hasAnyRole("REPORT_USER","ADMIN")
                 .requestMatchers("/handover-service/**","/actuator/health").permitAll()
                 .anyRequest()
                 .authenticated()
