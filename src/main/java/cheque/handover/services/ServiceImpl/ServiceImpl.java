@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.Duration;
@@ -668,20 +669,25 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             row.createCell(4).setCellValue(details.getConsumerType() != null ? details.getConsumerType() : "");
             row.createCell(5).setCellValue(details.getHandoverDate() != null ? details.getHandoverDate().toString() : "");
             row.createCell(6).setCellValue(details.getLoanAmount() != null ? details.getLoanAmount() : 0.0);
-            row.createCell(7).setCellValue(details.getUpdatedBy()!= null ? details.getUpdatedBy() : "");
+            row.createCell(7).setCellValue(details.getUpdatedBy() != null ? details.getUpdatedBy() : "");
         }
 
-        try {
-            response.setContentType("text/csv");
-            response.setHeader("Content-Disposition", "attachment; filename=MIS_Report.xlsx");
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=MIS_Report.xlsx");
 
-            workbook.write(response.getOutputStream());
-            workbook.close();
-
+        try (OutputStream out = response.getOutputStream()) {
+            workbook.write(out);
+            out.flush();
         } catch (IOException e) {
             System.out.println(e.getMessage());
-        }
+        } finally {
+            try {
+                workbook.close();
+            } catch (IOException e) {
+                System.out.println("Error closing workbook: " + e.getMessage());
+            }
 //        return response;
+        }
     }
 
     public AllAssignBranchResponse findAssignBranchList(String emailId) {
