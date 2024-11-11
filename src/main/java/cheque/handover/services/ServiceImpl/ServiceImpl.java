@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -120,7 +121,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
 
 
     private void setUserDetail(List<UserDetail> userDetail, List<UserDetailResponse> userDetailResponseList, CommonResponse commonResponse, AllUserDetailList allUserDetailList) {
-        List<RoleMaster> roleMasterList = new ArrayList<>();
+
         for (UserDetail userData : userDetail) {
             UserDetailResponse userDetails = new UserDetailResponse();
 
@@ -771,7 +772,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
 
         } catch (Exception e) {
             commonResponse.setCode("1111");
-            commonResponse.setMsg("Exception found :" + e.getMessage());
+            commonResponse.setMsg("User not exist.");
             return ResponseEntity.ok(commonResponse);
         }
     }
