@@ -96,16 +96,16 @@ public class GetExcelDataForReportUser {
                 "''as\"stamp1SecondPartyIDType\",'NA'as\"stamp1FirstPartyIDNumber\",'NA'as\"stamp1SecondPartyIDNumber\",\n" +
                 "'100'as\"Stamp1Amount\",appl.\"Sanction Loan Amount\"as\"stamp1Consideration\",\n" +
                 "'Loan Agreement'as\"stamp1DocDescription\",'Shubham Housing Development Finance LTD'as\"stamp1StampDutyPayer\",\n" +
-                "Decode(appl.\"Property State\",'Maharashtra','21','Uttar Pradesh','1','Haryana','NA','Telangana',\n" +
-                "'6','Delhi','1003','Andhra Pradesh','9','Punjab','1005','Uttarakhand','3','Gujarat','108',\n" +
+                "Decode(appl.\"Property State\",'Maharashtra','21','Uttar Pradesh','0001','Haryana','NA','Telangana',\n" +
+                "'6','Delhi','1003','Andhra Pradesh','0009','Punjab','1005','Uttarakhand','0003','Gujarat','0108',\n" +
                 "'Tamil Nadu','1076','Madhya Pradesh','4','Rajasthan','1151',0)as\"stamp1Article\",'Shubham Housing Development Finance LTD'as\"stamp2FirstParty\",\n" +
                 "appl.\"Customer Name\"as\"stamp2SecondParty\",\n" +
                 "''as\"stamp2FirstPartyPin\",''as\"stamp2SecondPartyPin\",''as\"stamp2FirstPartyIDType\",\n" +
                 "''as\"stamp2SecondPartyIDType\",'NA'as\"stamp2FirstPartyIDNumber\",'NA'as\"stamp2SecondPartyIDNumber\",\n" +
                 "'100'as\"Stamp2Amount\",appl.\"Sanction Loan Amount\"as\"stamp2Consideration\",\n" +
                 "'Loan Agreement'as\"stamp2DocDescription\",'Shubham Housing Development Finance LTD'as\"stamp2StampDutyPayer\",\n" +
-                "Decode(appl.\"Property State\",'Maharashtra','21','Uttar Pradesh','1','Haryana','NA','Telangana',\n" +
-                "'6','Delhi','1003','Andhra Pradesh','9','Punjab','1005','Uttarakhand','3','Gujarat','108',\n" +
+                "Decode(appl.\"Property State\",'Maharashtra','21','Uttar Pradesh','0001','Haryana','NA','Telangana',\n" +
+                "'6','Delhi','1003','Andhra Pradesh','0009','Punjab','1005','Uttarakhand','0003','Gujarat','0108',\n" +
                 "'Tamil Nadu','1076','Madhya Pradesh','4','Rajasthan','1151',0)as\"stamp2Article\",\n" +
                 "appl.\"Customer Name\"as\"Invitee0name\",''as\"Invitee0email\",appl.\"Mobile Number\"as\"Invitee0phone\",\n" +
                 "TO_CHAR(appl.\"DOB\",'YYYY')as\"Invitee0aadhaar_verifyYob\",\n" +
