@@ -193,7 +193,7 @@ public class ReportUserServiceImpl {
             }
             return ResponseEntity.ok("File exported successfully.");
         } catch (Exception e) {
-            logger.error("Exception found:", e);
+            logger.error("Exception found:", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error generating the Excel file.");
         }
     }

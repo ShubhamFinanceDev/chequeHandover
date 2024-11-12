@@ -15,8 +15,8 @@ public class ReportUser {
     @Autowired
     private ReportUserServiceImpl service;
 
-    @GetMapping("/excel-sheet-builder")
-    public ResponseEntity<?> getDataForNewRole(@RequestParam(value = "applicationNo",required = false)String applicationNo, @RequestParam(value = "file")MultipartFile file, HttpServletResponse response){
+    @PostMapping("/excel-sheet-builder")
+    public ResponseEntity<?> getDataForNewRole(@RequestParam(value = "applicationNo",required = false)String applicationNo, @RequestParam(value = "file",required = false)MultipartFile file, HttpServletResponse response){
         return ResponseEntity.ok(service.excelExportService(applicationNo, file, response)).getBody();
     }
 }
