@@ -6,6 +6,8 @@ import cheque.handover.services.Model.ReportUserModel;
 import cheque.handover.services.Utility.GetExcelDataForReportUser;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
@@ -17,12 +19,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 
 @Service
 public class ReportUserServiceImpl {
@@ -34,15 +38,19 @@ public class ReportUserServiceImpl {
     @Qualifier("jdbcJdbcTemplate")
     private JdbcTemplate jdbcTemplate;
 
-    public ResponseEntity<?> excelExportService(String applicationNo, HttpServletResponse response) {
+    public ResponseEntity<?> excelExportService(String applicationNo, MultipartFile file, HttpServletResponse response) {
 
         CommonResponse commonResponse = new CommonResponse();
         List<ReportUserModel> reportUserModel = new ArrayList<>();
-        if (applicationNo == null || applicationNo.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Application number is required.");
-        }
         try {
-            reportUserModel = jdbcTemplate.query(getExcelDataForReportUser.query(applicationNo), new BeanPropertyRowMapper<>(ReportUserModel.class));
+            if (file != null && !file.isEmpty()) {
+                String extractedApplicationNo = extractApplicationNoFromExcel(file);
+                reportUserModel = jdbcTemplate.query(getExcelDataForReportUser.query(extractedApplicationNo), new BeanPropertyRowMapper<>(ReportUserModel.class));
+            } else if (applicationNo != null && !applicationNo.isEmpty()) {
+                reportUserModel = jdbcTemplate.query(getExcelDataForReportUser.query(applicationNo), new BeanPropertyRowMapper<>(ReportUserModel.class));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Application number or file is required.");
+            }
             System.out.println(getExcelDataForReportUser.query(applicationNo));
             if (reportUserModel.isEmpty()) {
                 commonResponse.setCode("1111");
@@ -188,6 +196,29 @@ public class ReportUserServiceImpl {
             logger.error("Exception found:", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error generating the Excel file.");
         }
+    }
+
+    private String extractApplicationNoFromExcel(MultipartFile file) {
+        String applicationNo = "";
+        try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
+            Sheet sheet = workbook.getSheetAt(0);
+            boolean isHeader = true;
+
+            StringJoiner applicationNoJoiner = new StringJoiner(", ");
+
+            for (Row row : sheet) {
+                if (isHeader) {
+                    isHeader = false;
+                    continue;
+                }
+                String applicationNumber = row.getCell(0).getStringCellValue();
+                applicationNoJoiner.add("'" + applicationNumber + "'");
+            }
+            applicationNo = applicationNoJoiner.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return applicationNo;
     }
 
     private String getFieldValue(ReportUserModel details, String fieldName) {
