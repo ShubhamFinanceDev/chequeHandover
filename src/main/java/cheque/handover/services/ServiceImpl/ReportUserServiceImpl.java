@@ -203,6 +203,7 @@ public class ReportUserServiceImpl {
         try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
             Sheet sheet = workbook.getSheetAt(0);
             boolean isHeader = true;
+            int rowCount = 0;
 
             StringJoiner applicationNoJoiner = new StringJoiner(", ");
 
@@ -211,8 +212,13 @@ public class ReportUserServiceImpl {
                     isHeader = false;
                     continue;
                 }
+
+                if (rowCount >= 25){
+                    return "Excel file exceeds the allowed limit of " + 25 + " application numbers .";
+                }
                 String applicationNumber = row.getCell(0).getStringCellValue();
                 applicationNoJoiner.add("'" + applicationNumber + "'");
+                rowCount++;
             }
             applicationNo = applicationNoJoiner.toString();
         } catch (IOException e) {
