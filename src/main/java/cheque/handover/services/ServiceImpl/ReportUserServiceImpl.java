@@ -47,7 +47,8 @@ public class ReportUserServiceImpl {
                 String extractedApplicationNo = extractApplicationNoFromExcel(file);
                 reportUserModel = jdbcTemplate.query(getExcelDataForReportUser.query(extractedApplicationNo), new BeanPropertyRowMapper<>(ReportUserModel.class));
             } else if (applicationNo != null && !applicationNo.isEmpty()) {
-                reportUserModel = jdbcTemplate.query(getExcelDataForReportUser.query(applicationNo), new BeanPropertyRowMapper<>(ReportUserModel.class));
+                String newApplicationNo = "'"+applicationNo+"'";
+                reportUserModel = jdbcTemplate.query(getExcelDataForReportUser.query(newApplicationNo), new BeanPropertyRowMapper<>(ReportUserModel.class));
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Application number or file is required.");
             }
