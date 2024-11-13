@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Table(name = "otp_manage")
 public class OtpManage {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "otp_id")
     private Long otpId;
     @Column(name = "otp_code")
