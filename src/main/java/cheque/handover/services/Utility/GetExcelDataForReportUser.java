@@ -74,7 +74,13 @@ public class GetExcelDataForReportUser {
                 "'1702219382724'as\"Field63id\",'Title for Borrower (Acknowledgement)(Kum.)'as\"Field63name\",''as\"Field63value\",\n" +
                 "'1702219335653'as\"Field64id\",'Borrower Name (Acknowledgement)'as\"Field64name\",appl.\"Customer Name\" as\"Field64value\",\n" +
                 "'INDIVIDUAL_LOAN'as\"RegistrationType\",appl.\"Application Number\"as \"LoanNo\",''as\"SanctionNo\",\n" +
-                "appl.\"Property State\"as\"State\",appl.\"Branch Name\"as\"Branch\",appl.\"Branch Address\"as\"BranchAddress\",\n" +
+                "appl.\"Property State\"as\"State\",\n" +
+                "\n" +
+                "appl.\"Branch Name\"as\"Branch\",\n" +
+                "\n" +
+                "--appl.\"Branch Name\"as\"BranchAddress\",\n" +
+                "\n" +
+                "appl.\"Branch Address\"as\"BranchAddress\",\n" +    /////////////////////
                 "TO_CHAR(appl.\"Sanction Date\",'YYYY-MM-DD')as\"LoanSanctionDate\",appl.\"Installment Amount\"as\"InstallmentAmt\",\n" +
                 "appl.\"Sanctioned ROI\"as\"InterestRate\",appl.\"Sanction Loan Amount\" as\"SanctionAmount\",\n" +
                 "appl.\"Sanction Tenure\"as\"Tenure\",'Financial'as\"TypeOfDebt\",'No'as\"AccountClosedFlag\",\n" +
@@ -117,7 +123,7 @@ public class GetExcelDataForReportUser {
                 "'RESIDENT_INDIVIDUAL'as\"Invitee0LegalConstitution\",\n" +
                 "''as\"Invitee0AlternateEmailofParty\",''as\"Invitee0AlternateMobileOfParty\",\n" +
                 "'PAN_CARD'as\"Invitee0OfficialDocType\",appl.\"Identification Number\"as\"Invitee0OfficialDocId\",\n" +
-                "appl.\"Borrower Address\"as\"Invitee0RegisteredAddressOfTheParty\",\n" +
+                "REGEXP_REPLACE(regexp_replace(appl.\"Borrower Address\", '[\\.]',' '),'\\s{2,}', ' ')as\"Invitee0RegisteredAddressOfTheParty\",\n" +  ///////////
                 "appl.\"Pincode\"as\"Invitee0PermanentRegisteredAddressPIN\",\n" +
                 "'NA'as\"Invitee0ContactDesignation\",'NA'as\"Invitee0PartyCommunicationAddress\",\n" +
                 "''as\"Invitee0PartyCommunicationAddressPIN\",''as\"Invitee0CorpIdentificationNo\",\n" +
@@ -144,8 +150,7 @@ public class GetExcelDataForReportUser {
                 "EXTRACT(Month FROM a.\"Sanction Date\") \"month\",EXTRACT(Year FROM a.\"Sanction Date\") \"year\",\n" +
                 "regexp_replace(a.\"Sourcing RM Name\", '^[^ ]+ (.*)$', '\\1')as\"Sourcing RM Name\",''as \"Applicant Father/Husband Name\",\n" +
                 "h.\"Branch State\",\"APPLICANT'S_FATHER_NAME\"as\"Father Name\",\n" +
-                "\"Branch Flat/Plot Number\"||' '||\"Branch Address Line 2\"||' '||\"Branch Address Line 3\"||' '||\n" +
-                "\"Branch City\"||' '||\"Branch District\"||' '||\"Branch Pincode\" as\"Branch Address\",\n" +
+                "h.\"Branch Name\"||', '||\"Branch State\"||', '||\"Branch Pincode\" as\"Branch Address\",\n" + ////////////
                 "c.\"Mobile Number\",trunc(b.\"Date Of Birth\")as\"DOB\",\n" +
                 "b.\"Identification Number\",i.\"Build up Area\",i.\"Property Address 1\"||' '||i.\"Property Address 2\"\n" +
                 "||' '||i.\"Property Address 3\"||' '||i.\"Property City\"||' '||i.\"Property State\"\n" +
