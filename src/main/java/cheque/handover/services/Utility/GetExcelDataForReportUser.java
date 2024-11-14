@@ -30,7 +30,7 @@ public class GetExcelDataForReportUser {
                 "'1702213589441'as\"Field20id\",'Loan Amount in Words (DPN)'as\"Field20name\",appl.\"SA words\"as\"Field20value\",\n" +
                 "'1702210804113'as\"Field21id\",'Interest Rate (DPN)' as\"Field21name\",appl.\"Sanctioned ROI\"as\"Field21value\",\n" +
                 "'1702210586587'as\"Field22id\",'Place (DPN)'as\"Field22name\",appl.\"Branch Name\"as\"Field22value\",\n" +
-                "'1702213589444'as\"Field23id\",'Date (DPN)'as\"Field23name\",TO_CHAR(appl.\"Sanction Date\",'DD-MM-YYYY')as\"Field23value\",\n" +
+                "'1702213589444'as\"Field23id\",'Date (DPN)'as\"Field23name\",TO_CHAR(sysdate,'DD-MM-YYYY')as\"Field23value\",\n" +
                 "'1702211032374'as\"Field24id\",'Demand Promissory Note Dated'as\"Field24name\",TO_CHAR(appl.\"Sanction Date\",'DD-MM-YYYY')as\"Field24value\",\n" +
                 "'1702213589446'as\"Field25id\",'Loan Amount in Figures (Letter of Continuity)'as\"Field25name\",appl.\"Sanction Loan Amount\"as\"Field25value\",\n" +
                 "'1702213589447'as\"Field26id\",'Loan Amount in Words (Letter of Continuity)'as\"Field26name\",appl.\"SA words\"as\"Field26value\",\n" +
@@ -59,7 +59,7 @@ public class GetExcelDataForReportUser {
                 "'1702212879864'as\"Field49id\",'Property Description (Schedule)'as\"Field49name\",''as\"Field49value\",\n" +
                 "'1702214913800'as\"Field50id\",'Borrower Name (Memorandum of Entry)'as\"Field50name\",appl.\"Customer Name\"as\"Field50value\",\n" +
                 "'1717094311160'as\"Field51id\",'Acting through Proprietor/director/Partner'as\"Field51name\",''as\"Field51value\",\n" +
-                "'1712832519855'as\"Field52id\",'Loan Agreement/ Deposit Date (Memorandum of Entry)'as\"Field52name\",TO_CHAR(appl.\"Sanction Date\",'DD-MM-YYYY')as\"Field52value\",\n" +
+                "'1712832519855'as\"Field52id\",'Loan Agreement/ Deposit Date (Memorandum of Entry)'as\"Field52name\",TO_CHAR(sysdate,'DD-MM-YYYY')as\"Field52value\",\n" +
                 "'1712832519856'as\"Field53id\",'Place (Memorandum of Entry)'as\"Field53name\",appl.\"Branch Name\" as\"Field53value\",\n" +
                 "'1712832519857'as\"Field54id\",'Loan Amt (Memorandum of Entry)'as\"Field54name\",appl.\"Sanction Loan Amount\"as\"Field54value\",\n" +
                 "'1712831279043'as\"Field55id\",'Loan Account/Application No. (Memorandum of Entry)'as\"Field55name\",appl.\"Application Number\"as\"Field55value\",\n" +
@@ -68,16 +68,14 @@ public class GetExcelDataForReportUser {
                 "'1712831919185'as\"Field58id\",'Property Bearing Number (Memorandum of Entry)'as\"Field58name\",''as\"Field58value\",\n" +
                 "'1712831930752'as\"Field59id\",'Property Area (Memorandum of Entry)'as\"Field59name\",appl.\"Build up Area\"as\"Field59value\",\n" +
                 "'1712832519863'as\"Field60id\",'Property Location (Memorandum of Entry)'as\"Field60name\",appl.\"Property Address\"as\"Field60value\",\n" +
-                "'1702219366151'as\"Field61id\",'Title for Borrower (Acknowledgement)(Shri)'as\"Field61name\",CASE WHEN appl.\"Salutation\"='Mr' THEN 'True' else ''END as\"Field61value\",\n" +
-                "'1702219375976'as\"Field62id\",'Title for Borrower (Acknowledgement)(Smt.)'as\"Field62name\",CASE WHEN appl.\"Salutation\"='Mrs' THEN 'True' else ''END as\"Field62value\",\n" +
+                "'1702219366151'as\"Field61id\",'Title for Borrower (Acknowledgement)(Shri)'as\"Field61name\",'True'as\"Field61value\",\n" +
+                "'1702219375976'as\"Field62id\",'Title for Borrower (Acknowledgement)(Smt.)'as\"Field62name\",'' as\"Field62value\",\n" +
                 "'1702219382724'as\"Field63id\",'Title for Borrower (Acknowledgement)(Kum.)'as\"Field63name\",''as\"Field63value\",\n" +
-                "'1702219335653'as\"Field64id\",'Borrower Name (Acknowledgement)'as\"Field64name\",appl.\"Customer Name\" as\"Field64value\",\n" +
+                "'1702219335653'as\"Field64id\",'Borrower Name (Acknowledgement)'as\"Field64name\",appl.\"Sourcing RM Name\" as\"Field64value\",\n" +
                 "'INDIVIDUAL_LOAN'as\"RegistrationType\",appl.\"Application Number\"as \"LoanNo\",''as\"SanctionNo\",\n" +
                 "appl.\"Property State\"as\"State\",\n" +
                 "\n" +
                 "appl.\"Branch Name\"as\"Branch\",\n" +
-                "\n" +
-                "--appl.\"Branch Name\"as\"BranchAddress\",\n" +
                 "\n" +
                 "appl.\"Branch Address\"as\"BranchAddress\",\n" +    /////////////////////
                 "TO_CHAR(appl.\"Sanction Date\",'YYYY-MM-DD')as\"LoanSanctionDate\",appl.\"Installment Amount\"as\"InstallmentAmt\",\n" +
@@ -122,7 +120,7 @@ public class GetExcelDataForReportUser {
                 "'RESIDENT_INDIVIDUAL'as\"Invitee0LegalConstitution\",\n" +
                 "''as\"Invitee0AlternateEmailofParty\",''as\"Invitee0AlternateMobileOfParty\",\n" +
                 "'PAN_CARD'as\"Invitee0OfficialDocType\",appl.\"Identification Number\"as\"Invitee0OfficialDocId\",\n" +
-                "REGEXP_REPLACE(regexp_replace(appl.\"Borrower Address\", '[\\.]',' '),'\\s{2,}', ' ')as\"Invitee0RegisteredAddressOfTheParty\",\n" +  ///////////
+                "REGEXP_REPLACE(regexp_replace(appl.\"Borrower Address\", '[^a-zA-Z|,0-9]','F '),'\\s{2,}', ' ')as\"Invitee0RegisteredAddressOfTheParty\",\n" +  ///////////
                 "appl.\"Pincode\"as\"Invitee0PermanentRegisteredAddressPIN\",\n" +
                 "'NA'as\"Invitee0ContactDesignation\",'NA'as\"Invitee0PartyCommunicationAddress\",\n" +
                 "''as\"Invitee0PartyCommunicationAddressPIN\",''as\"Invitee0CorpIdentificationNo\",\n" +
@@ -145,8 +143,8 @@ public class GetExcelDataForReportUser {
                 "Decode(b.\"Gender\", 'Male','M','Female','F','')as\"Gender\",\n" +
                 "a.\"Sanction Loan Amount\",a.\"Product\",a.\"Sanction Tenure\",a.\"Sanctioned ROI\",\n" +
                 "a.\"Installment Amount\",a.\"Product Type\"as\"Type of Loan\",a.\"Branch Name\",\n" +
-                "a.\"Loan Purpose Description\",a.\"Loan Purpose\",g.witness_name,EXTRACT(Day FROM a.\"Sanction Date\") \"day\",\n" +
-                "EXTRACT(Month FROM a.\"Sanction Date\") \"month\",EXTRACT(Year FROM a.\"Sanction Date\") \"year\",\n" +
+                "a.\"Loan Purpose Description\",a.\"Loan Purpose\",g.witness_name,EXTRACT(Day FROM sysdate) \"day\",\n" +
+                "EXTRACT(Month FROM sysdate) \"month\",EXTRACT(Year FROM sysdate) \"year\",\n" +
                 "regexp_replace(a.\"Sourcing RM Name\", '^[^ ]+ (.*)$', '\\1')as\"Sourcing RM Name\",''as \"Applicant Father/Husband Name\",\n" +
                 "h.\"Branch State\",\"APPLICANT'S_FATHER_NAME\"as\"Father Name\",\n" +
                 "h.\"Branch Name\"||', '||\"Branch State\"||', '||\"Branch Pincode\" as\"Branch Address\",\n" + ////////////
