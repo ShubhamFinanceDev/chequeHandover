@@ -3,6 +3,7 @@ package cheque.handover.services.ServiceImpl;
 import cheque.handover.services.Controller.User;
 import cheque.handover.services.Model.CommonResponse;
 import cheque.handover.services.Model.ReportUserModel;
+import cheque.handover.services.Model.ReportUserResponse;
 import cheque.handover.services.Utility.GetExcelDataForReportUser;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.poi.ss.usermodel.Row;
@@ -24,9 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringJoiner;
+import java.util.*;
 
 @Service
 public class ReportUserServiceImpl {
@@ -41,16 +40,23 @@ public class ReportUserServiceImpl {
     public ResponseEntity<?> excelExportService(String applicationNo, MultipartFile file, HttpServletResponse response) {
 
         CommonResponse commonResponse = new CommonResponse();
+        ReportUserResponse reportUserResponse = new ReportUserResponse();
+        String error ="";
         List<ReportUserModel> reportUserModel = new ArrayList<>();
         try {
             if (file != null && !file.isEmpty()) {
-                String extractedApplicationNo = extractApplicationNoFromExcel(file);
+                String extractedApplicationNo = extractApplicationNoFromExcel(file, error);
+                if (extractedApplicationNo == null ){
+                    reportUserResponse.setCommonResponse(commonResponse);
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+                }
                 reportUserModel = jdbcTemplate.query(getExcelDataForReportUser.query(extractedApplicationNo), new BeanPropertyRowMapper<>(ReportUserModel.class));
             } else if (applicationNo != null && !applicationNo.isEmpty()) {
                 String newApplicationNo = "'"+applicationNo+"'";
                 reportUserModel = jdbcTemplate.query(getExcelDataForReportUser.query(newApplicationNo), new BeanPropertyRowMapper<>(ReportUserModel.class));
             } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Application number or file is required.");
+                commonResponse.setMsg("Application number or file is required.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(commonResponse);
             }
             System.out.println(getExcelDataForReportUser.query(applicationNo));
             if (reportUserModel.isEmpty()) {
@@ -195,11 +201,13 @@ public class ReportUserServiceImpl {
             return ResponseEntity.ok("File exported successfully.");
         } catch (Exception e) {
             logger.error("Exception found:", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error generating the Excel file.");
+            commonResponse.setCode("1111");
+            commonResponse.setMsg("Error generating the Excel file."+e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(commonResponse);
         }
     }
 
-    private String extractApplicationNoFromExcel(MultipartFile file) {
+    private String extractApplicationNoFromExcel(MultipartFile file, String error) {
         String applicationNo = "";
         try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
             Sheet sheet = workbook.getSheetAt(0);
@@ -207,6 +215,7 @@ public class ReportUserServiceImpl {
             int rowCount = 0;
 
             StringJoiner applicationNoJoiner = new StringJoiner(", ");
+            Set<String> uniqueApplicationNumbers = new HashSet<>();
 
             for (Row row : sheet) {
                 if (isHeader) {
@@ -215,9 +224,15 @@ public class ReportUserServiceImpl {
                 }
 
                 if (rowCount >= 25){
-                    return "Excel file exceeds the allowed limit of " + 25 + " application numbers .";
+                    error = "Excel file exceeds the allowed limit of "+ 25 + " application numbers.";
+                    return null;
                 }
                 String applicationNumber = row.getCell(0).getStringCellValue();
+
+                if (!uniqueApplicationNumbers.add(applicationNumber)) {
+                    error = "Duplicate application number found:"+applicationNumber;
+                    return null;
+                }
                 applicationNoJoiner.add("'" + applicationNumber + "'");
                 rowCount++;
             }
