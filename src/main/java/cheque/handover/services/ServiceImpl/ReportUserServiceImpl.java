@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ReportUserServiceImpl {
@@ -40,16 +41,15 @@ public class ReportUserServiceImpl {
     public ResponseEntity<?> excelExportService(String applicationNo, MultipartFile file, HttpServletResponse response) {
 
         CommonResponse commonResponse = new CommonResponse();
-        ReportUserResponse reportUserResponse = new ReportUserResponse();
         String error ="";
         List<ReportUserModel> reportUserModel = new ArrayList<>();
         try {
             if (file != null && !file.isEmpty()) {
                 String extractedApplicationNo = extractApplicationNoFromExcel(file, error);
-                if (extractedApplicationNo == null ){
-                    reportUserResponse.setCommonResponse(commonResponse);
+                if (extractedApplicationNo == null){
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
                 }
+                logger.info("application list {}",applicationNo);
                 reportUserModel = jdbcTemplate.query(getExcelDataForReportUser.query(extractedApplicationNo), new BeanPropertyRowMapper<>(ReportUserModel.class));
             } else if (applicationNo != null && !applicationNo.isEmpty()) {
                 String newApplicationNo = "'"+applicationNo+"'";
@@ -208,13 +208,11 @@ public class ReportUserServiceImpl {
     }
 
     private String extractApplicationNoFromExcel(MultipartFile file, String error) {
-        String applicationNo = "";
+        List<String> applicationList=new ArrayList<>();
+
         try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
             Sheet sheet = workbook.getSheetAt(0);
             boolean isHeader = true;
-            int rowCount = 0;
-
-            StringJoiner applicationNoJoiner = new StringJoiner(", ");
             Set<String> uniqueApplicationNumbers = new HashSet<>();
 
             for (Row row : sheet) {
@@ -222,25 +220,21 @@ public class ReportUserServiceImpl {
                     isHeader = false;
                     continue;
                 }
-
-                if (rowCount >= 25){
-                    error = "Excel file exceeds the allowed limit of "+ 25 + " application numbers.";
-                    return null;
+                applicationList.add(row.getCell(0).getStringCellValue());
+                if(applicationList.size()>25){
+                    error="Excel file exceeds the allowed limit of 25  application numbers.";
+                    break;
                 }
-                String applicationNumber = row.getCell(0).getStringCellValue();
-
-                if (!uniqueApplicationNumbers.add(applicationNumber)) {
-                    error = "Duplicate application number found:"+applicationNumber;
-                    return null;
+                if(!uniqueApplicationNumbers.add(row.getCell(0).getStringCellValue())){
+                    error="Excel file have duplicate application number.";
+                    break;
                 }
-                applicationNoJoiner.add("'" + applicationNumber + "'");
-                rowCount++;
             }
-            applicationNo = applicationNoJoiner.toString();
         } catch (IOException e) {
             e.printStackTrace();
+            error="Technical issue.";
         }
-        return applicationNo;
+        return error.isEmpty() ? applicationList.stream().map(data-> "'"+data+"'").collect(Collectors.joining(",")) : null;
     }
 
     private String getFieldValue(ReportUserModel details, String fieldName) {
