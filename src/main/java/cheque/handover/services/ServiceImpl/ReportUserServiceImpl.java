@@ -45,9 +45,12 @@ public class ReportUserServiceImpl {
         List<ReportUserModel> reportUserModel = new ArrayList<>();
         try {
             if (file != null && !file.isEmpty()) {
-                String extractedApplicationNo = extractApplicationNoFromExcel(file, error);
-                if (extractedApplicationNo == null){
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+                String extractedApplicationNo = extractApplicationNoFromExcel(file, commonResponse);
+                System.out.println(extractedApplicationNo);
+                if (extractedApplicationNo == null ){
+                    commonResponse.setCode("406");
+                    logger.warn(commonResponse.getMsg());
+                    return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(commonResponse);
                 }
                 logger.info("application list {}",applicationNo);
                 reportUserModel = jdbcTemplate.query(getExcelDataForReportUser.query(extractedApplicationNo), new BeanPropertyRowMapper<>(ReportUserModel.class));
@@ -207,7 +210,7 @@ public class ReportUserServiceImpl {
         }
     }
 
-    private String extractApplicationNoFromExcel(MultipartFile file, String error) {
+    private String extractApplicationNoFromExcel(MultipartFile file, CommonResponse commonResponse) {
         List<String> applicationList=new ArrayList<>();
 
         try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
@@ -222,19 +225,19 @@ public class ReportUserServiceImpl {
                 }
                 applicationList.add(row.getCell(0).getStringCellValue());
                 if(applicationList.size()>25){
-                    error="Excel file exceeds the allowed limit of 25  application numbers.";
+                    commonResponse.setMsg("Excel file exceeds the allowed limit of 25  application numbers.");
                     break;
                 }
                 if(!uniqueApplicationNumbers.add(row.getCell(0).getStringCellValue())){
-                    error="Excel file have duplicate application number.";
+                    commonResponse.setMsg("Excel file have duplicate application number.");
                     break;
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
-            error="Technical issue.";
+            commonResponse.setMsg("Technical issue.");
         }
-        return error.isEmpty() ? applicationList.stream().map(data-> "'"+data+"'").collect(Collectors.joining(",")) : null;
+        return commonResponse.getMsg().isEmpty() ? applicationList.stream().map(data-> "'"+data+"'").collect(Collectors.joining(",")) : null;
     }
 
     private String getFieldValue(ReportUserModel details, String fieldName) {
