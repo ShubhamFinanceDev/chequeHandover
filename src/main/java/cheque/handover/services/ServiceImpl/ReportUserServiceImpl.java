@@ -65,7 +65,7 @@ public class ReportUserServiceImpl {
             if (reportUserModel.isEmpty()) {
                 commonResponse.setCode("1111");
                 commonResponse.setMsg("Data not found");
-                return ResponseEntity.ok(commonResponse);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Data not found");
             }
             XSSFWorkbook workbook = new XSSFWorkbook();
             XSSFSheet sheet = workbook.createSheet("USER_REPORT");
