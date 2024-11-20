@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 public class GetExcelDataForReportUser {
 
     public String query(String applicationNo) {
+        System.out.println("query"+applicationNo);
         String query = "select 'Combined Loan Agreement'as\"Document Name\",appl.\"Application Number\"as\"IRN\",\n" +
                 "'1702208952696'as\"Field0id\",'Authorised Signatory Name on behalf of Shubham Finance'as\"Field0name\",'Shubham Housing Development Finance Compnay Limited'as\"Field0value\",\n" +
                 "'1702209131361'as\"Field1id\",'Borrower Name'as\"Field1name\",appl.\"Customer Name\"as\"Field1value\",\n" +
