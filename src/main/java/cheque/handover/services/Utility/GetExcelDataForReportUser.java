@@ -1,12 +1,15 @@
 package cheque.handover.services.Utility;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class GetExcelDataForReportUser {
 
+    private static final Logger log = LoggerFactory.getLogger(GetExcelDataForReportUser.class);
+
     public String query(String applicationNo) {
-        System.out.println("query"+applicationNo);
         String query = "select 'Combined Loan Agreement'as\"Document Name\",appl.\"Application Number\"as\"IRN\",\n" +
                 "'1702208952696'as\"Field0id\",'Authorised Signatory Name on behalf of Shubham Finance'as\"Field0name\",'Shubham Housing Development Finance Compnay Limited'as\"Field0value\",\n" +
                 "'1702209131361'as\"Field1id\",'Borrower Name'as\"Field1name\",appl.\"Customer Name\"as\"Field1value\",\n" +
@@ -243,6 +246,7 @@ public class GetExcelDataForReportUser {
                 " ))coap\n" +
                 "on(a.\"Application Number\"=coap.\"CoApplicant1 Application No\")\n" +
                     " where a.\"Application Number\" IN ("+applicationNo+")and c.\"Addresstype\"='Residential Address')appl";
+       log.info("query prepared for report {}", query);
         return query;
     }
 }
