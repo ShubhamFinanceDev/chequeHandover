@@ -207,7 +207,7 @@ public class GetExcelDataForReportUser {
                 "b.\"Applicant Type\"='Co-Applicant') and a.\"Application Number\"=b.\"Application Number\")left join \n" +
                 "neo_cas_lms_sit1_sh.\"Address Details\" c on(c.\"Customer Number\"=b.\"Customer Number\" and \n" +
                 "\"Addresstype\"='Residential Address')\n" +
-                "where a.\"Application Number\" ='"+applicationNo+"')\n" +
+                "where a.\"Application Number\" IN ("+applicationNo+"))\n" +
                 " SELECT * from test where rank1=1) t1 ) tt1  left join ( select t2.* from (WITH test AS (\n" +
                 " select a.\"Application Number\"as\"CoApplicant2 Application No\",\n" +
                 " CASE WHEN \"Gender\"='Male' THEN 'Mr' WHEN \"Gender\"='Female' THEN 'Mrs' ELSE ''END as \"Salutation2\",\n" +
@@ -221,7 +221,7 @@ public class GetExcelDataForReportUser {
                 "b.\"Applicant Type\"='Co-Applicant') and a.\"Application Number\"=b.\"Application Number\")left join \n" +
                 "neo_cas_lms_sit1_sh.\"Address Details\" c on(c.\"Customer Number\"=b.\"Customer Number\" and \n" +
                 "\"Addresstype\"='Residential Address')\n" +
-                "where a.\"Application Number\" ='"+applicationNo+"')\n" +
+                "where a.\"Application Number\" IN ("+applicationNo+"))\n" +
                 " SELECT * from test where rank2=2) t2 ) tt2 \n" +
                 " on (tt1.\"CoApplicant1 Application No\"=tt2.\"CoApplicant2 Application No\")\n" +
                 " left join ( select t3.* from (WITH test AS (\n" +
@@ -237,11 +237,11 @@ public class GetExcelDataForReportUser {
                 "b.\"Applicant Type\"='Co-Applicant') and a.\"Application Number\"=b.\"Application Number\")left join \n" +
                 "neo_cas_lms_sit1_sh.\"Address Details\" c on(c.\"Customer Number\"=b.\"Customer Number\" and \n" +
                 "\"Addresstype\"='Residential Address')\n" +
-                "where a.\"Application Number\" ='"+applicationNo+"')\n" +
+                "where a.\"Application Number\" IN ("+applicationNo+"))\n" +
                 " SELECT * from test where rank3=3) t3) tt3 on (tt1.\"CoApplicant1 Application No\"=tt3.\"CoApplicant3 Application No\")\n" +
                 " ))coap\n" +
                 "on(a.\"Application Number\"=coap.\"CoApplicant1 Application No\")\n" +
-                " where a.\"Application Number\"='"+applicationNo+"'and c.\"Addresstype\"='Residential Address')appl";
+                    " where a.\"Application Number\" IN ("+applicationNo+")and c.\"Addresstype\"='Residential Address')appl";
         return query;
     }
 }
