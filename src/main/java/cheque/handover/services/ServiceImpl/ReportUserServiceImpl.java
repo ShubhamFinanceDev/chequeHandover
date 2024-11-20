@@ -47,14 +47,13 @@ public class ReportUserServiceImpl {
         try {
             if (file != null && !file.isEmpty()) {
                 List<String> extractedApplicationNo = extractApplicationNoFromExcel(file, commonResponse);
-                System.out.println(extractedApplicationNo);
-                if(extractedApplicationNo.size()>25){
+                if(extractedApplicationNo.size()>26){
                     commonResponse.setMsg("Excel file exceeds the allowed limit of 25  application numbers.");
                     return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(commonResponse);
                 }
                 for (String application :extractedApplicationNo){
                     if (!duplicateApplicationNo.add(application)){
-                        return ResponseEntity.status(HttpStatus.CONFLICT).body("Excel have duplicate applicationNo");
+                        return ResponseEntity.status(HttpStatus.CONFLICT).body("Excel have duplicate applicationNo"+application);
                     }
                 }
                 String formattedApplicationNos = extractedApplicationNo.stream().map(application -> "'" + application + "'").collect(Collectors.joining(","));
@@ -219,7 +218,6 @@ public class ReportUserServiceImpl {
         try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
             Sheet sheet = workbook.getSheetAt(0);
             boolean isHeader = true;
-            Set<String> uniqueApplicationNumbers = new HashSet<>();
 
             for (Row row : sheet) {
                 if (isHeader) {
@@ -227,16 +225,13 @@ public class ReportUserServiceImpl {
                     continue;
                 }
                 applicationList.add(row.getCell(0).getStringCellValue());
-                if(!uniqueApplicationNumbers.add(row.getCell(0).getStringCellValue())){
-                    commonResponse.setMsg("Excel file have duplicate application number.");
-                    break;
-                }
             }
         } catch (IOException e) {
             e.printStackTrace();
             commonResponse.setMsg("Technical issue.");
         }
-        return applicationList;
+        List<String> filteredList = applicationList.stream().filter(entry -> entry != null && !entry.trim().isEmpty()).collect(Collectors.toList());
+        return filteredList;
     }
 
     private String getFieldValue(ReportUserModel details, String fieldName) {
