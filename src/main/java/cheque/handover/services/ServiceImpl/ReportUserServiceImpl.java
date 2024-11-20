@@ -43,23 +43,26 @@ public class ReportUserServiceImpl {
         CommonResponse commonResponse = new CommonResponse();
         String error ="";
         List<ReportUserModel> reportUserModel = new ArrayList<>();
+        Set<String> duplicateApplicationNo = new HashSet<>();
         try {
             if (file != null && !file.isEmpty()) {
-                String extractedApplicationNo = extractApplicationNoFromExcel(file, commonResponse);
+                List<String> extractedApplicationNo = extractApplicationNoFromExcel(file, commonResponse);
                 System.out.println(extractedApplicationNo);
-                if (extractedApplicationNo == null ){
-                    commonResponse.setCode("406");
-                    logger.warn(commonResponse.getMsg());
+                if(extractedApplicationNo.size()>25){
+                    commonResponse.setMsg("Excel file exceeds the allowed limit of 25  application numbers.");
                     return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(commonResponse);
                 }
+                for (String application :extractedApplicationNo){
+                    if (!duplicateApplicationNo.add(application)){
+                        return ResponseEntity.status(HttpStatus.CONFLICT).body("Excel have duplicate applicationNo");
+                    }
+                }
+                String formattedApplicationNos = extractedApplicationNo.stream().map(application -> "'" + application + "'").collect(Collectors.joining(","));
                 logger.info("application list {}",applicationNo);
-                reportUserModel = jdbcTemplate.query(getExcelDataForReportUser.query(extractedApplicationNo), new BeanPropertyRowMapper<>(ReportUserModel.class));
+                reportUserModel = jdbcTemplate.query(getExcelDataForReportUser.query(formattedApplicationNos), new BeanPropertyRowMapper<>(ReportUserModel.class));
             } else if (applicationNo != null && !applicationNo.isEmpty()) {
                 String newApplicationNo = "'"+applicationNo+"'";
                 reportUserModel = jdbcTemplate.query(getExcelDataForReportUser.query(newApplicationNo), new BeanPropertyRowMapper<>(ReportUserModel.class));
-            } else {
-                commonResponse.setMsg("Application number or file is required.");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(commonResponse);
             }
             System.out.println(getExcelDataForReportUser.query(applicationNo));
             if (reportUserModel.isEmpty()) {
@@ -210,7 +213,7 @@ public class ReportUserServiceImpl {
         }
     }
 
-    private String extractApplicationNoFromExcel(MultipartFile file, CommonResponse commonResponse) {
+    private List<String> extractApplicationNoFromExcel(MultipartFile file, CommonResponse commonResponse) throws Exception{
         List<String> applicationList=new ArrayList<>();
 
         try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
@@ -224,10 +227,6 @@ public class ReportUserServiceImpl {
                     continue;
                 }
                 applicationList.add(row.getCell(0).getStringCellValue());
-                if(applicationList.size()>25){
-                    commonResponse.setMsg("Excel file exceeds the allowed limit of 25  application numbers.");
-                    break;
-                }
                 if(!uniqueApplicationNumbers.add(row.getCell(0).getStringCellValue())){
                     commonResponse.setMsg("Excel file have duplicate application number.");
                     break;
@@ -237,7 +236,7 @@ public class ReportUserServiceImpl {
             e.printStackTrace();
             commonResponse.setMsg("Technical issue.");
         }
-        return commonResponse.getMsg().isEmpty() ? applicationList.stream().map(data-> "'"+data+"'").collect(Collectors.joining(",")) : null;
+        return applicationList;
     }
 
     private String getFieldValue(ReportUserModel details, String fieldName) {
