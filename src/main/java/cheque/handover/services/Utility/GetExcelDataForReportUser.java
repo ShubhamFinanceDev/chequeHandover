@@ -124,7 +124,7 @@ public class GetExcelDataForReportUser {
                 "'RESIDENT_INDIVIDUAL'as\"Invitee0LegalConstitution\",\n" +
                 "''as\"Invitee0AlternateEmailofParty\",''as\"Invitee0AlternateMobileOfParty\",\n" +
                 "'PAN_CARD'as\"Invitee0OfficialDocType\",appl.\"Identification Number\"as\"Invitee0OfficialDocId\",\n" +
-                "REGEXP_REPLACE(regexp_replace(appl.\"Borrower Address\", '[^a-zA-Z|,0-9]','F '),'\\s{2,}', ' ')as\"Invitee0RegisteredAddressOfTheParty\",\n" +  ///////////
+                "REGEXP_REPLACE(regexp_replace(appl.\"Borrower Address\", '[^a-zA-Z|,0-9]',' '),'\\s{2,}', ' ')as\"Invitee0RegisteredAddressOfTheParty\",\n" +  ///////////
                 "appl.\"Pincode\"as\"Invitee0PermanentRegisteredAddressPIN\",\n" +
                 "'NA'as\"Invitee0ContactDesignation\",'NA'as\"Invitee0PartyCommunicationAddress\",\n" +
                 "''as\"Invitee0PartyCommunicationAddressPIN\",''as\"Invitee0CorpIdentificationNo\",\n" +
