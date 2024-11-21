@@ -6,6 +6,8 @@ import cheque.handover.services.Model.ReportUserModel;
 import cheque.handover.services.Utility.GetExcelDataForReportUser;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
@@ -17,12 +19,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ReportUserServiceImpl {
@@ -34,20 +37,36 @@ public class ReportUserServiceImpl {
     @Qualifier("jdbcJdbcTemplate")
     private JdbcTemplate jdbcTemplate;
 
-    public ResponseEntity<?> excelExportService(String applicationNo, HttpServletResponse response) {
+    public ResponseEntity<?> excelExportService(String applicationNo, MultipartFile file, HttpServletResponse response) {
 
         CommonResponse commonResponse = new CommonResponse();
+        String error ="";
         List<ReportUserModel> reportUserModel = new ArrayList<>();
-        if (applicationNo == null || applicationNo.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Application number is required.");
-        }
+        Set<String> duplicateApplicationNo = new HashSet<>();
         try {
-            reportUserModel = jdbcTemplate.query(getExcelDataForReportUser.query(applicationNo), new BeanPropertyRowMapper<>(ReportUserModel.class));
+            if (file != null && !file.isEmpty()) {
+                List<String> extractedApplicationNo = extractApplicationNoFromExcel(file, commonResponse);
+                if(extractedApplicationNo.size()>26){
+                    commonResponse.setMsg("Excel file exceeds the allowed limit of 25  application numbers.");
+                    return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(commonResponse);
+                }
+                for (String application :extractedApplicationNo){
+                    if (!duplicateApplicationNo.add(application)){
+                        return ResponseEntity.status(HttpStatus.CONFLICT).body("Excel have duplicate applicationNo"+application);
+                    }
+                }
+                String formattedApplicationNos = extractedApplicationNo.stream().map(application -> "'" + application + "'").collect(Collectors.joining(","));
+                logger.info("application list {}",applicationNo);
+                reportUserModel = jdbcTemplate.query(getExcelDataForReportUser.query(formattedApplicationNos), new BeanPropertyRowMapper<>(ReportUserModel.class));
+            } else if (applicationNo != null && !applicationNo.isEmpty()) {
+                String newApplicationNo = "'"+applicationNo+"'";
+                reportUserModel = jdbcTemplate.query(getExcelDataForReportUser.query(newApplicationNo), new BeanPropertyRowMapper<>(ReportUserModel.class));
+            }
             System.out.println(getExcelDataForReportUser.query(applicationNo));
             if (reportUserModel.isEmpty()) {
                 commonResponse.setCode("1111");
                 commonResponse.setMsg("Data not found");
-                return ResponseEntity.ok(commonResponse);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Data not found");
             }
             XSSFWorkbook workbook = new XSSFWorkbook();
             XSSFSheet sheet = workbook.createSheet("USER_REPORT");
@@ -185,9 +204,33 @@ public class ReportUserServiceImpl {
             }
             return ResponseEntity.ok("File exported successfully.");
         } catch (Exception e) {
-            logger.error("Exception found:", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error generating the Excel file.");
+            logger.error("Exception found:", e.getMessage());
+            commonResponse.setCode("1111");
+            commonResponse.setMsg("Error generating the Excel file."+e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(commonResponse);
         }
+    }
+
+    private List<String> extractApplicationNoFromExcel(MultipartFile file, CommonResponse commonResponse) throws Exception{
+        List<String> applicationList=new ArrayList<>();
+
+        try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
+            Sheet sheet = workbook.getSheetAt(0);
+            boolean isHeader = true;
+
+            for (Row row : sheet) {
+                if (isHeader) {
+                    isHeader = false;
+                    continue;
+                }
+                applicationList.add(row.getCell(0).getStringCellValue());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            commonResponse.setMsg("Technical issue.");
+        }
+        List<String> filteredList = applicationList.stream().filter(entry -> entry != null && !entry.trim().isEmpty()).collect(Collectors.toList());
+        return filteredList;
     }
 
     private String getFieldValue(ReportUserModel details, String fieldName) {
