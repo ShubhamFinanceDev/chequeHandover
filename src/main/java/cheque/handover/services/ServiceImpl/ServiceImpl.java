@@ -12,13 +12,17 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -30,6 +34,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
+import java.lang.reflect.Field;
 
 @Service
 public class ServiceImpl implements cheque.handover.services.Services.Service {
@@ -54,6 +60,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
     @Autowired
     private ChequeStatusRepo chequeStatusRepo;
     @Autowired
+    @Qualifier("jdbcJdbcTemplate")
     private JdbcTemplate jdbcTemplate;
     @Autowired
     private MisReportUtility misReportUtility;
@@ -63,7 +70,6 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
     private LoginDetailsRepo loginDetailsRepo;
     @Autowired
     private AssignBranchRepo assignBranchRepo;
-
 
     private final Logger logger = LoggerFactory.getLogger(User.class);
 
@@ -124,26 +130,18 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             userDetails.setMobileNo("******" + userData.getMobileNo().substring(userData.getMobileNo().length() - 4));
             userDetails.setEncodedMobileNo(Base64.getEncoder().encodeToString(userData.getMobileNo().getBytes()));
             String fullNames = userDetailRepo.findFullNameByEmailId(userData.getCreatedBy());
-            if (!fullNames.isEmpty()) {
+            if (fullNames != null) {
                 userDetails.setCreatedBy(fullNames);
             }
             userDetails.setEnabled(userData.isEnabled());
             userDetails.setCreateDate(String.valueOf(userData.getCreateDate()));
             List<String> assignBranches = new ArrayList<>();
-
             if (!userData.getAssignBranches().isEmpty()) {
                 userData.getAssignBranches().forEach(branch -> {
 
                     assignBranches.add(branch.getBranchCode());
                 });
             }
-            List<String> allBranches = userUtility.listOfBranch(assignBranches);
-            if (assignBranches.equals("ALL")) {
-                userDetails.setAssignBranches(allBranches);
-            } else {
-                userUtility.listOfBranch(assignBranches);
-            }
-
             userDetails.setAssignBranches(userUtility.listOfBranch(assignBranches));
             userDetails.setBranchesCode(assignBranches);
             userDetails.setRoleMaster(userData.getRoleMasters().getRole());
@@ -343,7 +341,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                     }
                     if (!errorMsg.isEmpty()) break;
                     applicationDetails1.setChequeStatus("N");
-                    applicationDetails1.setUploadBy(emailId);
+                    applicationDetails1.setUploadedBy(emailId);
                     applicationDetails1.setUploadDate(Timestamp.from(Instant.now()));
                     applicationDetails.add(applicationDetails1);
                 }
@@ -390,7 +388,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
                     otpRepository.save(otpManage);
 
 //                    resetPasswordResponse.setOtpId(otpManage.getOtpId());
-                    resetPasswordResponse.setOtpCode(String.valueOf(otpCode));
+//                    resetPasswordResponse.setOtpCode(String.valueOf(otpCode));
                     resetPasswordResponse.setEmailId(otpManage.getEmailId());
 
                     commonResponse.setCode("0000");
@@ -495,15 +493,19 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         FetchExcelData fetchExcelData = new FetchExcelData();
         List<ApplicationDetails> applicationDetails = new ArrayList<>();
         int pageSize = 100;
-        long totalCount = 0;
+        Long totalCount = 0L;
 
         Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
         List<String> assignBranches = userUtility.findBranchesByUser(emailId);
         try {
             for (String branch : assignBranches) {
                 if (branch.equals(branchName) || branchName != null && !branchName.isEmpty() || applicationNo != null && !applicationNo.isEmpty() || status != null && !status.isEmpty()) {
-                    applicationDetails = jdbcTemplate.query(userUtility.findByGivenCriteria(applicationNo, branchName, status, pageable), new BeanPropertyRowMapper<>(ApplicationDetails.class));
-                    totalCount = applicationDetails.size();
+                    String searchFilter = userUtility.findByGivenCriteria(applicationNo, branchName, status);
+                    String searchQuery = "SELECT * FROM import_data WHERE " + searchFilter + userUtility.pagination(pageable);
+                    applicationDetails = jdbcTemplate.query(searchQuery, new BeanPropertyRowMapper<>(ApplicationDetails.class));
+                    String countQuery = "SELECT count(*) FROM import_data WHERE " + searchFilter;
+                    totalCount = jdbcTemplate.queryForObject(countQuery, Long.class);
+                    totalCount = (totalCount != null) ? totalCount : 0;
                 }
             }
             addFetchData(commonResponse, fetchExcelData, applicationDetails, totalCount, pageNo, pageSize);
@@ -624,11 +626,11 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return commonResponse;
     }
 
-    public List<MisReport> fetchReportData(String reportType, String selectedType, String fromDate, String toDate, String selectedDate) {
+    public List<MisReport> fetchReportData(String reportType, String selectedType, String fromDate, String toDate, String selectedDate, String status) {
         List<MisReport> fetchedData = new ArrayList<>();
         try {
 
-            return jdbcTemplate.query(misReportUtility.misQuery(reportType, selectedType, fromDate, toDate, selectedDate), new BeanPropertyRowMapper<>(MisReport.class));
+            return jdbcTemplate.query(misReportUtility.misQuery(reportType, selectedType, fromDate, toDate, selectedDate, status), new BeanPropertyRowMapper<>(MisReport.class));
         } catch (Exception e) {
             logger.error("Error while executing report query" + e.getMessage());
             return fetchedData;
@@ -680,7 +682,6 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         if (!userAssignBranch.isEmpty()) {
             commonResponse.setCode("0000");
             commonResponse.setMsg("Data found successfully");
-            userAssignBranch.remove("ALL");
             assignBranchResponse.setAssignBranchList(userAssignBranch);
         } else {
             commonResponse.setCode("1111");
@@ -714,6 +715,7 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
         return commonResponse;
     }
 
+    @Transactional
     public ResponseEntity<CommonResponse> userUpdate(Long userId, EditUserDetails inputDetails) {
 
         CommonResponse commonResponse = new CommonResponse();
@@ -725,16 +727,14 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             userDetails.setLastName(inputDetails.getLastName());
             userDetails.setMobileNo(inputDetails.getMobileNo());
             userDetails.getRoleMasters().setRole(inputDetails.getRoleMasters().getRole());
-
-            for (AssignBranch assignBranch : userDetails.getAssignBranches()) {
-
-                inputDetails.getAssignBranches().removeIf(assignBranch1 -> assignBranch.getBranchCode().equals(assignBranch1.getBranchCode()));
-            }
-            inputDetails.getAssignBranches().forEach(branch -> {
+            List<AssignBranch> newBranch = inputDetails.getAssignBranches().stream().filter(branch -> userDetails.getAssignBranches().stream().noneMatch(addedBranch -> addedBranch.getBranchCode().equals(branch.getBranchCode()))).collect(Collectors.toList());
+            List<AssignBranch> revokeBranches = userDetails.getAssignBranches().stream().filter(branch -> inputDetails.getAssignBranches().stream().noneMatch(revokeBranch -> revokeBranch.getBranchCode().equals(branch.getBranchCode()))).collect(Collectors.toList());
+            newBranch.forEach(branch -> {
                 branch.setUserMaster(userDetails);
             });
 
             userDetails.setAssignBranches(inputDetails.getAssignBranches());
+            assignBranchRepo.deleteAll(revokeBranches);
             userDetailRepo.save(userDetails);
             commonResponse.setCode("0000");
             commonResponse.setMsg("Updated successfully");
@@ -759,5 +759,39 @@ public class ServiceImpl implements cheque.handover.services.Services.Service {
             return false;
         }
         return true;
+    }
+
+    public CommonResponse updateOldPassword(UpdatePassword updatePassword, UserDetail userDetail) {
+        CommonResponse commonResponse = new CommonResponse();
+        try {
+            userDetail.setPassword(passwordEncoder.encode(updatePassword.getNewPassword()));
+            userDetailRepo.save(userDetail);
+            commonResponse.setCode("0000");
+            commonResponse.setMsg("Update Password successful");
+        } catch (Exception e) {
+            commonResponse.setCode("1111");
+            commonResponse.setMsg("Exception found :" + e.getMessage());
+        }
+        return commonResponse;
+    }
+
+    public void setUpdatePasswordResponse(UpdatePassword updatePassword, UserDetail userDetailOptional, CommonResponse commonResponse) {
+        if (updatePassword.getNewPassword().equals(updatePassword.getConfirmNewPassword())) {
+            if (!(updatePassword.getNewPassword().matches(".{8,}") && updatePassword.getConfirmNewPassword().matches(".{8,}"))) {
+                commonResponse.setMsg("The new password or confirm password is not 8 characters long");
+                commonResponse.setCode("1111");
+//                if (/*!passwordEncoder.matches(updatePassword.getOldPassword(), userDetailOptional.getPassword())*/ ) {
+//                    commonResponse.setMsg("Old password is not correct");
+//                    commonResponse.setCode("1111");
+//                }
+            }
+//            else {
+//                commonResponse.setMsg("The new password or confirm password is not 8 characters long");
+//                commonResponse.setCode("1111");
+//            }
+        } else {
+            commonResponse.setCode("1111");
+            commonResponse.setMsg("New password and confirm password did not matched");
+        }
     }
 }

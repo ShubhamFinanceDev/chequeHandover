@@ -40,7 +40,7 @@ public class ApplicationDetails {
     @Column(name = "cheque_number")
     private Long chequeNumber;
     @Column(name="uploaded_by")
-    private String uploadBy;
+    private String uploadedBy;
     @Column(name = "upload_date")
     private Timestamp uploadDate;
 
