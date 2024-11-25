@@ -179,7 +179,7 @@ public class GetExcelDataForReportUser {
                 "TO_DATE(MOD( TRUNC( \"Sanction Loan Amount\"/ 100000 ), 100 ),'J'),'JSP') || ' LAKH ' END||\n" +
                 "CASE WHEN \"Sanction Loan Amount\"= 0 THEN 'ZERO' WHEN MOD( \"Sanction Loan Amount\", 100000 ) > 0 THEN TO_CHAR(\n" +
                 "TO_DATE(MOD(\"Sanction Loan Amount\", 100000),'J'),'JSP') || ' 'END)AS VARCHAR2(4000)), 1,CEIL(LENGTH(ABS(\"Sanction Loan Amount\"))/7)\n" +
-                "FROM neo_cas_lms_sit1_sh.Application_Newprod where \"Application Number\" ='APPL05378458'\n" +
+                "FROM neo_cas_lms_sit1_sh.Application_Newprod where \"Application Number\" IN ("+applicationNo+")\n" +
                 "UNION ALL\n" +
                 "SELECT \"Application Number\",original,TRUNC( \"Sanction Loan Amount\" / 10000000 ),'CRORE ' || suffix,\n" +
                 "RTRIM(CASE WHEN MOD( TRUNC( \"Sanction Loan Amount\" / 100000 ), 100 ) > 0 \n" +
